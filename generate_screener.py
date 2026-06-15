@@ -1,7 +1,7 @@
 """
 generate_screener.py
 미너비니 한국 ETF 스크리너 — GitHub Actions에서 실행 → docs/screener.html 갱신
-Colab 노트북 기반으로 이동평균 정배열 조건 + 보조지표 계산 후 테이블 출력
+Colab 노트북 기반으로 이동평균 정배열 조건 + 보조지표 계산 후 테이블 출�%
 """
 import json
 import time
@@ -337,26 +337,20 @@ tr:hover td{{filter:brightness(.96)}}
 </table>
 </div>
 <div class="footer">데이터: yfinance · 네이버금융 | 투자 판단은 본인 책임입니다</div>
-</body>
-</html>'''
-
-
-# ──────────────────────────────────────────────
-if __name__ == '__main__':
-    now = datetime.now(KST)
-    print(f'[{now.strftime("%Y-%m-%d %H:%M")} KST] ETF 스크리너 시작')
-
-    etf_list = fetch_etf_list(min_volume=300_000)
-    if not etf_list:
-        print('❌ ETF 목록 없음 — 종료')
-        exit(1)
-
-    result_df = screen_etfs(etf_list)
-    print(f'\n✅ 미너비니 조건 통과: {len(result_df)}개')
-
-    updated = now.strftime('%Y-%m-%d %H:%M KST')
-    html = build_html(result_df, updated)
-
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(html, encoding='utf-8')
-    print(f'✅ 생성 완료 → {OUTPUT}')
+<script>
+let sortCol=-1,sortAsc=true;
+function sortTable(col){{
+  const tbody=document.querySelector('tbody');
+  const rows=Array.from(tbody.querySelectorAll('tr'));
+  if(sortCol===col){{sortAsc=!sortAsc;}}else{{sortCol=col;sortAsc=true;}}
+  rows.sort((a,b)=>{{
+    const ca=a.querySelectorAll('td')[col]?.textContent.trim()??'';
+    const cb=b.querySelectorAll('td')[col]?.textContent.trim()??'';
+    const na=parseFloat(ca.replace(/[%,원]/g,'')),nb=parseFloat(cb.replace(/[%,원]/g,''));
+    let v=isNaN(na)||isNaN(nb)?ca.localeCompare(cb,'ko'):na-nb;
+    return sortAsc?v:-v;
+  }});
+  rows.forEach(r=>tbody.appendChild(r));
+  document.querySelectorAll('thead th').forEach((th,i)=>{{
+    const sp=th.querySelector('span');
+    if(sp)sp.textContent=i===col?(sortAsc?'▲':'�
