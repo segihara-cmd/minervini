@@ -307,22 +307,22 @@ tr:hover td{{filter:brightness(1.15)}}
 <body>
 <div class="header">
   <h1>🔍 미너비니 ETF 스크리너</h1>
-  <span class="updated">업데이트: {{updated}}</span>
+  <span class="updated">업데이트: {updated}</span>
 </div>
-{{TAB_NAV}}
+{TAB_NAV}
 <div class="content">
 <div class="info-bar">
   <div>
-    <span class="badge">{{count}}개 통과</span>
+    <span class="badge">{count}개 통과</span>
     &nbsp; 미너비니 6조건: 주가 &gt; SMA50/150/200 · SMA 정배열 · SMA200 상승추세
     &nbsp;|&nbsp; 기준 거래량: 30만주 이상
   </div>
   <div style="color:#475569;font-size:.78rem">6개월 수익률 높은 순</div>
 </div>
 <table>
-<thead><tr>{{th_row}}</tr></thead>
+<thead><tr>{th_row}</tr></thead>
 <tbody>
-{{rows_html}}
+{rows_html}
 </tbody>
 </table>
 </div>
@@ -334,7 +334,7 @@ tr:hover td{{filter:brightness(1.15)}}
 # ──────────────────────────────────────────────
 if __name__ == '__main__':
     now = datetime.now(KST)
-    print(f'[{{now.strftime("%Y-%m-%d %H:%M")}} KST] ETF 스크리너 시작')
+    print(f'[{now.strftime("%Y-%m-%d %H:%M")} KST] ETF 스크리너 시작')
 
     etf_list = fetch_etf_list(min_volume=300_000)
     if not etf_list:
@@ -342,11 +342,11 @@ if __name__ == '__main__':
         exit(1)
 
     result_df = screen_etfs(etf_list)
-    print(f'\n✅ 미너비니 조건 통과: {{len(result_df)}}개')
+    print(f'\n✅ 미너비니 조건 통과: {len(result_df)}개')
 
     updated = now.strftime('%Y-%m-%d %H:%M KST')
     html = build_html(result_df, updated)
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(html, encoding='utf-8')
-    print(f'✅ 생성 완료 → {{OUTPUT}}')
+    print(f'✅ 생성 완료 → {OUTPUT}')
