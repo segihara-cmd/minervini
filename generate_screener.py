@@ -208,7 +208,7 @@ def screen_etfs(etf_list):
 def _lerp_color(v, lo, hi, c_lo, c_hi):
     """v를 [lo,hi] 범위로 선형 보간해 hex 색상 반환"""
     if v is None or lo == hi:
-        return '#1e293b'
+        return '#f8fafc'
     t = max(0.0, min(1.0, (v - lo) / (hi - lo)))
     def parse(h):
         h = h.lstrip('#')
@@ -221,38 +221,53 @@ def _lerp_color(v, lo, hi, c_lo, c_hi):
     return f'#{r:02x}{g:02x}{b:02x}'
 
 def color_pct(v, lo=0, hi=50):
-    return _lerp_color(v, lo, hi, '#fca5a5', '#86efac')
+    # 0% 이하 = 빨강, hi% 이상 = 초록
+    if v is None:
+        return '#f8fafc'
+    if v < 0:
+        return _lerp_color(v, -30, 0, '#fca5a5', '#fef9c3')
+    return _lerp_color(v, 0, hi, '#fef9c3', '#86efac')
 
 def color_neutral(v, lo=0, hi=3):
-    return _lerp_color(v, lo, hi, '#fca5a5', '#86efac')
+    # 0 이하 = 빨강, 중립 = 노랑, hi 이상 = 초록
+    if v is None:
+        return '#f8fafc'
+    if v < 0:
+        return '#fca5a5'
+    return _lerp_color(v, lo, hi, '#fef9c3', '#86efac')
 
 def color_rsi(v):
-    # 30 파란색(매도과다), 50 중립, 70+ 빨강(과매수)
+    # <30 파랑(과매도), 30~70 노랑→,��록 그라데이션, >70 빨강(과매수)
     if v is None:
-        return '#1e293b'
+        return '#f8fafc'
     if v < 30:
         return '#bfdbfe'
     if v > 70:
         return '#fca5a5'
-    return _lerp_color(v, 30, 70, '#bfdbfe', '#86efac')
+    return _lerp_color(v, 30, 70, '#fef9c3', '#86efac')
 
 def color_macd(v, col_vals):
+    # 음수 = 빨강, 0 근처 = 연한 노랑, 양수 = 초록 (발산형)
     numeric = [x for x in col_vals if x is not None]
     if not numeric or v is None:
-        return '#1e293b'
+        return '#f8fafc'
     lo, hi = min(numeric), max(numeric)
-    return _lerp_color(v, lo, hi, '#7f1d1d', '#14532d')
+    if v < 0:
+        lo_neg = lo if lo < 0 else -1e-9
+        return _lerp_color(v, lo_neg, 0, '#fca5a5', '#fef9c3')
+    else:
+        hi_pos = hi if hi > 0 else 1e-9
+        return _lerp_color(v, 0, hi_pos, '#fef9c3', '#86efac')
+
+def color_sma(v):
+    # 정배열 강도: 차이 롍수록 진한 초록
+    if v is None or v <= 0:
+        return '#fef9c3'
+    return _lerp_color(v, 0, 300, '#fef9c3', '#86efac')
 
 def td(val, bg='#f8fafc', fmt='{}', align='right'):
     display = fmt.format(val) if val is not None else 'N/A'
-    return f'<td style="padding:7px 10px;background:{bg};text-align:{align};white-space:nowrap;color:#1e293b">{display}</td>'
-
-# ──────────────────────────────────────────────
-# HTML 생성
-# ──────────────────────────────────────────────
-TAB_NAV = '''<nav style="background:#1e293b;border-bottom:2px solid #334155;display:flex;gap:0">
-  <a href="index.html" style="padding:12px 24px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid transparent">📊 매크로 대시보드</a>
-  <a href="screener.html" style="padding:12px 24px;color:#f1f5f9;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid #3b82f6">🔍 ETF 스크리너</a>
+    return f'<td style="padding:7px 10px;background:{bg};text-align:{align};white-space:nowrap;color:#1e293b">{display}</td>'ottom:3px solid #3b82f6">🔍 ETF 스크리너</a>
 </nav>'''
 
 def build_html(df, updated):
@@ -278,8 +293,8 @@ def build_html(df, updated):
                 + td(row['6개월변동성'], '#f8fafc', '{:.1f}%')
                 + td(row['샤프지수'],  color_neutral(row['샤프지수'], 0, 3),  '{:.2f}')
                 + td(row['소르티노'],  color_neutral(row['소르티노'], 0, 3),   '{:.2f}')
-                + td(row['SMA50-150'],  '#f8fafc', '{:,.0f}')
-                + td(row['SMA150-200'], '#f8fafc', '{:,.0f}')
+                + td(row['SMA50-150'],  color_sma(row['SMA50-150']),  '{:,.0f}')
+                + td(row['SMA150-200'], color_sma(row['SMA150-200']), '{:,.0f}')
                 + td(row['RSI'],        color_rsi(row['RSI']), '{:.1f}')
                 + td(row['MACD_Hist'],  color_macd(row['MACD_Hist'], mcd_vals), '{:.4f}')
                 + f'<td style="padding:7px 10px;background:#f8fafc;text-align:center">{row["MACD↑"]}</td>'
