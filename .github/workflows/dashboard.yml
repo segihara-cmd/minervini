@@ -1,24 +1,39 @@
 name: Daily Dashboard Update
+
 on:
   schedule:
-    - cron: '0 23 * * 0-4'  # 8am KST weekdays
-  workflow_dispatch:
+    - cron: '0 23 * * 0-4'   # 평일 오전 8시 KST (UTC 23:00 전날)
+    - cron: '0 8 * * 1-5'    # 평일 오후 5시 KST (UTC 08:00)
+  workflow_dispatch:           # 수동 실행 버튼
+
 jobs:
   update-dashboard:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install yfinance pandas numpy
-      - run: python generate_dashboard.py
-      - name: Commit and push docs/index.html
+
+      - name: Install dependencies
+        run: pip install yfinance pandas numpy requests
+
+      - name: Generate dashboard HTML
+        run: python generate_dashboard.py
+
+      - name: Generate ETF screener HTML
+        run: python generate_screener.py
+
+      - name: Commit and push docs/
         run: |
-          git config user.name "github-actions[bot]"
+          git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/index.html
+          git add docs/index.html docs/screener.html
           git diff --staged --quiet || git commit -m "chore: dashboard update $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
           git push
