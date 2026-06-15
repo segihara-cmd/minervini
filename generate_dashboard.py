@@ -60,7 +60,7 @@ def sma(values, n):
     return round(float(np.mean(values[-n:])), 2)
 
 def norm(values):
-    """0-index 기준 누적 수익률(%)로 정규화"""
+    """0-index 기준 누적 수익률 %)로 정규화"""
     if not values or values[0] == 0:
         return []
     base = values[0]
@@ -325,7 +325,7 @@ def build_html(d):
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}
-body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}}
+body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}}
 .header{{background:#1e293b;border-bottom:1px solid #334155;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}}
 .header h1{{font-size:1.1rem;font-weight:700;color:#f1f5f9}}
 .updated{{font-size:.8rem;color:#94a3b8}}
@@ -334,24 +334,24 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .exit-title{{font-size:1.2rem;font-weight:700}}
 .exit-sub{{font-size:.9rem;margin-top:4px;opacity:.9}}
 .kpi-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px}}
-.kpi-card{{background:#1e293b;border-radius:8px;padding:14px;border:1px solid #334155}}
+.kpi-card{{background:#ffffff;border-radius:8px;padding:14px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
 .kpi-label{{font-size:.75rem;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}}
-.kpi-val{{font-size:1.1rem;font-weight:700;color:#f1f5f9}}
+.kpi-val{{font-size:1.1rem;font-weight:700;color:#0f172a}}
 .kpi-pct{{font-size:.8rem;margin-top:2px}}
 .charts-grid{{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}}
 @media(max-width:900px){{.charts-grid{{grid-template-columns:1fr}}}}
-.chart-card{{background:#1e293b;border-radius:8px;padding:16px;border:1px solid #334155}}
+.chart-card{{background:#ffffff;border-radius:8px;padding:16px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
 .chart-title{{font-size:.85rem;font-weight:600;color:#94a3b8;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}}
 .chart-legend{{display:flex;gap:16px;margin-bottom:8px;flex-wrap:wrap}}
 .leg{{display:flex;align-items:center;gap:5px;font-size:.75rem;color:#cbd5e1}}
 .leg-dot{{width:10px;height:10px;border-radius:50%}}
 canvas{{max-height:220px}}
-.signals-card{{background:#1e293b;border-radius:8px;padding:16px;border:1px solid #334155;margin-bottom:20py}}
+.signals-card{{background:#ffffff;border-radius:8px;padding:16px;border:1px solid #e2e8f0;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
 .signals-card h3{{font-size:.85rem;font-weight:600;color:#94a3b8;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em}}
 table{{width:100%;border-collapse:collapse}}
 th{{text-align:left;padding:6px 12px;font-size:.75rem;color:#64748b;border-bottom:1px solid #334155;text-transform:uppercase}}
-tr:hover td{{background:#263348}}
-.footer{{text-align:center;padding:16px;color:#475569;font-size:.75rem}}
+tr:hover td{{background:#f8fafc}}
+.footer{{text-align:center;padding:16px;color:#94a3b8;font-size:.75rem}}
 </style>
 </head>
 <body>
@@ -484,7 +484,7 @@ tr:hover td{{background:#263348}}
   <div class="chart-card">
     <div class="chart-title">DRAM 프록시: Micron vs SOX (3개월)</div>
     <div class="chart-legend">
-      <span class="leg"><span class="leg-dot" style="background:#7c3aed"></span>Micron (MU)</span>
+      <span class="leg"><span class="leg-dot" style="background:#7c�aed"></span>Micron (MU)</span>
       <span class="leg"><span class="leg-dot" style="background:#94a3b8"></span>SOX</span>
     </div>
     <canvas id="cSoxMu"></canvas>
@@ -531,8 +531,8 @@ const cfg = (labels, datasets, yLabel='', y2Label='') => ({{
       borderWidth:1
     }} }},
     scales: {{
-      x: {{ ticks:{{ color:'#64748b', maxTicksLimit:6, font:{{size:10}} }}, grid:{{color:'#1e3a5f22'}} }},
-      y: {{ ticks:{{ color:'#64748b', font:{{size:10}} }}, grid:{{color:'#1e3a5f44'}}, title:{{display:!!yLabel,text:yLabel,color:'#64748b',font:{{size:10}}}} }},
+      x: {{ ticks:{{ color:'#64748b', maxTicksLimit:6, font:{{size:10}} }}, grid:{{color:'#cbd5e188'}} }},
+      y: {{ ticks:{{ color:'#64748b', font:{{size:10}} }}, grid:{{color:'#94a3b844'}}, title:{{display:!!yLabel,text:yLabel,color:'#64748b',font:{{size:10}}}} }},
       ...(y2Label ? {{y2:{{ type:'linear', position:'right', ticks:{{color:'#64748b',font:{{size:10}} }}, grid:{{drawOnChartArea:false}}, title:{{display:true,text:y2Label,color:'#64748b',font:{{size:10}}}} }}}} : {{}} )
     }}
   }}
@@ -563,7 +563,7 @@ new Chart(document.getElementById('cSamHyn'), cfg(
   [
     ds('삼성전자',   D.charts.sam_hyn.sam, BLUE, 'y'),
     ds('SK하이닉스', D.charts.sam_hyn.hyn, RED,  'y'),
-  ], '누적수익률(%)'
+  ], '누적수익률 %)'
 ));
 
 // SOX vs NVDA
@@ -598,9 +598,9 @@ new Chart(document.getElementById('cSoxNvda'), cfg(
   new Chart(document.getElementById('cFxWti'), cfg(
     fDates,
     [
-      ds('달러/원', D.charts.fx_wti.fx, BLUE, 'y'),
-      ds('WTI',     wAligned,           RED,  'y2'),
-    ], '달러/원', 'WTI($)'
+      ds('환율/원', D.charts.fx_wti.fx, BLUE, 'y'),
+      ds('WTI',    wAligned,           RED,  'y2'),
+    ], '환율/원', 'WTI($)'
   ));
 }})();
 
@@ -610,7 +610,7 @@ new Chart(document.getElementById('cSoxMu'), cfg(
   [
     ds('Micron', D.charts.sox_mu.mu,  PURPLE, 'y'),
     ds('SOX',    D.charts.sox_mu.sox, GRAY,   'y'),
-  ], '누적수익률(%)'
+  ], '상대수익률(%)'
 ));
 </script>
 </body>
