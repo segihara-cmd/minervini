@@ -221,19 +221,20 @@ def _lerp_color(v, lo, hi, c_lo, c_hi):
     return f'#{r:02x}{g:02x}{b:02x}'
 
 def color_pct(v, lo=0, hi=50):
-    return _lerp_color(v, lo, hi, '#7f1d1d', '#14532d')
+    return _lerp_color(v, lo, hi, '#fca5a5', '#86efac')
 
 def color_neutral(v, lo=0, hi=3):
-    return _lerp_color(v, lo, hi, '#7f1d1d', '#14532d')
+    return _lerp_color(v, lo, hi, '#fca5a5', '#86efac')
 
 def color_rsi(v):
+    # 30 파란색(매도과다), 50 중립, 70+ 빨강(과매수)
     if v is None:
         return '#1e293b'
     if v < 30:
-        return '#1e3a5f'
+        return '#bfdbfe'
     if v > 70:
-        return '#7f1d1d'
-    return _lerp_color(v, 30, 70, '#1e3a5f', '#14532d')
+        return '#fca5a5'
+    return _lerp_color(v, 30, 70, '#bfdbfe', '#86efac')
 
 def color_macd(v, col_vals):
     numeric = [x for x in col_vals if x is not None]
@@ -242,38 +243,46 @@ def color_macd(v, col_vals):
     lo, hi = min(numeric), max(numeric)
     return _lerp_color(v, lo, hi, '#7f1d1d', '#14532d')
 
-def td(val, bg='#1e293b', fmt='{}', align='right'):
+def td(val, bg='#f8fafc', fmt='{}', align='right'):
     display = fmt.format(val) if val is not None else 'N/A'
-    return f'<td style="padding:7px 10px;background:{bg};text-align:{align};white-space:nowrap">{display}</td>'
+    return f'<td style="padding:7px 10px;background:{bg};text-align:{align};white-space:nowrap;color:#1e293b">{display}</td>'
 
 # ──────────────────────────────────────────────
 # HTML 생성
 # ──────────────────────────────────────────────
-TAB_NAV = '<nav style="background:#1e293b;border-bottom:2px solid #334155;display:flex;gap:0"><a href="index.html" style="padding:12px 24px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid transparent">📊 매크로 대시보드</a><a href="screener.html" style="padding:12px 24px;color:#f1f5f9;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid #3b82f6">🔍 ETF 스크리너</a></nav>'
+TAB_NAV = '''<nav style="background:#1e293b;border-bottom:2px solid #334155;display:flex;gap:0">
+  <a href="index.html" style="padding:12px 24px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid transparent">📊 매크로 대시보드</a>
+  <a href="screener.html" style="padding:12px 24px;color:#f1f5f9;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid #3b82f6">🔍 ETF 스크리너</a>
+</nav>'''
 
 def build_html(df, updated):
     if df.empty:
-        rows_html = '<tr><td colspan="14" style="text-align:center;padding:40px;color:#64748b">조건을 만족하는 ETF가 없습니다</td></tr>'
+        rows_html = '<tr><td colspan="14" style="text-align:center;padding:40px;color:#94a3b8">조건을 만족하는 ETF가 없습니다</td></tr>'
     else:
+        ret6_vals = df['6개월수익률'].tolist()
+        ret3_vals = df['3개월수익률'].tolist()
+        shr_vals  = df['샤프지수'].tolist()
+        srt_vals  = df['소르티노'].tolist()
         mcd_vals  = df['MACD_Hist'].tolist()
+
         rows = []
         for idx, row in df.iterrows():
             rank = idx + 1
             cells = (
-                f'<td style="padding:7px 10px;text-align:center;color:#64748b;background:#1e293b">{rank}</td>'
-                + f'<td style="padding:7px 10px;background:#1e293b;white-space:nowrap"><span style="color:#94a3b8;font-size:.8rem">{row["티커"]}</span><br><b style="font-size:.9rem">{row["종목명"][:18]}</b></td>'
-                + td(f'{row["현재가"]:,}원', '#1e293b', '{}', 'right')
-                + td(f'{row["거래량"]:,}', '#1e293b', '{}', 'right')
+                f'<td style="padding:7px 10px;text-align:center;color:#94a3b8;background:#f8fafc">{rank}</td>'
+                + f'<td style="padding:7px 10px;background:#ffffff;white-space:nowrap"><span style="color:#94a3b8;font-size:.8rem">{row["티커"]}</span><br><b style="font-size:.9rem;color:#1e293b">{row["종목명"][:18]}</b></td>'
+                + td(f'{row["현재가"]:,}원', '#f8fafc', '{}', 'right')
+                + td(f'{row["거래량"]:,}', '#f8fafc', '{}', 'right')
                 + td(row['3개월수익률'], color_pct(row['3개월수익률'], 0, 30), '{:.1f}%')
                 + td(row['6개월수익률'], color_pct(row['6개월수익률'], 0, 50), '{:.1f}%')
-                + td(row['6개월변동성'], '#1e293b', '{:.1f}%')
+                + td(row['6개월변동성'], '#f8fafc', '{:.1f}%')
                 + td(row['샤프지수'],  color_neutral(row['샤프지수'], 0, 3),  '{:.2f}')
                 + td(row['소르티노'],  color_neutral(row['소르티노'], 0, 3),   '{:.2f}')
-                + td(row['SMA50-150'],  '#1e293b', '{:,.0f}')
-                + td(row['SMA150-200'], '#1e293b', '{:,.0f}')
+                + td(row['SMA50-150'],  '#f8fafc', '{:,.0f}')
+                + td(row['SMA150-200'], '#f8fafc', '{:,.0f}')
                 + td(row['RSI'],        color_rsi(row['RSI']), '{:.1f}')
                 + td(row['MACD_Hist'],  color_macd(row['MACD_Hist'], mcd_vals), '{:.4f}')
-                + f'<td style="padding:7px 10px;background:#1e293b;text-align:center">{row["MACD↑"]}</td>'
+                + f'<td style="padding:7px 10px;background:#f8fafc;text-align:center">{row["MACD↑"]}</td>'
             )
             rows.append(f'<tr>{"".join(cells)}</tr>')
         rows_html = '\n'.join(rows)
@@ -282,9 +291,9 @@ def build_html(df, updated):
     cols = ['#', '종목명', '현재가', '거래량', '3개월<br>수익률', '6개월<br>수익률',
             '6개월<br>변동성', '샤프지수', '소르티노', 'SMA50<br>-150', 'SMA150<br>-200',
             'RSI', 'MACD<br>Hist', 'MACD↑']
-    th_row = ''.join(f'<th style="padding:8px 10px;text-align:right;background:#0f172a;color:#64748b;font-size:.75rem;border-bottom:2px solid #334155;white-space:nowrap">{c}</th>' for c in cols)
+    th_row = ''.join(f'<th onclick="sortTable({i})" data-col="{i}" style="padding:8px 10px;text-align:right;background:#1e293b;color:#94a3b8;font-size:.75rem;border-bottom:2px solid #334155;white-space:nowrap;cursor:pointer;user-select:none">{c} <span style="opacity:.5;font-size:.7rem">⇅</span></th>' for i,c in enumerate(cols))
 
-    return f"""<!DOCTYPE html>
+    return f'''<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -292,16 +301,17 @@ def build_html(df, updated):
 <title>미너비니 ETF 스크리너</title>
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}
-body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}}
+body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}}
 .header{{background:#1e293b;border-bottom:1px solid #334155;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}}
 .header h1{{font-size:1.05rem;font-weight:700;color:#f1f5f9}}
 .updated{{font-size:.78rem;color:#94a3b8}}
 .content{{padding:20px;max-width:1600px;margin:0 auto;overflow-x:auto}}
-.info-bar{{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:12px 18px;margin-bottom:16px;font-size:.85rem;color:#94a3b8;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}}
-.badge{{background:#1d4ed8;color:#eff6ff;padding:3px 10px;border-radius:12px;font-size:.75rem;font-weight:600}}
-table{{width:100%;border-collapse:collapse;font-size:.82rem}}
-tr:hover td{{filter:brightness(1.15)}}
-.footer{{text-align:center;padding:20px;color:#475569;font-size:.75rem}}
+.info-bar{{background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 18px;margin-bottom:16px;font-size:.85rem;color:#64748b;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}}
+.badge{{background:#2563eb;color:#eff6ff;padding:3px 10px;border-radius:12px;font-size:.75rem;font-weight:600}}
+table{{width:100%;border-collapse:collapse;font-size:.82rem;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}}
+thead th:hover{{background:#334155 !important;transition:.15s}}
+tr:hover td{{filter:brightness(.96)}}
+.footer{{text-align:center;padding:20px;color:#94a3b8;font-size:.75rem}}
 </style>
 </head>
 <body>
@@ -328,7 +338,7 @@ tr:hover td{{filter:brightness(1.15)}}
 </div>
 <div class="footer">데이터: yfinance · 네이버금융 | 투자 판단은 본인 책임입니다</div>
 </body>
-</html>"""
+</html>'''
 
 
 # ──────────────────────────────────────────────
