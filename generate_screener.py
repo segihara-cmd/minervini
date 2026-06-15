@@ -1,7 +1,7 @@
 """
 generate_screener.py
 미너비니 한국 ETF 스크리너 — GitHub Actions에서 실행 → docs/screener.html 갱신
-Colab 노트북 기반으로 이동평균 정배열 조건 + 보조지표 계산 후 테이블 출�%
+Colab 노트북 기반으로 이동평균 정배열 조건 + 보조지표 계산 후 테이블 출력
 """
 import json
 import time
@@ -186,7 +186,7 @@ def screen_etfs(etf_list):
                 '6개월변동성': round(vol6 * 100, 2) if vol6 is not None else None,
                 '샤프지수':    round(sharpe, 2) if sharpe is not None else None,
                 '소르티노':    round(sortino, 2) if sortino is not None else None,
-                'RSI':         rsi,
+                   'RSI':         rsi,
                 'MACD_Hist':   macd_h,
                 'MACD↑':       '✅' if macd_up else '❌',
             })
@@ -353,4 +353,31 @@ function sortTable(col){{
   rows.forEach(r=>tbody.appendChild(r));
   document.querySelectorAll('thead th').forEach((th,i)=>{{
     const sp=th.querySelector('span');
-    if(sp)sp.textContent=i===col?(sortAsc?'▲':'�
+    if(sp)sp.textContent=i===col?(sortAsc?'\u25b2':'\u25bc'):'\u21c5';
+    if(sp)sp.style.opacity=i===col?'1':'.5';
+  }});
+}}
+</script>
+</body>
+</html>'''
+
+
+# ──────────────────────────────────────────────
+if __name__ == '__main__':
+    now = datetime.now(KST)
+    print(f'[{now.strftime("%Y-%m-%d %H:%M")} KST] ETF 스크리너 시작')
+
+    etf_list = fetch_etf_list(min_volume=300_000)
+    if not etf_list:
+        print('❌ ETF 목록 없음 — 종료')
+        exit(1)
+
+    result_df = screen_etfs(etf_list)
+    print(f'\n✅ 미너비니 조건 통과: {len(result_df)}개')
+
+    updated = now.strftime('%Y-%m-%d %H:%M KST')
+    html = build_html(result_df, updated)
+
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT.write_text(html, encoding='utf-8')
+    print(f'✅ 생성 완료 → {OUTPUT}')
