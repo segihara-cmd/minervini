@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>미너비니 ETF 스크리너</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+.header{background:#1e293b;border-bottom:1px solid #334155;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:1.05rem;font-weight:700;color:#f1f5f9}
+.updated{font-size:.78rem;color:#94a3b8}
+.content{padding:20px;max-width:1600px;margin:0 auto;overflow-x:auto}
+.info-bar{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:12px 18px;margin-bottom:16px;font-size:.85rem;color:#94a3b8;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.badge{background:#1d4ed8;color:#eff6ff;padding:3px 10px;border-radius:12px;font-size:.75rem;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+tr:hover td{filter:brightness(1.15)}
+.footer{text-align:center;padding:20px;color:#475569;font-size:.75rem}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🔍 미너비니 ETF 스크리너</h1>
+  <span class="updated">업데이트: {updated}</span>
+</div>
+{TAB_NAV}
+<div class="content">
+<div class="info-bar">
+  <div>
+    <span class="badge">{count}개 통과</span>
+    &nbsp; 미너비니 6조건: 주가 &gt; SMA50/150/200 · SMA 정배열 · SMA200 상승추세
+    &nbsp;|&nbsp; 기준 거래량: 30만주 이상
+  </div>
+  <div style="color:#475569;font-size:.78rem">6개월 수익률 높은 순</div>
+</div>
+<table>
+<thead><tr>{th_row}</tr></thead>
+<tbody>
+{rows_html}
+</tbody>
+</table>
+</div>
+<div class="footer">데이터: yfinance · 네이버금융 | 투자 판단은 본인 책임입니다</div>
+</body>
+</html>
