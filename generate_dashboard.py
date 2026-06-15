@@ -359,6 +359,10 @@ tr:hover td{{background:#263348}}
   <h1>📊 반도체 포트폴리오 대시보드</h1>
   <span class="updated">업데이트: {d['updated']}</span>
 </div>
+<nav style="background:#1e293b;border-bottom:2px solid #334155;display:flex;gap:0">
+  <a href="index.html" style="padding:12px 24px;color:#f1f5f9;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid #3b82f6">📊 매크로 대시보드</a>
+  <a href="screener.html" style="padding:12px 24px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid transparent">🔍 ETF 스크리너</a>
+</nav>
 <div class="content">
 
 <!-- EXIT BANNER -->
