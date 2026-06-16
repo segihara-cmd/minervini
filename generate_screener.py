@@ -186,7 +186,7 @@ def screen_etfs(etf_list):
                 '6개월변동성': round(vol6 * 100, 2) if vol6 is not None else None,
                 '샤프지수':    round(sharpe, 2) if sharpe is not None else None,
                 '소르티노':    round(sortino, 2) if sortino is not None else None,
-                   'RSI':         rsi,
+                'RSI':         rsi,
                 'MACD_Hist':   macd_h,
                 'MACD↑':       '✅' if macd_up else '❌',
             })
@@ -237,7 +237,7 @@ def color_neutral(v, lo=0, hi=3):
     return _lerp_color(v, lo, hi, '#fef9c3', '#86efac')
 
 def color_rsi(v):
-    # <30 파랑(과매도), 30~70 노랑→,��록 그라데이션, >70 빨강(과매수)
+    # <30 파랑(과매도), 30~70 노랑→초록 그라데이션, >70 빨강(과매수)
     if v is None:
         return '#f8fafc'
     if v < 30:
@@ -260,14 +260,21 @@ def color_macd(v, col_vals):
         return _lerp_color(v, 0, hi_pos, '#fef9c3', '#86efac')
 
 def color_sma(v):
-    # 정배열 강도: 차이 롍수록 진한 초록
+    # 정배열 강도: 차이 클수록 진한 초록
     if v is None or v <= 0:
         return '#fef9c3'
     return _lerp_color(v, 0, 300, '#fef9c3', '#86efac')
 
 def td(val, bg='#f8fafc', fmt='{}', align='right'):
     display = fmt.format(val) if val is not None else 'N/A'
-    return f'<td style="padding:7px 10px;background:{bg};text-align:{align};white-space:nowrap;color:#1e293b">{display}</td>'ottom:3px solid #3b82f6">🔍 ETF 스크리너</a>
+    return f'<td style="padding:7px 10px;background:{bg};text-align:{align};white-space:nowrap;color:#1e293b">{display}</td>'
+
+# ──────────────────────────────────────────────
+# HTML 생성
+# ──────────────────────────────────────────────
+TAB_NAV = '''<nav style="background:#1e293b;border-bottom:2px solid #334155;display:flex;gap:0">
+  <a href="index.html" style="padding:12px 24px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid transparent">📊 매크로 대시보드</a>
+  <a href="screener.html" style="padding:12px 24px;color:#f1f5f9;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid #3b82f6">🔍 ETF 스크리너</a>
 </nav>'''
 
 def build_html(df, updated):
