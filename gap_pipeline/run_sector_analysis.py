@@ -58,12 +58,62 @@ def save_csv(df: pd.DataFrame, path: Path) -> None:
     logger.info("저장: %s (%d행)", path, len(out))
 
 
+_DEDUP_COLS = ["ticker", "securities_company", "report_date", "target_price"]
+
+
+def _collect_investing_for_tickers(
+    tickers: list[str],
+    name_map: dict[str, str],
+    months: int,
+) -> pd.DataFrame:
+    collector = InvestingCollector()
+    frames: list[pd.DataFrame] = []
+    total = len(tickers)
+    for i, raw in enumerate(tickers, 1):
+        code = normalize_ticker_code(raw)
+        try:
+            df = collector.fetch_consensus(
+                code,
+                name_map.get(code),
+                foreign_only=False,
+                months=months,
+            )
+            if not df.empty:
+                frames.append(df)
+        except Exception as exc:
+            logger.warning("Investing %s 실패: %s", code, exc)
+        if i % 25 == 0 or i == total:
+            rows = sum(len(f) for f in frames)
+            logger.info("Investing 수집 %d/%d (누적 %d건)", i, total, rows)
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames, ignore_index=True).drop_duplicates(
+        subset=_DEDUP_COLS,
+        keep="last",
+    )
+
+
+def _merge_investing_cache(cached: pd.DataFrame, fresh: pd.DataFrame) -> pd.DataFrame:
+    """재수집된 종목은 최신 행으로 교체, 실패 종목은 기존 캐시 유지."""
+    if fresh.empty:
+        return cached
+    fresh = fresh.copy()
+    fresh["ticker"] = fresh["ticker"].map(normalize_ticker_code)
+    refreshed = set(fresh["ticker"].astype(str))
+    cached = cached.copy()
+    cached["ticker"] = cached["ticker"].map(normalize_ticker_code)
+    kept = cached[~cached["ticker"].isin(refreshed)]
+    out = pd.concat([kept, fresh], ignore_index=True)
+    return out.drop_duplicates(subset=_DEDUP_COLS, keep="last")
+
+
 def run(
     months: int | None = None,
     per_sector: int | None = None,
     refresh_etf_cache: bool = False,
     top_gap: int | None = None,
     from_cache: bool = False,
+    refresh_investing: bool = False,
     skip_etf: bool = False,
     refresh_industry_cache: bool = False,
 ) -> pd.DataFrame:
@@ -88,7 +138,16 @@ def run(
     )
 
     cache_path = RAW_DIR / "sector_investing_reports.csv"
-    if from_cache and cache_path.exists():
+    if refresh_investing:
+        logger.info("Investing 전 종목 재수집 (%d개)…", len(tickers))
+        fresh_df = _collect_investing_for_tickers(tickers, name_map, months)
+        if from_cache and cache_path.exists():
+            investing_df = pd.read_csv(cache_path, encoding="utf-8-sig")
+            investing_df = _merge_investing_cache(investing_df, fresh_df)
+        else:
+            investing_df = fresh_df
+        save_csv(investing_df, cache_path)
+    elif from_cache and cache_path.exists():
         investing_df = pd.read_csv(cache_path, encoding="utf-8-sig")
         if "ticker" in investing_df.columns:
             investing_df["ticker"] = investing_df["ticker"].map(normalize_ticker_code)
@@ -97,26 +156,16 @@ def run(
         missing = [t for t in tickers if normalize_ticker_code(t) not in existing]
         if missing:
             logger.info("캐시에 없는 종목 %d개 추가 수집…", len(missing))
-            new_df = InvestingCollector().collect(
-                missing,
-                stock_names=name_map,
-                foreign_only=False,
-                months=months,
-            )
+            new_df = _collect_investing_for_tickers(missing, name_map, months)
             if not new_df.empty:
                 investing_df = pd.concat([investing_df, new_df], ignore_index=True)
                 investing_df = investing_df.drop_duplicates(
-                    subset=["ticker", "securities_company", "report_date", "target_price"],
+                    subset=_DEDUP_COLS,
                     keep="last",
                 )
                 save_csv(investing_df, cache_path)
     else:
-        investing_df = InvestingCollector().collect(
-            tickers,
-            stock_names=name_map,
-            foreign_only=False,
-            months=months,
-        )
+        investing_df = _collect_investing_for_tickers(tickers, name_map, months)
         save_csv(investing_df, cache_path)
 
     if investing_df.empty:
@@ -186,7 +235,17 @@ def main() -> None:
     parser.add_argument(
         "--from-cache",
         action="store_true",
-        help="Investing CSV 캐시만 사용 (재수집 생략)",
+        help="Investing CSV 캐시 병합 (재수집 시 기존 데이터 유지)",
+    )
+    parser.add_argument(
+        "--refresh-investing",
+        action="store_true",
+        help="대표주 전 종목 Investing.com 재수집",
+    )
+    parser.add_argument(
+        "--no-refresh-investing",
+        action="store_true",
+        help="Investing 재수집 생략 (캐시만 사용)",
     )
     parser.add_argument("--skip-etf", action="store_true", help="ETF 구성·지표 생략")
     parser.add_argument(
@@ -195,12 +254,14 @@ def main() -> None:
         help="네이버 업종 구성종목 캐시 재수집",
     )
     args = parser.parse_args()
+    refresh_investing = args.refresh_investing and not args.no_refresh_investing
     run(
         months=args.months,
         per_sector=args.per_sector,
         refresh_etf_cache=args.refresh_etf_cache,
         top_gap=args.top_gap,
-        from_cache=args.from_cache,
+        from_cache=args.from_cache or refresh_investing,
+        refresh_investing=refresh_investing,
         skip_etf=args.skip_etf,
         refresh_industry_cache=args.refresh_industry_cache,
     )

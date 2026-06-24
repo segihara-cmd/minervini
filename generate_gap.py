@@ -116,7 +116,7 @@ tr:hover td{{filter:brightness(.96)}}
   <div class="loading-box"><div class="spinner"></div><p>괴리율 데이터 불러오는 중</p></div>
 </div>
 <div class="footer">Investing.com 해외 목표가 · Yahoo 현재가 · 투자 권유 아님</div>
-<script src="gap-app.js?v=20260624-gap100"></script>
+<script src="gap-app.js?v=20260624-gap-live"></script>
 </body>
 </html>"""
 
@@ -126,12 +126,17 @@ def main() -> None:
     logger.info("[%s KST] gap Top %d 생성", now.strftime("%Y-%m-%d %H:%M"), TOP_N)
 
     summary_path = GAP_ROOT / "data" / "processed" / "sector_target_summary.csv"
-    refresh = "--refresh" in sys.argv
+    skip_refresh = "--no-refresh" in sys.argv
 
-    if refresh:
+    if not skip_refresh:
         cache = GAP_ROOT / "data" / "raw" / "sector_investing_reports.csv"
         try:
-            run(from_cache=cache.exists(), skip_etf=True, top_gap=TOP_N)
+            run(
+                from_cache=cache.exists(),
+                refresh_investing=True,
+                skip_etf=True,
+                top_gap=TOP_N,
+            )
         except Exception as e:
             logger.warning("파이프라인 갱신 실패 (%s) — 기존 요약 CSV 사용", e)
 

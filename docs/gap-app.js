@@ -2,6 +2,26 @@
 let sortCol = -1;
 let sortAsc = true;
 
+const API_CANDIDATES = () => {
+  const q = new URLSearchParams(location.search).get('api');
+  if (q) return [q.replace(/\/$/, '')];
+  const fromCfg = window.__DASHBOARD_API_BASES || [];
+  const list = [...fromCfg];
+  if (location.hostname.includes('vercel.app')) list.unshift('');
+  if (!list.includes('https://minervini.vercel.app')) list.push('https://minervini.vercel.app');
+  return [...new Set(list)];
+};
+
+async function loadApiConfig() {
+  try {
+    const res = await fetch(`./config.json?t=${Date.now()}`, { cache: 'no-store' });
+    if (res.ok) {
+      const cfg = await res.json();
+      window.__DASHBOARD_API_BASES = cfg.apiBases || [];
+    }
+  } catch (_) { /* optional */ }
+}
+
 function fmtNum(v, dec = 0) {
   if (v == null) return 'N/A';
   return Number(v).toLocaleString('en-US', {
@@ -72,14 +92,19 @@ function buildTable(rows) {
 }
 
 function renderGap(data) {
+  const mode = data._live ? '실시간' : '스냅샷';
+  const extra = data._live && data.refreshedTickers != null
+    ? ` · Investing ${data.refreshedTickers}/${data.totalTargets || '?'}종목 갱신`
+    : '';
   document.getElementById('updated').textContent =
-    `업데이트: ${data.updated} · ${data._live === false ? '스냅샷' : '최신'}`;
+    `업데이트: ${data.updated} · ${mode}${extra}`;
   document.getElementById('app-content').innerHTML = `
     <div class="info-bar">
       <div>
         <span class="badge">${data.count}종목</span>
         &nbsp; Investing.com 해외 기관 목표가 · Yahoo 현재가 · 괴리율 = (목표−현재)/현재
         &nbsp;|&nbsp; * = 타 기관 목표 대비
+        ${data._live ? '&nbsp;|&nbsp; <b style="color:#2563eb">새로고침 시 Investing 재수집</b>' : ''}
       </div>
       <div style="font-size:.78rem;color:#475569">괴리율 높은 순 · Top ${data.count}</div>
     </div>
@@ -88,19 +113,38 @@ function renderGap(data) {
   sortAsc = true;
 }
 
-async function fetchGapData() {
+async function fetchLiveData() {
   const ts = Date.now();
-  const res = await fetch(`./gap.json?t=${ts}`, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`gap.json: ${res.status}`);
-  const data = await res.json();
-  data._live = false;
-  return data;
+  const errors = [];
+  for (const base of API_CANDIDATES()) {
+    const url = base ? `${base}/api/gap?t=${ts}` : `/api/gap?t=${ts}`;
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`${res.status}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      data._live = true;
+      return data;
+    } catch (e) {
+      errors.push(`${url}: ${e.message}`);
+    }
+  }
+  try {
+    const res = await fetch(`./gap.json?t=${ts}`, { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      data._live = false;
+      return data;
+    }
+    errors.push(`gap.json: ${res.status}`);
+  } catch (e) { errors.push(`gap.json: ${e.message}`); }
+  throw new Error(errors.join(' | '));
 }
 
 function showLoading() {
-  document.getElementById('updated').textContent = '데이터 로딩 중...';
+  document.getElementById('updated').textContent = '실시간 데이터 로딩 중...';
   document.getElementById('app-content').innerHTML =
-    '<div class="loading-box"><div class="spinner"></div><p>괴리율 데이터 불러오는 중</p></div>';
+    '<div class="loading-box"><div class="spinner"></div><p>Investing.com 재수집 중 (약 1~3분)</p></div>';
 }
 
 function showError(msg) {
@@ -112,7 +156,8 @@ function showError(msg) {
 async function loadGap() {
   showLoading();
   try {
-    const data = await fetchGapData();
+    await loadApiConfig();
+    const data = await fetchLiveData();
     renderGap(data);
   } catch (e) {
     showError(e.message);

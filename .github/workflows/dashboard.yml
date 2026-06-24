@@ -6,6 +6,7 @@ on:
     paths:
       - 'generate_dashboard.py'
       - 'api/**'
+      - 'vercel.json'
       - 'docs/dashboard-app.js'
       - 'docs/screener-app.js'
       - 'generate_gap.py'
@@ -43,6 +44,7 @@ jobs:
 
       - name: Generate gap Top 100 JSON
         run: python generate_gap.py
+        timeout-minutes: 45
 
       - name: Commit and push docs/
         run: |
