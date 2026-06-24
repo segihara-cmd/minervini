@@ -350,6 +350,9 @@ def build_html(d):
     ma_ok       = ex['ma50'] is not None and ex['ma150'] is not None and (ex['ma50'] or 0) >= (ex['ma150'] or 0)
     ks_vs_150   = (kpi['ks11']['val'] or 0) >= (ex['ma150'] or float('inf'))
     ks_vs_200   = (kpi['ks11']['val'] or 0) >= (ex['ma200'] or float('inf'))
+    adr_kospi_v = kpi['adr_kospi']['val']
+    adr_kosdaq_v = kpi['adr_kosdaq']['val']
+    skew_v      = kpi['skew']['val']
 
     def sig_row(label, ok, detail=''):
         ico  = '🟢' if ok else '🔴'
@@ -361,6 +364,48 @@ def build_html(d):
           <td style="padding:6px 12px;color:{col};font-weight:600">{stat}</td>
           <td style="padding:6px 12px;color:#64748b;font-size:.85em">{detail}</td>
         </tr>'''
+
+    def tier_row(label, val, tiers, detail=''):
+        """val 기준 3단계 판정: tiers = [(min, ico, stat, color), ...] 내림차순"""
+        if val is None:
+            return sig_row(label, False, detail or 'N/A')
+        for threshold, ico, stat, col in tiers:
+            if val >= threshold:
+                return f'''<tr>
+          <td style="padding:6px 12px">{label}</td>
+          <td style="padding:6px 12px;text-align:center">{ico}</td>
+          <td style="padding:6px 12px;color:{col};font-weight:600">{stat}</td>
+          <td style="padding:6px 12px;color:#64748b;font-size:.85em">{detail}</td>
+        </tr>'''
+        ico, stat, col = tiers[-1][1], tiers[-1][2], tiers[-1][3]
+        return f'''<tr>
+          <td style="padding:6px 12px">{label}</td>
+          <td style="padding:6px 12px;text-align:center">{ico}</td>
+          <td style="padding:6px 12px;color:{col};font-weight:600">{stat}</td>
+          <td style="padding:6px 12px;color:#64748b;font-size:.85em">{detail}</td>
+        </tr>'''
+
+    def skew_tier_row(val):
+        if val is None:
+            return sig_row('CBOE SKEW', False, 'N/A')
+        if val <= 135:
+            ico, stat, col = '🟢', '안정', '#16a34a'
+        elif val <= 145:
+            ico, stat, col = '⚠️', '주의', '#ca8a04'
+        else:
+            ico, stat, col = '🔴', '꼬리위험↑', '#dc2626'
+        return f'''<tr>
+          <td style="padding:6px 12px">CBOE SKEW (꼬리위험)</td>
+          <td style="padding:6px 12px;text-align:center">{ico}</td>
+          <td style="padding:6px 12px;color:{col};font-weight:600">{stat}</td>
+          <td style="padding:6px 12px;color:#64748b;font-size:.85em">현재 {fmt_val(val,"",2)} · 135↓안정 / 145↑경계</td>
+        </tr>'''
+
+    adr_tiers = [
+        (100, '🟢', '정상', '#16a34a'),
+        (75,  '⚠️', '주의', '#ca8a04'),
+        (0,   '🔴', '약세', '#dc2626'),
+    ]
 
     sideways_row = f'''<tr>
       <td style="padding:6px 12px">VIX 횡보 (20~30, 3주↑)</td>
@@ -390,7 +435,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .header h1{{font-size:1.1rem;font-weight:700;color:#f1f5f9}}
 .updated{{font-size:.8rem;color:#94a3b8}}
 .content{{padding:20px;max-width:1400px;margin:0 auto}}
-.exit-banner{{border-radius:10px;padding:16px 20px;margin-bottom:20px;border:2px solid}}
+.exit-banner{{border-radius:10px;padding:16px 20px;margin-bottom:12px;border:2px solid}}
 .exit-title{{font-size:1.2rem;font-weight:700}}
 .exit-sub{{font-size:.9rem;margin-top:4px;opacity:.9}}
 .kpi-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px}}
@@ -406,7 +451,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .leg{{display:flex;align-items:center;gap:5px;font-size:.75rem;color:#cbd5e1}}
 .leg-dot{{width:10px;height:10px;border-radius:50%}}
 canvas{{max-height:220px}}
-.signals-card{{background:#ffffff;border-radius:8px;padding:16px;border:1px solid #e2e8f0;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
+.signals-card{{background:#ffffff;border-radius:10px;padding:16px;border:1px solid #e2e8f0;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
 .signals-card h3{{font-size:.85rem;font-weight:600;color:#94a3b8;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em}}
 table{{width:100%;border-collapse:collapse}}
 th{{text-align:left;padding:6px 12px;font-size:.75rem;color:#64748b;border-bottom:1px solid #334155;text-transform:uppercase}}
@@ -444,6 +489,9 @@ tr:hover td{{background:#f8fafc}}
     {sig_row('SMA50 > SMA150', ma_ok, f'SMA50 {ma50_v} vs SMA150 {ma150_v}')}
     {sig_row('VIX ≤ 25', vix_ok, f'현재 VIX {fmt_val(kpi["vix"]["val"],"",2)}')}
     {sig_row('미국 10년물 ≤ 4.5%', tnx_ok, f'현재 {fmt_val(kpi["tnx"]["val"],"%",2)}')}
+    {tier_row('KOSPI ADR (등락비율)', adr_kospi_v, adr_tiers, f'현재 {fmt_val(adr_kospi_v,"",2)} · 100↑정상 / 75↓약세')}
+    {tier_row('KOSDAQ ADR (등락비율)', adr_kosdaq_v, adr_tiers, f'현재 {fmt_val(adr_kosdaq_v,"",2)} · 100↑정상 / 75↓약세')}
+    {skew_tier_row(skew_v)}
     {sideways_row}
   </table>
 </div>
