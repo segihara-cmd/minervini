@@ -1,20 +1,18 @@
 {
-  "buildCommand": "pip install yfinance pandas numpy requests -q && python generate_dashboard.py",
-  "outputDirectory": "docs",
-  "rewrites": [
-    { "source": "/api/dashboard", "destination": "/api/dashboard.js" }
+  "version": 2,
+  "builds": [
+    { "src": "api/dashboard.js", "use": "@vercel/node" },
+    { "src": "docs/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/dashboard", "dest": "/api/dashboard.js" },
+    { "src": "/(.*)", "dest": "/docs/$1" }
   ],
   "headers": [
     {
       "source": "/api/(.*)",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
-      ]
-    },
-    {
-      "source": "/data.json",
-      "headers": [
         { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
       ]
     }

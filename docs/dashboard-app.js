@@ -8,8 +8,8 @@ const API_CANDIDATES = () => {
   const fromCfg = (window.__DASHBOARD_API_BASES || []);
   const list = [...fromCfg];
   if (location.hostname.includes('vercel.app')) list.unshift('');
-  if (!list.includes('https://minervini-dashboard.vercel.app')) {
-    list.push('https://minervini-dashboard.vercel.app');
+  if (!list.includes('https://minervini.vercel.app')) {
+    list.push('https://minervini.vercel.app');
   }
   return [...new Set(list)];
 };
