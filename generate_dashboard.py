@@ -426,6 +426,9 @@ def build_html(d):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>반도체 포트폴리오 대시보드</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -435,9 +438,11 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .header h1{{font-size:1.1rem;font-weight:700;color:#f1f5f9}}
 .updated{{font-size:.8rem;color:#94a3b8}}
 .content{{padding:20px;max-width:1400px;margin:0 auto}}
-.exit-banner{{border-radius:10px;padding:16px 20px;margin-bottom:12px;border:2px solid}}
+.exit-panel{{margin-bottom:20px;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
+.exit-banner{{border-radius:0;padding:16px 20px;margin-bottom:0;border:2px solid;border-bottom:none}}
 .exit-title{{font-size:1.2rem;font-weight:700}}
 .exit-sub{{font-size:.9rem;margin-top:4px;opacity:.9}}
+.signals-card{{background:#ffffff;border-radius:0;padding:16px 20px;border:none;margin-bottom:0;box-shadow:none}}
 .kpi-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px}}
 .kpi-card{{background:#ffffff;border-radius:8px;padding:14px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
 .kpi-label{{font-size:.75rem;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}}
@@ -451,8 +456,7 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .leg{{display:flex;align-items:center;gap:5px;font-size:.75rem;color:#cbd5e1}}
 .leg-dot{{width:10px;height:10px;border-radius:50%}}
 canvas{{max-height:220px}}
-.signals-card{{background:#ffffff;border-radius:10px;padding:16px;border:1px solid #e2e8f0;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
-.signals-card h3{{font-size:.85rem;font-weight:600;color:#94a3b8;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em}}
+.signals-card h3{{font-size:.85rem;font-weight:600;color:#64748b;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em}}
 table{{width:100%;border-collapse:collapse}}
 th{{text-align:left;padding:6px 12px;font-size:.75rem;color:#64748b;border-bottom:1px solid #334155;text-transform:uppercase}}
 tr:hover td{{background:#f8fafc}}
@@ -470,13 +474,13 @@ tr:hover td{{background:#f8fafc}}
 </nav>
 <div class="content">
 
-<!-- EXIT BANNER -->
+<!-- EXIT PANEL: L0 레벨 + 신호 모니터링 -->
+<div class="exit-panel">
 <div class="exit-banner" style="background:{ex['color']}22;border-color:{ex['color']}">
   <div class="exit-title">{ex['badge']} EXIT 레벨</div>
   <div class="exit-sub">{ex['desc']}</div>
 </div>
 
-<!-- EXIT SIGNALS TABLE -->
 <div class="signals-card">
   <h3>🚦 Exit 신호 모니터링</h3>
   <table>
@@ -494,6 +498,7 @@ tr:hover td{{background:#f8fafc}}
     {skew_tier_row(skew_v)}
     {sideways_row}
   </table>
+</div>
 </div>
 
 <!-- KPI CARDS -->
