@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const BLUE = '#1d4ed8', RED = '#dc2626', AMBER = '#f59e0b', CYAN = '#22d3ee', PURPLE = '#7c3aed', GRAY = '#94a3b8', WHITE = '#f1f5f9';
+const BLUE = '#1d4ed8', RED = '#dc2626', AMBER = '#f59e0b', CYAN = '#22d3ee', PURPLE = '#7c3aed', GRAY = '#94a3b8', KOSPI_LINE = '#0f172a';
 let chartInstances = [];
 
 const API_CANDIDATES = () => {
@@ -131,7 +131,7 @@ function mkChart(id, labels, datasets, yLabel = '', y2Label = '') {
 function renderCharts(D) {
   destroyCharts();
   mkChart('cKospi', D.charts.kospi.dates, [
-    ds('KOSPI', D.charts.kospi.price, WHITE, 'y', true),
+    ds('KOSPI', D.charts.kospi.price, KOSPI_LINE, 'y', true),
     ds('SMA50', D.charts.kospi.ma50, AMBER, 'y'),
     ds('SMA150', D.charts.kospi.ma150, CYAN, 'y'),
     ds('SMA200', D.charts.kospi.ma200, PURPLE, 'y'),
@@ -253,6 +253,12 @@ function renderDashboard(D) {
   </div>
   <div class="chart-card">
     <div class="chart-title">KOSPI 이평선 (1년)</div>
+    <div class="chart-legend">
+      <span class="leg"><span class="leg-dot" style="background:#0f172a"></span>KOSPI</span>
+      <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>SMA50</span>
+      <span class="leg"><span class="leg-dot" style="background:#22d3ee"></span>SMA150</span>
+      <span class="leg"><span class="leg-dot" style="background:#a78bfa"></span>SMA200</span>
+    </div>
     <canvas id="cKospi"></canvas>
   </div>
   <div class="chart-card">
