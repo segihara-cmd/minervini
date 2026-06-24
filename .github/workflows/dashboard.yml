@@ -1,9 +1,17 @@
 name: Daily Dashboard Update
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'generate_dashboard.py'
+      - 'api/**'
+      - 'docs/dashboard-app.js'
+      - '.github/workflows/dashboard.yml'
   schedule:
-    - cron: '0 23 * * 0-4'   # 평일 오전 8시 KST (UTC 23:00 전날)
-    - cron: '0 8 * * 1-5'    # 평일 오후 5시 KST (UTC 08:00)
+    - cron: '0/30 * * * 1-5'   # 평일 30분마다 (KST 장중·장후 스냅샷 갱신)
+    - cron: '0 23 * * 0-4'     # 평일 오전 8시 KST
+    - cron: '0 8 * * 1-5'      # 평일 오후 5시 KST
   workflow_dispatch:           # 수동 실행 버튼
 
 jobs:
@@ -34,6 +42,6 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/index.html docs/screener.html
+          git add docs/index.html docs/data.json docs/dashboard-app.js docs/config.json docs/screener.html
           git diff --staged --quiet || git commit -m "chore: dashboard update $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
           git push

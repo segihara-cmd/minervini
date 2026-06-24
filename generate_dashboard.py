@@ -158,11 +158,10 @@ def vix_sideways(vix_vals):
     return all(20 <= v <= 30 for v in last15)
 
 # ──────────────────────────────────────────────
-# 메인 — 데이터 수집 및 HTML 생성
+# 메인 — 데이터 수집 및 HTML/JSON 생성
 # ──────────────────────────────────────────────
-def main():
+def collect_data():
     now_kst = datetime.now(KST)
-    print(f'[{now_kst.strftime("%Y-%m-%d %H:%M")} KST] 데이터 수집 중...')
 
     # Fetch
     sam_d,  sam_v  = _close_list(fetch('005930.KS', '3mo'))
@@ -318,110 +317,11 @@ def main():
         }
     }
 
-    # ── HTML 생성 ─────────────────────────────
-    html = build_html(data)
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(html, encoding='utf-8')
-    print(f'[OK] Generated -> {OUTPUT}')
+    return data
 
 
-def fmt_val(v, unit='', decimals=2):
-    if v is None: return 'N/A'
-    return f'{v:,.{decimals}f}{unit}'
-
-def fmt_pct(v):
-    if v is None: return ''
-    sign = '+' if v >= 0 else ''
-    color = '#16a34a' if v >= 0 else '#dc2626'
-    arrow = '▲' if v >= 0 else '▼'
-    return f'<span style="color:{color}">{arrow} {sign}{v:.2f}%</span>'
-
-
-def build_html(d):
-    data_json = json.dumps(d, ensure_ascii=False)
-    kpi = d['kpi']
-    ex  = d['exit']
-    el  = ex['level']
-
-    # Exit signals table rows
-    aligned_ok  = ex['aligned'] is True
-    vix_ok      = (kpi['vix']['val'] or 0) <= 25
-    tnx_ok      = (kpi['tnx']['val'] or 0) <= 4.5
-    ma_ok       = ex['ma50'] is not None and ex['ma150'] is not None and (ex['ma50'] or 0) >= (ex['ma150'] or 0)
-    ks_vs_150   = (kpi['ks11']['val'] or 0) >= (ex['ma150'] or float('inf'))
-    ks_vs_200   = (kpi['ks11']['val'] or 0) >= (ex['ma200'] or float('inf'))
-    adr_kospi_v = kpi['adr_kospi']['val']
-    adr_kosdaq_v = kpi['adr_kosdaq']['val']
-    skew_v      = kpi['skew']['val']
-
-    def sig_row(label, ok, detail=''):
-        ico  = '🟢' if ok else '🔴'
-        stat = '정상' if ok else '이탈'
-        col  = '#16a34a' if ok else '#dc2626'
-        return f'''<tr>
-          <td style="padding:6px 12px">{label}</td>
-          <td style="padding:6px 12px;text-align:center">{ico}</td>
-          <td style="padding:6px 12px;color:{col};font-weight:600">{stat}</td>
-          <td style="padding:6px 12px;color:#64748b;font-size:.85em">{detail}</td>
-        </tr>'''
-
-    def tier_row(label, val, tiers, detail=''):
-        """val 기준 3단계 판정: tiers = [(min, ico, stat, color), ...] 내림차순"""
-        if val is None:
-            return sig_row(label, False, detail or 'N/A')
-        for threshold, ico, stat, col in tiers:
-            if val >= threshold:
-                return f'''<tr>
-          <td style="padding:6px 12px">{label}</td>
-          <td style="padding:6px 12px;text-align:center">{ico}</td>
-          <td style="padding:6px 12px;color:{col};font-weight:600">{stat}</td>
-          <td style="padding:6px 12px;color:#64748b;font-size:.85em">{detail}</td>
-        </tr>'''
-        ico, stat, col = tiers[-1][1], tiers[-1][2], tiers[-1][3]
-        return f'''<tr>
-          <td style="padding:6px 12px">{label}</td>
-          <td style="padding:6px 12px;text-align:center">{ico}</td>
-          <td style="padding:6px 12px;color:{col};font-weight:600">{stat}</td>
-          <td style="padding:6px 12px;color:#64748b;font-size:.85em">{detail}</td>
-        </tr>'''
-
-    def skew_tier_row(val):
-        if val is None:
-            return sig_row('CBOE SKEW', False, 'N/A')
-        if val <= 135:
-            ico, stat, col = '🟢', '안정', '#16a34a'
-        elif val <= 145:
-            ico, stat, col = '⚠️', '주의', '#ca8a04'
-        else:
-            ico, stat, col = '🔴', '꼬리위험↑', '#dc2626'
-        return f'''<tr>
-          <td style="padding:6px 12px">CBOE SKEW (꼬리위험)</td>
-          <td style="padding:6px 12px;text-align:center">{ico}</td>
-          <td style="padding:6px 12px;color:{col};font-weight:600">{stat}</td>
-          <td style="padding:6px 12px;color:#64748b;font-size:.85em">현재 {fmt_val(val,"",2)} · 135↓안정 / 145↑경계</td>
-        </tr>'''
-
-    adr_tiers = [
-        (100, '🟢', '정상', '#16a34a'),
-        (75,  '⚠️', '주의', '#ca8a04'),
-        (0,   '🔴', '약세', '#dc2626'),
-    ]
-
-    sideways_row = f'''<tr>
-      <td style="padding:6px 12px">VIX 횡보 (20~30, 3주↑)</td>
-      <td style="padding:6px 12px;text-align:center">{'⚠️' if ex['sideways'] else '🟢'}</td>
-      <td style="padding:6px 12px;color:{'#ca8a04' if ex['sideways'] else '#16a34a'};font-weight:600">
-        {'감지됨' if ex['sideways'] else '미감지'}
-      </td>
-      <td style="padding:6px 12px;color:#64748b;font-size:.85em">레버리지 베타 슬리피지 가속 구간</td>
-    </tr>'''
-
-    ma50_v  = fmt_val(ex['ma50'],  '', 0)
-    ma150_v = fmt_val(ex['ma150'], '', 0)
-    ma200_v = fmt_val(ex['ma200'], '', 0)
-    ks_v    = fmt_val(kpi['ks11']['val'], '', 2)
-
-    html = f'''<!DOCTYPE html>
+def build_shell_html(build_ts):
+    return f'''<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -434,363 +334,75 @@ def build_html(d):
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}
 body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}}
-.header{{background:#1e293b;border-bottom:1px solid #334155;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}}
+.header{{background:#1e293b;border-bottom:1px solid #334155;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}}
 .header h1{{font-size:1.1rem;font-weight:700;color:#f1f5f9}}
 .updated{{font-size:.8rem;color:#94a3b8}}
+.refresh-btn{{background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:.75rem;font-weight:600;cursor:pointer}}
+.refresh-btn:hover{{background:#2563eb}}
 .content{{padding:20px;max-width:1400px;margin:0 auto}}
 .exit-panel{{margin-bottom:20px;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
 .exit-banner{{border-radius:0;padding:16px 20px;margin-bottom:0;border:2px solid;border-bottom:none}}
-.exit-title{{font-size:1.2rem;font-weight:700}}
-.exit-sub{{font-size:.9rem;margin-top:4px;opacity:.9}}
-.signals-card{{background:#ffffff;border-radius:0;padding:16px 20px;border:none;margin-bottom:0;box-shadow:none}}
+.signals-card{{background:#fff;border-radius:0;padding:16px 20px;border:none;margin-bottom:0}}
 .kpi-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px}}
-.kpi-card{{background:#ffffff;border-radius:8px;padding:14px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
+.kpi-card{{background:#fff;border-radius:8px;padding:14px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
 .kpi-label{{font-size:.75rem;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}}
 .kpi-val{{font-size:1.1rem;font-weight:700;color:#0f172a}}
 .kpi-pct{{font-size:.8rem;margin-top:2px}}
 .charts-grid{{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}}
 @media(max-width:900px){{.charts-grid{{grid-template-columns:1fr}}}}
-.chart-card{{background:#ffffff;border-radius:8px;padding:16px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
+.chart-card{{background:#fff;border-radius:8px;padding:16px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
 .chart-title{{font-size:.85rem;font-weight:600;color:#94a3b8;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}}
+.chart-sub{{font-weight:400;text-transform:none;letter-spacing:0;color:#64748b}}
 .chart-legend{{display:flex;gap:16px;margin-bottom:8px;flex-wrap:wrap}}
-.leg{{display:flex;align-items:center;gap:5px;font-size:.75rem;color:#cbd5e1}}
+.leg{{display:flex;align-items:center;gap:5px;font-size:.75rem;color:#64748b}}
 .leg-dot{{width:10px;height:10px;border-radius:50%}}
 canvas{{max-height:220px}}
 .signals-card h3{{font-size:.85rem;font-weight:600;color:#64748b;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em}}
 table{{width:100%;border-collapse:collapse}}
-th{{text-align:left;padding:6px 12px;font-size:.75rem;color:#64748b;border-bottom:1px solid #334155;text-transform:uppercase}}
+th{{text-align:left;padding:6px 12px;font-size:.75rem;color:#64748b;border-bottom:1px solid #e2e8f0;text-transform:uppercase}}
 tr:hover td{{background:#f8fafc}}
+.loading-box{{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:#64748b;gap:12px}}
+.loading-box.error{{color:#dc2626}}
+.loading-box .err-detail{{font-size:.8rem;color:#94a3b8;max-width:480px;text-align:center;word-break:break-all}}
+.loading-box button{{margin-top:8px;padding:8px 16px;border:none;border-radius:6px;background:#3b82f6;color:#fff;font-weight:600;cursor:pointer}}
+.spinner{{width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:spin .7s linear infinite}}
+@keyframes spin{{to{{transform:rotate(360deg)}}}}
 .footer{{text-align:center;padding:16px;color:#94a3b8;font-size:.75rem}}
 </style>
 </head>
 <body>
 <div class="header">
   <h1>📊 반도체 포트폴리오 대시보드</h1>
-  <span class="updated">업데이트: {d['updated']}</span>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span class="updated" id="updated">실시간 데이터 로딩 중...</span>
+    <button type="button" class="refresh-btn" onclick="loadDashboard()">↻ 새로고침</button>
+  </div>
 </div>
 <nav style="background:#1e293b;border-bottom:2px solid #334155;display:flex;gap:0">
   <a href="index.html" style="padding:12px 24px;color:#f1f5f9;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid #3b82f6">📊 매크로 대시보드</a>
   <a href="screener.html" style="padding:12px 24px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid transparent">🔍 ETF 스크리너</a>
 </nav>
-<div class="content">
-
-<!-- EXIT PANEL: L0 레벨 + 신호 모니터링 -->
-<div class="exit-panel">
-<div class="exit-banner" style="background:{ex['color']}22;border-color:{ex['color']}">
-  <div class="exit-title">{ex['badge']} EXIT 레벨</div>
-  <div class="exit-sub">{ex['desc']}</div>
+<div class="content" id="app-content">
+  <div class="loading-box"><div class="spinner"></div><p>시장 데이터 불러오는 중 (약 10~20초)</p></div>
 </div>
-
-<div class="signals-card">
-  <h3>🚦 Exit 신호 모니터링</h3>
-  <table>
-    <tr>
-      <th>신호</th><th style="text-align:center">상태</th><th>판정</th><th>상세</th>
-    </tr>
-    {sig_row('KOSPI 정배열 (curr>SMA50>150>200)', aligned_ok, f'KOSPI {ks_v} | SMA50 {ma50_v} | SMA150 {ma150_v} | SMA200 {ma200_v}')}
-    {sig_row('KOSPI > SMA200', ks_vs_200, f'KOSPI {ks_v} vs SMA200 {ma200_v}')}
-    {sig_row('KOSPI > SMA150', ks_vs_150, f'KOSPI {ks_v} vs SMA150 {ma150_v}')}
-    {sig_row('SMA50 > SMA150', ma_ok, f'SMA50 {ma50_v} vs SMA150 {ma150_v}')}
-    {sig_row('VIX ≤ 25', vix_ok, f'현재 VIX {fmt_val(kpi["vix"]["val"],"",2)}')}
-    {sig_row('미국 10년물 ≤ 4.5%', tnx_ok, f'현재 {fmt_val(kpi["tnx"]["val"],"%",2)}')}
-    {tier_row('KOSPI ADR (등락비율)', adr_kospi_v, adr_tiers, f'현재 {fmt_val(adr_kospi_v,"",2)} · 100↑정상 / 75↓약세')}
-    {tier_row('KOSDAQ ADR (등락비율)', adr_kosdaq_v, adr_tiers, f'현재 {fmt_val(adr_kosdaq_v,"",2)} · 100↑정상 / 75↓약세')}
-    {skew_tier_row(skew_v)}
-    {sideways_row}
-  </table>
-</div>
-</div>
-
-<!-- KPI CARDS -->
-<div class="kpi-grid">
-  <div class="kpi-card">
-    <div class="kpi-label">삼성전자</div>
-    <div class="kpi-val">{fmt_val(kpi['sam']['val'],'원',0)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['sam']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">SK하이닉스</div>
-    <div class="kpi-val">{fmt_val(kpi['hyn']['val'],'원',0)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['hyn']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">KOSPI</div>
-    <div class="kpi-val">{fmt_val(kpi['ks11']['val'],'',2)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['ks11']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">KOSPI ADR</div>
-    <div class="kpi-val">{fmt_val(kpi['adr_kospi']['val'],'',2)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['adr_kospi']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">KOSDAQ ADR</div>
-    <div class="kpi-val">{fmt_val(kpi['adr_kosdaq']['val'],'',2)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['adr_kosdaq']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">CBOE SKEW</div>
-    <div class="kpi-val">{fmt_val(kpi['skew']['val'],'',2)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['skew']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">SOX</div>
-    <div class="kpi-val">{fmt_val(kpi['sox']['val'],'',0)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['sox']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">NVIDIA</div>
-    <div class="kpi-val">${fmt_val(kpi['nvda']['val'],'',2)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['nvda']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">VIX</div>
-    <div class="kpi-val">{fmt_val(kpi['vix']['val'],'',2)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['vix']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">미국 10년물</div>
-    <div class="kpi-val">{fmt_val(kpi['tnx']['val'],'%',2)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['tnx']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">달러/원</div>
-    <div class="kpi-val">{fmt_val(kpi['fx']['val'],'원',1)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['fx']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">WTI</div>
-    <div class="kpi-val">${fmt_val(kpi['wti']['val'],'',2)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['wti']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">Micron (DRAM)</div>
-    <div class="kpi-val">${fmt_val(kpi['mu']['val'],'',2)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['mu']['pct'])}</div>
-  </div>
-</div>
-
-<!-- CHARTS -->
-<div class="charts-grid">
-
-  <!-- ADR KOSPI / KOSDAQ -->
-  <div class="chart-card">
-    <div class="chart-title">ADR 지표 — KOSPI / KOSDAQ (3개월) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#64748b">· adrinfo.kr 기준 · 100=중립</span></div>
-    <div class="chart-legend">
-      <span class="leg"><span class="leg-dot" style="background:#1d4ed8"></span>KOSPI ADR</span>
-      <span class="leg"><span class="leg-dot" style="background:#dc2626"></span>KOSDAQ ADR</span>
-      <span class="leg"><span class="leg-dot" style="background:#64748b;border:1px dashed #64748b;background:transparent;width:16px;height:0;border-radius:0"></span>기준 100</span>
-    </div>
-    <canvas id="cAdr"></canvas>
-  </div>
-
-  <!-- CBOE SKEW -->
-  <div class="chart-card">
-    <div class="chart-title">CBOE SKEW 지수 (3개월) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#64748b">· 꼬리위험 프리미엄</span></div>
-    <div class="chart-legend">
-      <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>SKEW</span>
-    </div>
-    <canvas id="cSkew"></canvas>
-  </div>
-
-  <!-- KOSPI MA -->
-  <div class="chart-card">
-    <div class="chart-title">KOSPI 이평선 (1년)</div>
-    <div class="chart-legend">
-      <span class="leg"><span class="leg-dot" style="background:#f1f5f9"></span>KOSPI</span>
-      <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>SMA50</span>
-      <span class="leg"><span class="leg-dot" style="background:#22d3ee"></span>SMA150</span>
-      <span class="leg"><span class="leg-dot" style="background:#a78bfa"></span>SMA200</span>
-    </div>
-    <canvas id="cKospi"></canvas>
-  </div>
-
-  <!-- 삼성 vs 하이닉스 -->
-  <div class="chart-card">
-    <div class="chart-title">삼성전자 vs SK하이닉스 수익률 (3개월)</div>
-    <div class="chart-legend">
-      <span class="leg"><span class="leg-dot" style="background:#1d4ed8"></span>삼성전자</span>
-      <span class="leg"><span class="leg-dot" style="background:#dc2626"></span>SK하이닉스</span>
-    </div>
-    <canvas id="cSamHyn"></canvas>
-  </div>
-
-  <!-- SOX vs NVDA -->
-  <div class="chart-card">
-    <div class="chart-title">SOX vs NVIDIA 수익률 (3개월)</div>
-    <div class="chart-legend">
-      <span class="leg"><span class="leg-dot" style="background:#1d4ed8"></span>SOX</span>
-      <span class="leg"><span class="leg-dot" style="background:#dc2626"></span>NVIDIA</span>
-    </div>
-    <canvas id="cSoxNvda"></canvas>
-  </div>
-
-  <!-- VIX + TNX -->
-  <div class="chart-card">
-    <div class="chart-title">VIX + 미국 10년물 (3개월)</div>
-    <div class="chart-legend">
-      <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>VIX</span>
-      <span class="leg"><span class="leg-dot" style="background:#22d3ee"></span>10년물(%)</span>
-    </div>
-    <canvas id="cVixTnx"></canvas>
-  </div>
-
-  <!-- FX + WTI -->
-  <div class="chart-card">
-    <div class="chart-title">달러/원 + WTI (3개월)</div>
-    <div class="chart-legend">
-      <span class="leg"><span class="leg-dot" style="background:#1d4ed8"></span>달러/원</span>
-      <span class="leg"><span class="leg-dot" style="background:#dc2626"></span>WTI ($)</span>
-    </div>
-    <canvas id="cFxWti"></canvas>
-  </div>
-
-  <!-- SOX vs MU (DRAM proxy) -->
-  <div class="chart-card">
-    <div class="chart-title">DRAM 프록시: Micron vs SOX (3개월)</div>
-    <div class="chart-legend">
-      <span class="leg"><span class="leg-dot" style="background:#7c�aed"></span>Micron (MU)</span>
-      <span class="leg"><span class="leg-dot" style="background:#94a3b8"></span>SOX</span>
-    </div>
-    <canvas id="cSoxMu"></canvas>
-  </div>
-
-</div>
-
-</div>
-<div class="footer">자동 생성 대시보드 · 매 영업일 오전 9시 KST 업데이트 · 투자 권유 아님</div>
-
-<script>
-const D = {data_json};
-const BLUE='#1d4ed8',RED='#dc2626',AMBER='#f59e0b',CYAN='#22d3ee',PURPLE='#7c3aed',GRAY='#94a3b8',WHITE='#f1f5f9';
-
-const cfg = (labels, datasets, yLabel='', y2Label='') => ({{
-  type: 'line',
-  data: {{ labels, datasets }},
-  options: {{
-    responsive: true,
-    maintainAspectRatio: true,
-    interaction: {{ mode:'index', intersect:false }},
-    plugins: {{ legend:{{display:false}}, tooltip:{{
-      backgroundColor:'#1e293b',
-      titleColor:'#94a3b8',
-      bodyColor:'#e2e8f0',
-      borderColor:'#334155',
-      borderWidth:1
-    }} }},
-    scales: {{
-      x: {{ ticks:{{ color:'#64748b', maxTicksLimit:6, font:{{size:10}} }}, grid:{{color:'#cbd5e188'}} }},
-      y: {{ ticks:{{ color:'#64748b', font:{{size:10}} }}, grid:{{color:'#94a3b844'}}, title:{{display:!!yLabel,text:yLabel,color:'#64748b',font:{{size:10}}}} }},
-      ...(y2Label ? {{y2:{{ type:'linear', position:'right', ticks:{{color:'#64748b',font:{{size:10}} }}, grid:{{drawOnChartArea:false}}, title:{{display:true,text:y2Label,color:'#64748b',font:{{size:10}}}} }}}} : {{}} )
-    }}
-  }}
-}});
-
-const ds = (label, data, color, yID='y', fill=false, dash=[]) => ({{
-  label, data,
-  borderColor:color, backgroundColor: fill ? color+'33' : 'transparent',
-  borderWidth: 2, pointRadius: 0, tension: 0.3,
-  yAxisID: yID,
-  ...(dash.length ? {{borderDash:dash}} : {{}})
-}});
-
-// KOSPI MA
-new Chart(document.getElementById('cKospi'), cfg(
-  D.charts.kospi.dates,
-  [
-    ds('KOSPI',  D.charts.kospi.price, WHITE, 'y', true),
-    ds('SMA50',  D.charts.kospi.ma50,  AMBER, 'y'),
-    ds('SMA150', D.charts.kospi.ma150, CYAN,  'y'),
-    ds('SMA200', D.charts.kospi.ma200, PURPLE,'y'),
-  ]
-));
-
-// Samsung vs Hynix
-new Chart(document.getElementById('cSamHyn'), cfg(
-  D.charts.sam_hyn.dates,
-  [
-    ds('삼성전자',   D.charts.sam_hyn.sam, BLUE, 'y'),
-    ds('SK하이닉스', D.charts.sam_hyn.hyn, RED,  'y'),
-  ], '누적수익률 %)'
-));
-
-// SOX vs NVDA
-new Chart(document.getElementById('cSoxNvda'), cfg(
-  D.charts.sox_nvda.dates,
-  [
-    ds('SOX',    D.charts.sox_nvda.sox,  BLUE, 'y'),
-    ds('NVIDIA', D.charts.sox_nvda.nvda, RED,  'y'),
-  ], '누적수익률(%)'
-));
-
-// VIX + TNX (dual axis)
-// Align TNX to VIX dates
-(function(){{
-  const vDates = D.charts.vix_tnx.dates;
-  const tMap   = Object.fromEntries(D.charts.vix_tnx.tnx_dates.map((d,i)=>[d,D.charts.vix_tnx.tnx[i]]));
-  const tAligned = vDates.map(d => tMap[d] ?? null);
-  new Chart(document.getElementById('cVixTnx'), cfg(
-    vDates,
-    [
-      ds('VIX',     D.charts.vix_tnx.vix, AMBER, 'y'),
-      ds('10년물%', tAligned,              CYAN,  'y2'),
-    ], 'VIX', '금리(%)'
-  ));
-}})();
-
-// FX + WTI (dual axis)
-(function(){{
-  const fDates  = D.charts.fx_wti.dates;
-  const wMap    = Object.fromEntries(D.charts.fx_wti.wti_dates.map((d,i)=>[d,D.charts.fx_wti.wti[i]]));
-  const wAligned = fDates.map(d => wMap[d] ?? null);
-  new Chart(document.getElementById('cFxWti'), cfg(
-    fDates,
-    [
-      ds('환율/원', D.charts.fx_wti.fx, BLUE, 'y'),
-      ds('WTI',    wAligned,           RED,  'y2'),
-    ], '환율/원', 'WTI($)'
-  ));
-}})();
-
-// SOX vs MU
-new Chart(document.getElementById('cSoxMu'), cfg(
-  D.charts.sox_mu.dates,
-  [
-    ds('Micron', D.charts.sox_mu.mu,  PURPLE, 'y'),
-    ds('SOX',    D.charts.sox_mu.sox, GRAY,   'y'),
-  ], '상대수익률(%)'
-));
-
-// ADR — KOSPI / KOSDAQ (adrinfo.kr style)
-if (D.charts.adr.dates.length) {{
-  const adrRef = D.charts.adr.dates.map(() => 100);
-  new Chart(document.getElementById('cAdr'), cfg(
-    D.charts.adr.dates,
-    [
-      ds('KOSPI ADR',  D.charts.adr.kospi,  BLUE, 'y'),
-      ds('KOSDAQ ADR', D.charts.adr.kosdaq, RED,  'y'),
-      ds('기준 100',   adrRef,              GRAY, 'y', false, [6, 4]),
-    ], 'ADR'
-  ));
-}} else {{
-  document.getElementById('cAdr').parentElement.innerHTML += '<p style="color:#64748b;font-size:.85rem;margin-top:8px">ADR 데이터를 불러오지 못했습니다.</p>';
-}}
-
-// CBOE SKEW
-if (D.charts.skew.dates.length) {{
-  new Chart(document.getElementById('cSkew'), cfg(
-    D.charts.skew.dates,
-    [
-      ds('SKEW', D.charts.skew.values, AMBER, 'y', true),
-    ], 'SKEW'
-  ));
-}} else {{
-  document.getElementById('cSkew').parentElement.innerHTML += '<p style="color:#64748b;font-size:.85rem;margin-top:8px">SKEW 데이터를 불러오지 못했습니다.</p>';
-}}
-</script>
+<div class="footer">실시간 대시보드 · 새로고침 시 최신 데이터 반영 · 투자 권유 아님</div>
+<script src="dashboard-app.js?v={build_ts}"></script>
 </body>
 </html>'''
-    return html
+
+
+def main():
+    now_kst = datetime.now(KST)
+    print(f'[{now_kst.strftime("%Y-%m-%d %H:%M")} KST] 데이터 수집 중...')
+    data = collect_data()
+    build_ts = int(now_kst.timestamp())
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT.write_text(build_shell_html(build_ts), encoding='utf-8')
+    (OUTPUT.parent / 'data.json').write_text(
+        json.dumps(data, ensure_ascii=False), encoding='utf-8'
+    )
+    print(f'[OK] Shell -> {OUTPUT}')
+    print(f'[OK] Fallback data.json -> {OUTPUT.parent / "data.json"}')
 
 
 if __name__ == '__main__':
