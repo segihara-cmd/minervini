@@ -322,7 +322,7 @@ def main():
     html = build_html(data)
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(html, encoding='utf-8')
-    print(f'✅ 생성 완료 → {OUTPUT}')
+    print(f'[OK] Generated -> {OUTPUT}')
 
 
 def fmt_val(v, unit='', decimals=2):
@@ -431,6 +431,23 @@ tr:hover td{{background:#f8fafc}}
   <div class="exit-sub">{ex['desc']}</div>
 </div>
 
+<!-- EXIT SIGNALS TABLE -->
+<div class="signals-card">
+  <h3>🚦 Exit 신호 모니터링</h3>
+  <table>
+    <tr>
+      <th>신호</th><th style="text-align:center">상태</th><th>판정</th><th>상세</th>
+    </tr>
+    {sig_row('KOSPI 정배열 (curr>SMA50>150>200)', aligned_ok, f'KOSPI {ks_v} | SMA50 {ma50_v} | SMA150 {ma150_v} | SMA200 {ma200_v}')}
+    {sig_row('KOSPI > SMA200', ks_vs_200, f'KOSPI {ks_v} vs SMA200 {ma200_v}')}
+    {sig_row('KOSPI > SMA150', ks_vs_150, f'KOSPI {ks_v} vs SMA150 {ma150_v}')}
+    {sig_row('SMA50 > SMA150', ma_ok, f'SMA50 {ma50_v} vs SMA150 {ma150_v}')}
+    {sig_row('VIX ≤ 25', vix_ok, f'현재 VIX {fmt_val(kpi["vix"]["val"],"",2)}')}
+    {sig_row('미국 10년물 ≤ 4.5%', tnx_ok, f'현재 {fmt_val(kpi["tnx"]["val"],"%",2)}')}
+    {sideways_row}
+  </table>
+</div>
+
 <!-- KPI CARDS -->
 <div class="kpi-grid">
   <div class="kpi-card">
@@ -447,6 +464,21 @@ tr:hover td{{background:#f8fafc}}
     <div class="kpi-label">KOSPI</div>
     <div class="kpi-val">{fmt_val(kpi['ks11']['val'],'',2)}</div>
     <div class="kpi-pct">{fmt_pct(kpi['ks11']['pct'])}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">KOSPI ADR</div>
+    <div class="kpi-val">{fmt_val(kpi['adr_kospi']['val'],'',2)}</div>
+    <div class="kpi-pct">{fmt_pct(kpi['adr_kospi']['pct'])}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">KOSDAQ ADR</div>
+    <div class="kpi-val">{fmt_val(kpi['adr_kosdaq']['val'],'',2)}</div>
+    <div class="kpi-pct">{fmt_pct(kpi['adr_kosdaq']['pct'])}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">CBOE SKEW</div>
+    <div class="kpi-val">{fmt_val(kpi['skew']['val'],'',2)}</div>
+    <div class="kpi-pct">{fmt_pct(kpi['skew']['pct'])}</div>
   </div>
   <div class="kpi-card">
     <div class="kpi-label">SOX</div>
@@ -483,25 +515,30 @@ tr:hover td{{background:#f8fafc}}
     <div class="kpi-val">${fmt_val(kpi['mu']['val'],'',2)}</div>
     <div class="kpi-pct">{fmt_pct(kpi['mu']['pct'])}</div>
   </div>
-  <div class="kpi-card">
-    <div class="kpi-label">KOSPI ADR</div>
-    <div class="kpi-val">{fmt_val(kpi['adr_kospi']['val'],'',2)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['adr_kospi']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">KOSDAQ ADR</div>
-    <div class="kpi-val">{fmt_val(kpi['adr_kosdaq']['val'],'',2)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['adr_kosdaq']['pct'])}</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-label">CBOE SKEW</div>
-    <div class="kpi-val">{fmt_val(kpi['skew']['val'],'',2)}</div>
-    <div class="kpi-pct">{fmt_pct(kpi['skew']['pct'])}</div>
-  </div>
 </div>
 
 <!-- CHARTS -->
 <div class="charts-grid">
+
+  <!-- ADR KOSPI / KOSDAQ -->
+  <div class="chart-card">
+    <div class="chart-title">ADR 지표 — KOSPI / KOSDAQ (3개월) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#64748b">· adrinfo.kr 기준 · 100=중립</span></div>
+    <div class="chart-legend">
+      <span class="leg"><span class="leg-dot" style="background:#1d4ed8"></span>KOSPI ADR</span>
+      <span class="leg"><span class="leg-dot" style="background:#dc2626"></span>KOSDAQ ADR</span>
+      <span class="leg"><span class="leg-dot" style="background:#64748b;border:1px dashed #64748b;background:transparent;width:16px;height:0;border-radius:0"></span>기준 100</span>
+    </div>
+    <canvas id="cAdr"></canvas>
+  </div>
+
+  <!-- CBOE SKEW -->
+  <div class="chart-card">
+    <div class="chart-title">CBOE SKEW 지수 (3개월) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#64748b">· 꼬리위험 프리미엄</span></div>
+    <div class="chart-legend">
+      <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>SKEW</span>
+    </div>
+    <canvas id="cSkew"></canvas>
+  </div>
 
   <!-- KOSPI MA -->
   <div class="chart-card">
@@ -565,43 +602,6 @@ tr:hover td{{background:#f8fafc}}
     <canvas id="cSoxMu"></canvas>
   </div>
 
-  <!-- ADR KOSPI / KOSDAQ -->
-  <div class="chart-card">
-    <div class="chart-title">ADR 지표 — KOSPI / KOSDAQ (3개월) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#64748b">· adrinfo.kr 기준 · 100=중립</span></div>
-    <div class="chart-legend">
-      <span class="leg"><span class="leg-dot" style="background:#1d4ed8"></span>KOSPI ADR</span>
-      <span class="leg"><span class="leg-dot" style="background:#dc2626"></span>KOSDAQ ADR</span>
-      <span class="leg"><span class="leg-dot" style="background:#64748b;border:1px dashed #64748b;background:transparent;width:16px;height:0;border-radius:0"></span>기준 100</span>
-    </div>
-    <canvas id="cAdr"></canvas>
-  </div>
-
-  <!-- CBOE SKEW -->
-  <div class="chart-card">
-    <div class="chart-title">CBOE SKEW 지수 (3개월) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#64748b">· 꼬리위험 프리미엄</span></div>
-    <div class="chart-legend">
-      <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>SKEW</span>
-    </div>
-    <canvas id="cSkew"></canvas>
-  </div>
-
-</div>
-
-<!-- EXIT SIGNALS TABLE -->
-<div class="signals-card">
-  <h3>🚦 Exit 신호 모니터링</h3>
-  <table>
-    <tr>
-      <th>신호</th><th style="text-align:center">상태</th><th>판정</th><th>상세</th>
-    </tr>
-    {sig_row('KOSPI 정배열 (curr>SMA50>150>200)', aligned_ok, f'KOSPI {ks_v} | SMA50 {ma50_v} | SMA150 {ma150_v} | SMA200 {ma200_v}')}
-    {sig_row('KOSPI > SMA200', ks_vs_200, f'KOSPI {ks_v} vs SMA200 {ma200_v}')}
-    {sig_row('KOSPI > SMA150', ks_vs_150, f'KOSPI {ks_v} vs SMA150 {ma150_v}')}
-    {sig_row('SMA50 > SMA150', ma_ok, f'SMA50 {ma50_v} vs SMA150 {ma150_v}')}
-    {sig_row('VIX ≤ 25', vix_ok, f'현재 VIX {fmt_val(kpi["vix"]["val"],"",2)}')}
-    {sig_row('미국 10년물 ≤ 4.5%', tnx_ok, f'현재 {fmt_val(kpi["tnx"]["val"],"%",2)}')}
-    {sideways_row}
-  </table>
 </div>
 
 </div>
