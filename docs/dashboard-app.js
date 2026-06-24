@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
-const BLUE = '#1d4ed8', RED = '#dc2626', AMBER = '#f59e0b', CYAN = '#22d3ee', PURPLE = '#7c3aed', GRAY = '#94a3b8', KOSPI_LINE = '#0f172a';
+const BLUE = '#1d4ed8', RED = '#dc2626', AMBER = '#f59e0b', CYAN = '#22d3ee', PURPLE = '#7c3aed', GRAY = '#94a3b8';
+const KOSPI_LINE = '#2563eb'; // 진한 파랑 — 흰 배경에서 KOSPI 지수선 식별용
 let chartInstances = [];
 
 const API_CANDIDATES = () => {
@@ -35,6 +36,27 @@ function fmtPct(v) {
   const color = v >= 0 ? '#16a34a' : '#dc2626';
   const arrow = v >= 0 ? '▲' : '▼';
   return `<span style="color:${color}">${arrow} ${sign}${v.toFixed(2)}%</span>`;
+}
+
+function lastVal(arr) {
+  if (!arr?.length) return null;
+  for (let i = arr.length - 1; i >= 0; i--) {
+    if (arr[i] != null && !Number.isNaN(arr[i])) return arr[i];
+  }
+  return null;
+}
+
+function latestItemsHtml(items) {
+  const parts = items
+    .filter(it => it.val != null)
+    .map(it => {
+      let v;
+      if (it.pct) v = `${it.val >= 0 ? '+' : ''}${it.val.toFixed(it.dec ?? 2)}%`;
+      else if (it.prefix) v = `${it.prefix}${fmtVal(it.val, '', it.dec ?? 2)}`;
+      else v = fmtVal(it.val, it.unit || '', it.dec ?? 2);
+      return `<span class="latest-item"><span class="latest-dot" style="background:${it.color}"></span>${it.label} <strong style="color:${it.color}">${v}</strong></span>`;
+    });
+  return parts.length ? `<span class="chart-latest">${parts.join('')}</span>` : '';
 }
 
 function sigRow(label, ok, detail = '') {
@@ -113,10 +135,12 @@ function chartCfg(labels, datasets, yLabel = '', y2Label = '') {
   };
 }
 
-function ds(label, data, color, yID = 'y', fill = false, dash = []) {
+function ds(label, data, color, yID = 'y', fill = false, dash = [], borderWidth = 2) {
   return {
-    label, data, borderColor: color, backgroundColor: fill ? color + '33' : 'transparent',
-    borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: yID,
+    label, data,
+    borderColor: color,
+    backgroundColor: fill ? (color.startsWith('#') && color.length === 7 ? color + '22' : color) : 'transparent',
+    borderWidth, pointRadius: 0, tension: 0.3, yAxisID: yID,
     ...(dash.length ? { borderDash: dash } : {}),
   };
 }
@@ -131,10 +155,10 @@ function mkChart(id, labels, datasets, yLabel = '', y2Label = '') {
 function renderCharts(D) {
   destroyCharts();
   mkChart('cKospi', D.charts.kospi.dates, [
-    ds('KOSPI', D.charts.kospi.price, KOSPI_LINE, 'y', true),
-    ds('SMA50', D.charts.kospi.ma50, AMBER, 'y'),
-    ds('SMA150', D.charts.kospi.ma150, CYAN, 'y'),
-    ds('SMA200', D.charts.kospi.ma200, PURPLE, 'y'),
+    ds('KOSPI', D.charts.kospi.price, KOSPI_LINE, 'y', true, [], 3.5),
+    ds('SMA50', D.charts.kospi.ma50, AMBER, 'y', false, [], 1.5),
+    ds('SMA150', D.charts.kospi.ma150, CYAN, 'y', false, [], 1.5),
+    ds('SMA200', D.charts.kospi.ma200, PURPLE, 'y', false, [], 1.5),
   ]);
   mkChart('cSamHyn', D.charts.sam_hyn.dates, [
     ds('삼성전자', D.charts.sam_hyn.sam, BLUE, 'y'),
@@ -187,6 +211,45 @@ function renderDashboard(D) {
   const ma150v = fmtVal(ex.ma150, '', 0);
   const ma200v = fmtVal(ex.ma200, '', 0);
   const ksv = fmtVal(kpi.ks11.val, '', 2);
+  const ch = D.charts;
+  const vDates = ch.vix_tnx.dates;
+  const tMap = Object.fromEntries(ch.vix_tnx.tnx_dates.map((d, i) => [d, ch.vix_tnx.tnx[i]]));
+  const fDates = ch.fx_wti.dates;
+  const wMap = Object.fromEntries(ch.fx_wti.wti_dates.map((d, i) => [d, ch.fx_wti.wti[i]]));
+  const lastVD = vDates.length ? vDates[vDates.length - 1] : null;
+  const lastFD = fDates.length ? fDates[fDates.length - 1] : null;
+
+  const latestAdr = latestItemsHtml([
+    { label: 'KOSPI', val: lastVal(ch.adr.kospi), color: BLUE, dec: 1 },
+    { label: 'KOSDAQ', val: lastVal(ch.adr.kosdaq), color: RED, dec: 1 },
+  ]);
+  const latestSkew = latestItemsHtml([{ label: 'SKEW', val: lastVal(ch.skew.values), color: AMBER, dec: 2 }]);
+  const latestKospi = latestItemsHtml([
+    { label: 'KOSPI', val: lastVal(ch.kospi.price), color: KOSPI_LINE, dec: 2 },
+    { label: 'SMA50', val: lastVal(ch.kospi.ma50), color: AMBER, dec: 0 },
+    { label: 'SMA150', val: lastVal(ch.kospi.ma150), color: CYAN, dec: 0 },
+    { label: 'SMA200', val: lastVal(ch.kospi.ma200), color: PURPLE, dec: 0 },
+  ]);
+  const latestSamHyn = latestItemsHtml([
+    { label: '삼성전자', val: lastVal(ch.sam_hyn.sam), color: BLUE, pct: true },
+    { label: 'SK하이닉스', val: lastVal(ch.sam_hyn.hyn), color: RED, pct: true },
+  ]);
+  const latestSoxNvda = latestItemsHtml([
+    { label: 'SOX', val: lastVal(ch.sox_nvda.sox), color: BLUE, pct: true },
+    { label: 'NVIDIA', val: lastVal(ch.sox_nvda.nvda), color: RED, pct: true },
+  ]);
+  const latestVixTnx = latestItemsHtml([
+    { label: 'VIX', val: lastVal(ch.vix_tnx.vix), color: AMBER, dec: 2 },
+    { label: '10년물', val: lastVD ? (tMap[lastVD] ?? null) : lastVal(ch.vix_tnx.tnx), color: CYAN, dec: 2, unit: '%' },
+  ]);
+  const latestFxWti = latestItemsHtml([
+    { label: '달러/원', val: lastVal(ch.fx_wti.fx), color: BLUE, dec: 1, unit: '원' },
+    { label: 'WTI', val: lastFD ? (wMap[lastFD] ?? null) : lastVal(ch.fx_wti.wti), color: RED, dec: 2, prefix: '$' },
+  ]);
+  const latestSoxMu = latestItemsHtml([
+    { label: 'Micron', val: lastVal(ch.sox_mu.mu), color: PURPLE, pct: true },
+    { label: 'SOX', val: lastVal(ch.sox_mu.sox), color: GRAY, pct: true },
+  ]);
 
   document.getElementById('updated').textContent =
     `업데이트: ${D.updated} · ${D._live ? '실시간' : '스냅샷'}`;
@@ -242,19 +305,28 @@ function renderDashboard(D) {
 
 <div class="charts-grid">
   <div class="chart-card">
-    <div class="chart-title">ADR 지표 — KOSPI / KOSDAQ (3개월) <span class="chart-sub">· adrinfo.kr · 100=중립</span></div>
+    <div class="chart-title-wrap">
+      <div class="chart-title">ADR 지표 — KOSPI / KOSDAQ (3개월) <span class="chart-sub">· adrinfo.kr · 100=중립</span></div>
+      ${latestAdr}
+    </div>
     <div class="chart-legend"><span class="leg"><span class="leg-dot" style="background:#1d4ed8"></span>KOSPI ADR</span><span class="leg"><span class="leg-dot" style="background:#dc2626"></span>KOSDAQ ADR</span></div>
     <canvas id="cAdr"></canvas>
   </div>
   <div class="chart-card">
-    <div class="chart-title">CBOE SKEW 지수 (3개월) <span class="chart-sub">· 꼬리위험 프리미엄</span></div>
+    <div class="chart-title-wrap">
+      <div class="chart-title">CBOE SKEW 지수 (3개월) <span class="chart-sub">· 꼬리위험 프리미엄</span></div>
+      ${latestSkew}
+    </div>
     <div class="chart-legend"><span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>SKEW</span></div>
     <canvas id="cSkew"></canvas>
   </div>
   <div class="chart-card">
-    <div class="chart-title">KOSPI 이평선 (1년)</div>
+    <div class="chart-title-wrap">
+      <div class="chart-title">KOSPI 이평선 (1년)</div>
+      ${latestKospi}
+    </div>
     <div class="chart-legend">
-      <span class="leg"><span class="leg-dot" style="background:#0f172a"></span>KOSPI</span>
+      <span class="leg"><span class="leg-dot" style="background:#2563eb"></span>KOSPI</span>
       <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>SMA50</span>
       <span class="leg"><span class="leg-dot" style="background:#22d3ee"></span>SMA150</span>
       <span class="leg"><span class="leg-dot" style="background:#a78bfa"></span>SMA200</span>
@@ -262,23 +334,38 @@ function renderDashboard(D) {
     <canvas id="cKospi"></canvas>
   </div>
   <div class="chart-card">
-    <div class="chart-title">삼성전자 vs SK하이닉스 수익률 (3개월)</div>
+    <div class="chart-title-wrap">
+      <div class="chart-title">삼성전자 vs SK하이닉스 수익률 (3개월)</div>
+      ${latestSamHyn}
+    </div>
     <canvas id="cSamHyn"></canvas>
   </div>
   <div class="chart-card">
-    <div class="chart-title">SOX vs NVIDIA 수익률 (3개월)</div>
+    <div class="chart-title-wrap">
+      <div class="chart-title">SOX vs NVIDIA 수익률 (3개월)</div>
+      ${latestSoxNvda}
+    </div>
     <canvas id="cSoxNvda"></canvas>
   </div>
   <div class="chart-card">
-    <div class="chart-title">VIX + 미국 10년물 (3개월)</div>
+    <div class="chart-title-wrap">
+      <div class="chart-title">VIX + 미국 10년물 (3개월)</div>
+      ${latestVixTnx}
+    </div>
     <canvas id="cVixTnx"></canvas>
   </div>
   <div class="chart-card">
-    <div class="chart-title">달러/원 + WTI (3개월)</div>
+    <div class="chart-title-wrap">
+      <div class="chart-title">달러/원 + WTI (3개월)</div>
+      ${latestFxWti}
+    </div>
     <canvas id="cFxWti"></canvas>
   </div>
   <div class="chart-card">
-    <div class="chart-title">DRAM 프록시: Micron vs SOX (3개월)</div>
+    <div class="chart-title-wrap">
+      <div class="chart-title">DRAM 프록시: Micron vs SOX (3개월)</div>
+      ${latestSoxMu}
+    </div>
     <canvas id="cSoxMu"></canvas>
   </div>
 </div>`;
