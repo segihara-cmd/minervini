@@ -120,7 +120,7 @@ def fetch_etf_list(min_volume=300_000):
         print(f'  → {len(result)}개 수집')
         return result
     except Exception as e:
-        print(f'  ❌ 네이버 API 오류: {e}')
+        print(f'  Naver API error: {e}')
         return []
 
 # ──────────────────────────────────────────────
@@ -191,7 +191,7 @@ def screen_etfs(etf_list):
                 'MACD↑':       '✅' if macd_up else '❌',
             })
         except Exception as e:
-            print(f'  [{i}/{total}] {ticker} 오류: {e}')
+            print(f'  [{i}/{total}] {ticker} error: {e}')
             continue
 
         if i % 10 == 0:
@@ -203,183 +203,93 @@ def screen_etfs(etf_list):
     return df_r
 
 # ──────────────────────────────────────────────
-# 색상 유틸
-# ──────────────────────────────────────────────
-def _lerp_color(v, lo, hi, c_lo, c_hi):
-    """v를 [lo,hi] 범위로 선형 보간해 hex 색상 반환"""
-    if v is None or lo == hi:
-        return '#f8fafc'
-    t = max(0.0, min(1.0, (v - lo) / (hi - lo)))
-    def parse(h):
-        h = h.lstrip('#')
-        return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
-    r0, g0, b0 = parse(c_lo)
-    r1, g1, b1 = parse(c_hi)
-    r = int(r0 + t * (r1 - r0))
-    g = int(g0 + t * (g1 - g0))
-    b = int(b0 + t * (b1 - b0))
-    return f'#{r:02x}{g:02x}{b:02x}'
-
-def color_pct(v, lo=0, hi=50):
-    # 0% 이하 = 빨강, hi% 이상 = 초록
-    if v is None:
-        return '#f8fafc'
-    if v < 0:
-        return _lerp_color(v, -30, 0, '#fca5a5', '#fef9c3')
-    return _lerp_color(v, 0, hi, '#fef9c3', '#86efac')
-
-def color_neutral(v, lo=0, hi=3):
-    # 0 이하 = 빨강, 중립 = 노랑, hi 이상 = 초록
-    if v is None:
-        return '#f8fafc'
-    if v < 0:
-        return '#fca5a5'
-    return _lerp_color(v, lo, hi, '#fef9c3', '#86efac')
-
-def color_rsi(v):
-    # <30 파랑(과매도), 30~70 노랑→초록 그라데이션, >70 빨강(과매수)
-    if v is None:
-        return '#f8fafc'
-    if v < 30:
-        return '#bfdbfe'
-    if v > 70:
-        return '#fca5a5'
-    return _lerp_color(v, 30, 70, '#fef9c3', '#86efac')
-
-def color_macd(v, col_vals):
-    # 음수 = 빨강, 0 근처 = 연한 노랑, 양수 = 초록 (발산형)
-    numeric = [x for x in col_vals if x is not None]
-    if not numeric or v is None:
-        return '#f8fafc'
-    lo, hi = min(numeric), max(numeric)
-    if v < 0:
-        lo_neg = lo if lo < 0 else -1e-9
-        return _lerp_color(v, lo_neg, 0, '#fca5a5', '#fef9c3')
-    else:
-        hi_pos = hi if hi > 0 else 1e-9
-        return _lerp_color(v, 0, hi_pos, '#fef9c3', '#86efac')
-
-def color_sma(v):
-    # 정배열 강도: 차이 클수록 진한 초록
-    if v is None or v <= 0:
-        return '#fef9c3'
-    return _lerp_color(v, 0, 300, '#fef9c3', '#86efac')
-
-def td(val, bg='#f8fafc', fmt='{}', align='right'):
-    display = fmt.format(val) if val is not None else 'N/A'
-    return f'<td style="padding:7px 10px;background:{bg};text-align:{align};white-space:nowrap;color:#1e293b">{display}</td>'
-
-# ──────────────────────────────────────────────
-# HTML 생성
+# HTML / JSON 출력
 # ──────────────────────────────────────────────
 TAB_NAV = '''<nav style="background:#1e293b;border-bottom:2px solid #334155;display:flex;gap:0">
   <a href="index.html" style="padding:12px 24px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid transparent">📊 매크로 대시보드</a>
   <a href="screener.html" style="padding:12px 24px;color:#f1f5f9;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid #3b82f6">🔍 ETF 스크리너</a>
 </nav>'''
 
-def build_html(df, updated):
-    if df.empty:
-        rows_html = '<tr><td colspan="14" style="text-align:center;padding:40px;color:#94a3b8">조건을 만족하는 ETF가 없습니다</td></tr>'
-    else:
-        ret6_vals = df['6개월수익률'].tolist()
-        ret3_vals = df['3개월수익률'].tolist()
-        shr_vals  = df['샤프지수'].tolist()
-        srt_vals  = df['소르티노'].tolist()
-        mcd_vals  = df['MACD_Hist'].tolist()
+def df_to_api_rows(df):
+    import math
+    def clean(v):
+        if v is None:
+            return None
+        try:
+            if math.isnan(float(v)):
+                return None
+        except (TypeError, ValueError):
+            pass
+        return v
 
-        rows = []
-        for idx, row in df.iterrows():
-            rank = idx + 1
-            cells = (
-                f'<td style="padding:7px 10px;text-align:center;color:#94a3b8;background:#f8fafc">{rank}</td>'
-                + f'<td style="padding:7px 10px;background:#ffffff;white-space:nowrap"><span style="color:#94a3b8;font-size:.8rem">{row["티커"]}</span><br><b style="font-size:.9rem;color:#1e293b">{row["종목명"][:18]}</b></td>'
-                + td(f'{row["현재가"]:,}원', '#f8fafc', '{}', 'right')
-                + td(f'{row["거래량"]:,}', '#f8fafc', '{}', 'right')
-                + td(row['3개월수익률'], color_pct(row['3개월수익률'], 0, 30), '{:.1f}%')
-                + td(row['6개월수익률'], color_pct(row['6개월수익률'], 0, 50), '{:.1f}%')
-                + td(row['6개월변동성'], '#f8fafc', '{:.1f}%')
-                + td(row['샤프지수'],  color_neutral(row['샤프지수'], 0, 3),  '{:.2f}')
-                + td(row['소르티노'],  color_neutral(row['소르티노'], 0, 3),   '{:.2f}')
-                + td(row['SMA50-150'],  color_sma(row['SMA50-150']),  '{:,.0f}')
-                + td(row['SMA150-200'], color_sma(row['SMA150-200']), '{:,.0f}')
-                + td(row['RSI'],        color_rsi(row['RSI']), '{:.1f}')
-                + td(row['MACD_Hist'],  color_macd(row['MACD_Hist'], mcd_vals), '{:.4f}')
-                + f'<td style="padding:7px 10px;background:#f8fafc;text-align:center">{row["MACD↑"]}</td>'
-            )
-            rows.append(f'<tr>{"".join(cells)}</tr>')
-        rows_html = '\n'.join(rows)
+    rows = []
+    for _, row in df.iterrows():
+        rows.append({
+            'ticker': row['티커'],
+            'name': row['종목명'],
+            'price': int(row['현재가']),
+            'volume': int(row['거래량']),
+            'sma50150': clean(float(row['SMA50-150']) if row['SMA50-150'] is not None else None),
+            'sma150200': clean(float(row['SMA150-200']) if row['SMA150-200'] is not None else None),
+            'ret3': clean(row['3개월수익률']),
+            'ret6': clean(row['6개월수익률']),
+            'vol6': clean(row['6개월변동성']),
+            'sharpe': clean(row['샤프지수']),
+            'sortino': clean(row['소르티노']),
+            'rsi': clean(row['RSI']),
+            'macdHist': clean(row['MACD_Hist']),
+            'macdUp': row['MACD↑'] == '✅',
+        })
+    return rows
 
-    count = len(df)
-    cols = ['#', '종목명', '현재가', '거래량', '3개월<br>수익률', '6개월<br>수익률',
-            '6개월<br>변동성', '샤프지수', '소르티노', 'SMA50<br>-150', 'SMA150<br>-200',
-            'RSI', 'MACD<br>Hist', 'MACD↑']
-    th_row = ''.join(f'<th onclick="sortTable({i})" data-col="{i}" style="padding:8px 10px;text-align:right;background:#1e293b;color:#94a3b8;font-size:.75rem;border-bottom:2px solid #334155;white-space:nowrap;cursor:pointer;user-select:none">{c} <span style="opacity:.5;font-size:.7rem">⇅</span></th>' for i,c in enumerate(cols))
 
+def build_shell_html():
     return f'''<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>미너비니 ETF 스크리너</title>
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}
 body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}}
-.header{{background:#1e293b;border-bottom:1px solid #334155;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}}
+.header{{background:#1e293b;border-bottom:1px solid #334155;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}}
 .header h1{{font-size:1.05rem;font-weight:700;color:#f1f5f9}}
 .updated{{font-size:.78rem;color:#94a3b8}}
+.refresh-btn{{background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:.75rem;font-weight:600;cursor:pointer}}
+.refresh-btn:hover{{background:#2563eb}}
 .content{{padding:20px;max-width:1600px;margin:0 auto;overflow-x:auto}}
 .info-bar{{background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 18px;margin-bottom:16px;font-size:.85rem;color:#64748b;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}}
 .badge{{background:#2563eb;color:#eff6ff;padding:3px 10px;border-radius:12px;font-size:.75rem;font-weight:600}}
 table{{width:100%;border-collapse:collapse;font-size:.82rem;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}}
 thead th:hover{{background:#334155 !important;transition:.15s}}
 tr:hover td{{filter:brightness(.96)}}
+.loading-box{{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:#64748b;gap:12px}}
+.loading-box.error{{color:#dc2626}}
+.loading-box .err-detail{{font-size:.8rem;color:#94a3b8;max-width:480px;text-align:center;word-break:break-all}}
+.loading-box button{{margin-top:8px;padding:8px 16px;border:none;border-radius:6px;background:#3b82f6;color:#fff;font-weight:600;cursor:pointer}}
+.spinner{{width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:spin .7s linear infinite}}
+@keyframes spin{{to{{transform:rotate(360deg)}}}}
 .footer{{text-align:center;padding:20px;color:#94a3b8;font-size:.75rem}}
 </style>
 </head>
 <body>
 <div class="header">
   <h1>🔍 미너비니 ETF 스크리너</h1>
-  <span class="updated">업데이트: {updated}</span>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span class="updated" id="updated">실시간 데이터 로딩 중...</span>
+    <button type="button" class="refresh-btn" onclick="loadScreener()">↻ 새로고침</button>
+  </div>
 </div>
 {TAB_NAV}
-<div class="content">
-<div class="info-bar">
-  <div>
-    <span class="badge">{count}개 통과</span>
-    &nbsp; 미너비니 6조건: 주가 &gt; SMA50/150/200 · SMA 정배열 · SMA200 상승추세
-    &nbsp;|&nbsp; 기준 거래량: 30만주 이상
-  </div>
-  <div style="color:#475569;font-size:.78rem">6개월 수익률 높은 순</div>
+<div class="content" id="app-content">
+  <div class="loading-box"><div class="spinner"></div><p>ETF 스크리닝 중 (약 30~90초)</p></div>
 </div>
-<table>
-<thead><tr>{th_row}</tr></thead>
-<tbody>
-{rows_html}
-</tbody>
-</table>
-</div>
-<div class="footer">데이터: yfinance · 네이버금융 | 투자 판단은 본인 책임입니다</div>
-<script>
-let sortCol=-1,sortAsc=true;
-function sortTable(col){{
-  const tbody=document.querySelector('tbody');
-  const rows=Array.from(tbody.querySelectorAll('tr'));
-  if(sortCol===col){{sortAsc=!sortAsc;}}else{{sortCol=col;sortAsc=true;}}
-  rows.sort((a,b)=>{{
-    const ca=a.querySelectorAll('td')[col]?.textContent.trim()??'';
-    const cb=b.querySelectorAll('td')[col]?.textContent.trim()??'';
-    const na=parseFloat(ca.replace(/[%,원]/g,'')),nb=parseFloat(cb.replace(/[%,원]/g,''));
-    let v=isNaN(na)||isNaN(nb)?ca.localeCompare(cb,'ko'):na-nb;
-    return sortAsc?v:-v;
-  }});
-  rows.forEach(r=>tbody.appendChild(r));
-  document.querySelectorAll('thead th').forEach((th,i)=>{{
-    const sp=th.querySelector('span');
-    if(sp)sp.textContent=i===col?(sortAsc?'\u25b2':'\u25bc'):'\u21c5';
-    if(sp)sp.style.opacity=i===col?'1':'.5';
-  }});
-}}
-</script>
+<div class="footer">실시간 스크리너 · 새로고침 시 최신 데이터 반영 · 투자 권유 아님</div>
+<script src="screener-app.js?v=20260624-live"></script>
 </body>
 </html>'''
 
@@ -391,15 +301,23 @@ if __name__ == '__main__':
 
     etf_list = fetch_etf_list(min_volume=300_000)
     if not etf_list:
-        print('❌ ETF 목록 없음 — 종료')
+        print('ETF list empty - exit')
         exit(1)
 
     result_df = screen_etfs(etf_list)
-    print(f'\n✅ 미너비니 조건 통과: {len(result_df)}개')
+    print(f'\n[OK] Minervini passed: {len(result_df)}')
 
     updated = now.strftime('%Y-%m-%d %H:%M KST')
-    html = build_html(result_df, updated)
+    payload = {
+        'updated': updated,
+        'count': len(result_df),
+        'rows': df_to_api_rows(result_df),
+    }
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(html, encoding='utf-8')
-    print(f'✅ 생성 완료 → {OUTPUT}')
+    OUTPUT.write_text(build_shell_html(), encoding='utf-8')
+    (OUTPUT.parent / 'screener.json').write_text(
+        json.dumps(payload, ensure_ascii=False, allow_nan=False), encoding='utf-8'
+    )
+    print(f'[OK] Shell -> {OUTPUT}')
+    print(f'[OK] Fallback screener.json -> {OUTPUT.parent / "screener.json"}')

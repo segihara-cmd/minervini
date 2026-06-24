@@ -2,10 +2,12 @@
   "version": 2,
   "builds": [
     { "src": "api/dashboard.js", "use": "@vercel/node" },
+    { "src": "api/screener.js", "use": "@vercel/node" },
     { "src": "docs/**", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/api/dashboard", "dest": "/api/dashboard.js" },
+    { "src": "/api/screener", "dest": "/api/screener.js" },
     { "src": "/(.*)", "dest": "/docs/$1" }
   ],
   "headers": [
