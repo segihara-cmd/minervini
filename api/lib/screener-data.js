@@ -27,7 +27,9 @@ async function fetchEtfList(minVolume = MIN_VOLUME) {
     headers: { 'User-Agent': UA, Referer: 'https://finance.naver.com/sise/etf.nhn' },
   });
   if (!res.ok) throw new Error(`Naver ETF list: ${res.status}`);
-  const json = await res.json();
+  const buf = Buffer.from(await res.arrayBuffer());
+  const text = new TextDecoder('euc-kr').decode(buf);
+  const json = JSON.parse(text);
   const items = json?.result?.etfItemList || [];
   return items
     .map(item => ({

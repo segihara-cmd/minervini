@@ -203,9 +203,6 @@ function renderDashboard(D) {
   const alignedOk = ex.aligned === true;
   const vixOk = (kpi.vix.val || 0) <= 25;
   const tnxOk = (kpi.tnx.val || 0) <= 4.5;
-  const maOk = ex.ma50 != null && ex.ma150 != null && (ex.ma50 || 0) >= (ex.ma150 || 0);
-  const ksVs150 = (kpi.ks11.val || 0) >= (ex.ma150 || Infinity);
-  const ksVs200 = (kpi.ks11.val || 0) >= (ex.ma200 || Infinity);
   const adrTiers = [[100, '🟢', '정상', '#16a34a'], [75, '⚠️', '주의', '#ca8a04'], [0, '🔴', '약세', '#dc2626']];
   const ma50v = fmtVal(ex.ma50, '', 0);
   const ma150v = fmtVal(ex.ma150, '', 0);
@@ -265,9 +262,6 @@ function renderDashboard(D) {
     <table>
       <tr><th>신호</th><th style="text-align:center">상태</th><th>판정</th><th>상세</th></tr>
       ${sigRow('KOSPI 정배열 (curr>SMA50>150>200)', alignedOk, `KOSPI ${ksv} | SMA50 ${ma50v} | SMA150 ${ma150v} | SMA200 ${ma200v}`)}
-      ${sigRow('KOSPI > SMA200', ksVs200, `KOSPI ${ksv} vs SMA200 ${ma200v}`)}
-      ${sigRow('KOSPI > SMA150', ksVs150, `KOSPI ${ksv} vs SMA150 ${ma150v}`)}
-      ${sigRow('SMA50 > SMA150', maOk, `SMA50 ${ma50v} vs SMA150 ${ma150v}`)}
       ${sigRow('VIX ≤ 25', vixOk, `현재 VIX ${fmtVal(kpi.vix.val, '', 2)}`)}
       ${sigRow('미국 10년물 ≤ 4.5%', tnxOk, `현재 ${fmtVal(kpi.tnx.val, '%', 2)}`)}
       ${tierRow('KOSPI ADR (등락비율)', kpi.adr_kospi.val, adrTiers, `현재 ${fmtVal(kpi.adr_kospi.val, '', 2)} · 100↑정상 / 75↓약세`)}
