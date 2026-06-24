@@ -161,11 +161,6 @@
 010140,삼성중공업,UBS,2026-03-11,37000.0,21000.0,,76.19,매수,investing.com,foreign,investing_samsung-heavy-industries_UBS_2026-03-11,samsung-heavy-industries
 000120,CJ대한통운,JP Morgan,2026-05-14,100000.0,120000.0,,-16.67,보유,investing.com,foreign,investing_cj-korea-express_JPMorgan_2026-05-14,cj-korea-express
 000120,CJ대한통운,JP Morgan,2026-02-11,120000.0,80000.0,,50.0,보유,investing.com,foreign,investing_cj-korea-express_JPMorgan_2026-02-11,cj-korea-express
-009150,삼성전기,Nomura,2026-05-21,1300000.0,1100000.0,,18.18,매수,investing.com,foreign,investing_samsung-electro-mechanics_Nomura/Instinet_2026-05-21,samsung-electro-mechanics
-009150,삼성전기,JP Morgan,2026-05-21,1450000.0,980000.0,,47.96,매수,investing.com,foreign,investing_samsung-electro-mechanics_JPMorgan_2026-05-21,samsung-electro-mechanics
-009150,삼성전기,CLSA,2026-05-21,1700000.0,1200000.0,,41.67,매수,investing.com,foreign,investing_samsung-electro-mechanics_CLSA_2026-05-21,samsung-electro-mechanics
-009150,삼성전기,Nomura,2026-05-04,1100000.0,360000.0,,205.56,매수,investing.com,foreign,investing_samsung-electro-mechanics_Nomura/Instinet_2026-05-04,samsung-electro-mechanics
-009150,삼성전기,JP Morgan,2026-05-04,980000.0,840000.0,,16.67,매수,investing.com,foreign,investing_samsung-electro-mechanics_JPMorgan_2026-05-04,samsung-electro-mechanics
 011070,LG이노텍,Goldman Sachs,2026-04-28,550000.0,245000.0,,124.49,보유,investing.com,foreign,investing_lg-innotek-co-ltd_Goldman Sachs_2026-04-28,lg-innotek-co-ltd
 011070,LG이노텍,CLSA,2026-04-28,650000.0,460000.0,,41.3,매수,investing.com,foreign,investing_lg-innotek-co-ltd_CLSA_2026-04-28,lg-innotek-co-ltd
 011070,LG이노텍,JP Morgan,2026-04-28,700000.0,285000.0,,145.61,매수,investing.com,foreign,investing_lg-innotek-co-ltd_JPMorgan_2026-04-28,lg-innotek-co-ltd
@@ -307,3 +302,8 @@
 023530,롯데쇼핑,Citi,2026-05-12,157000.0,102000.0,,53.92,보유,investing.com,foreign,investing_lotte-shopping_Citi_2026-05-12,lotte-shopping
 069960,현대백화점,CLSA,2026-05-07,133000.0,80000.0,,66.25,매수,investing.com,foreign,investing_hyundai-department_CLSA_2026-05-07,hyundai-department
 069960,현대백화점,Morgan Stanley,2026-04-25,120000.0,112000.0,,7.14,매수,investing.com,foreign,investing_hyundai-department_Morgan Stanley_2026-04-25,hyundai-department
+009150,삼성전기,JP Morgan,2026-06-15,2400000.0,1450000.0,,65.52,매수,investing.com,foreign,investing_samsung-electro-mechanics_JPMorgan_2026-06-15,samsung-electro-mechanics
+009150,삼성전기,CLSA,2026-06-03,3200000.0,2200000.0,,45.45,매수,investing.com,foreign,investing_samsung-electro-mechanics_CLSA_2026-06-03,samsung-electro-mechanics
+009150,삼성전기,CLSA,2026-05-28,2200000.0,1700000.0,,29.41,매수,investing.com,foreign,investing_samsung-electro-mechanics_CLSA_2026-05-28,samsung-electro-mechanics
+009150,삼성전기,Citi,2026-05-28,2000000.0,1100000.0,,81.82,매수,investing.com,foreign,investing_samsung-electro-mechanics_Citi_2026-05-28,samsung-electro-mechanics
+009150,삼성전기,Macquarie,2026-05-27,2150000.0,1250000.0,,72.0,매수,investing.com,foreign,investing_samsung-electro-mechanics_Macquarie_2026-05-27,samsung-electro-mechanics

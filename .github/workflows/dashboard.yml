@@ -50,6 +50,6 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/index.html docs/data.json docs/dashboard-app.js docs/config.json docs/screener.html docs/screener.json docs/screener-app.js docs/gap.html docs/gap.json docs/gap-app.js
+          git add docs/index.html docs/data.json docs/dashboard-app.js docs/config.json docs/screener.html docs/screener.json docs/screener-app.js docs/gap.html docs/gap.json docs/gap-app.js gap_pipeline/data/raw/sector_investing_reports.csv gap_pipeline/data/processed/sector_target_summary.csv
           git diff --staged --quiet || git commit -m "chore: dashboard update $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
           git push

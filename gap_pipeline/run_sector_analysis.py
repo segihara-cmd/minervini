@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 from pathlib import Path
@@ -20,7 +21,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from collectors.etf_analytics import build_etf_metrics_table, build_holdings_cache
-from collectors.investing_collector import InvestingCollector
+from collectors.investing_collector import InvestingCollector, SLUG_CACHE_PATH
 from collectors.yahoo_collector import YahooCollector
 from config.settings import (
     PROCESSED_DIR,
@@ -61,30 +62,62 @@ def save_csv(df: pd.DataFrame, path: Path) -> None:
 _DEDUP_COLS = ["ticker", "securities_company", "report_date", "target_price"]
 
 
+def _load_slug_map() -> dict[str, str]:
+    if SLUG_CACHE_PATH.exists():
+        try:
+            return json.loads(SLUG_CACHE_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
+
+
 def _collect_investing_for_tickers(
     tickers: list[str],
     name_map: dict[str, str],
     months: int,
 ) -> pd.DataFrame:
     collector = InvestingCollector()
+    slug_map = _load_slug_map()
     frames: list[pd.DataFrame] = []
+    failed: list[str] = []
     total = len(tickers)
-    for i, raw in enumerate(tickers, 1):
-        code = normalize_ticker_code(raw)
-        try:
+
+    def _fetch_one(code: str) -> pd.DataFrame:
+        slug = slug_map.get(code)
+        df = collector.fetch_consensus(
+            code,
+            name_map.get(code),
+            foreign_only=False,
+            months=months,
+            slug=slug,
+        )
+        if df.empty:
             df = collector.fetch_consensus(
                 code,
                 name_map.get(code),
                 foreign_only=False,
                 months=months,
             )
+        return df
+
+    for i, raw in enumerate(tickers, 1):
+        code = normalize_ticker_code(raw)
+        try:
+            df = _fetch_one(code)
             if not df.empty:
                 frames.append(df)
+            else:
+                failed.append(code)
+                logger.warning("Investing %s — 데이터 없음 (캐시 유지)", code)
         except Exception as exc:
+            failed.append(code)
             logger.warning("Investing %s 실패: %s", code, exc)
         if i % 25 == 0 or i == total:
             rows = sum(len(f) for f in frames)
-            logger.info("Investing 수집 %d/%d (누적 %d건)", i, total, rows)
+            logger.info("Investing 수집 %d/%d (누적 %d건, 실패 %d)", i, total, rows, len(failed))
+
+    if failed:
+        logger.warning("Investing 재수집 실패/빈 응답 %d종목: %s…", len(failed), ", ".join(failed[:10]))
     if not frames:
         return pd.DataFrame()
     return pd.concat(frames, ignore_index=True).drop_duplicates(

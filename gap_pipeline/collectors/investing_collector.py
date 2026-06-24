@@ -81,6 +81,7 @@ KNOWN_SLUGS: dict[str, str] = {
     "005380": "hyundai-motor",
     "005930": "samsung-electronics-co-ltd",
     "000660": "sk-hynix-inc",
+    "009150": "samsung-electro-mechanics",
     "035420": "naver",
 }
 
