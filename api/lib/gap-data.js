@@ -403,19 +403,33 @@ async function buildGapData() {
   const freshRows = [];
   const refreshedTickers = new Set();
   const errors = [];
+  const failed = [];
 
-  await mapInBatches(targets, BATCH_SIZE, async ({ ticker, stockName, slug }) => {
-    try {
-      const rows = await fetchInvestingConsensus(ticker, stockName, slug);
-      if (rows.length) {
-        freshRows.push(...rows);
-        refreshedTickers.add(ticker);
+  async function fetchBatch(items, batchSize) {
+    await mapInBatches(items, batchSize, async ({ ticker, stockName, slug }) => {
+      try {
+        const rows = await fetchInvestingConsensus(ticker, stockName, slug);
+        if (rows.length) {
+          freshRows.push(...rows);
+          refreshedTickers.add(ticker);
+        } else {
+          failed.push({ ticker, stockName, slug });
+        }
+      } catch (e) {
+        errors.push(`${ticker}:${e.message}`);
+        failed.push({ ticker, stockName, slug });
       }
-    } catch (e) {
-      errors.push(`${ticker}:${e.message}`);
-    }
-    return null;
-  });
+      return null;
+    });
+  }
+
+  await fetchBatch(targets, BATCH_SIZE);
+  if (failed.length) {
+    const retryList = [...failed];
+    failed.length = 0;
+    await new Promise(r => setTimeout(r, 15000));
+    await fetchBatch(retryList, 4);
+  }
 
   const allReports = mergeReports(freshRows, cachedReports, refreshedTickers);
 

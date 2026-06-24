@@ -12,6 +12,7 @@ import argparse
 import json
 import logging
 import sys
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -79,8 +80,8 @@ def _collect_investing_for_tickers(
     collector = InvestingCollector()
     slug_map = _load_slug_map()
     frames: list[pd.DataFrame] = []
-    failed: list[str] = []
-    total = len(tickers)
+    pending = [normalize_ticker_code(t) for t in tickers]
+    total = len(pending)
 
     def _fetch_one(code: str) -> pd.DataFrame:
         slug = slug_map.get(code)
@@ -100,24 +101,51 @@ def _collect_investing_for_tickers(
             )
         return df
 
-    for i, raw in enumerate(tickers, 1):
-        code = normalize_ticker_code(raw)
-        try:
-            df = _fetch_one(code)
-            if not df.empty:
-                frames.append(df)
-            else:
-                failed.append(code)
-                logger.warning("Investing %s — 데이터 없음 (캐시 유지)", code)
-        except Exception as exc:
-            failed.append(code)
-            logger.warning("Investing %s 실패: %s", code, exc)
-        if i % 25 == 0 or i == total:
-            rows = sum(len(f) for f in frames)
-            logger.info("Investing 수집 %d/%d (누적 %d건, 실패 %d)", i, total, rows, len(failed))
+    def _run_pass(codes: list[str], *, pass_no: int, delay: float) -> list[str]:
+        still_failed: list[str] = []
+        for i, code in enumerate(codes, 1):
+            if delay > 0 and i > 1:
+                time.sleep(delay)
+            try:
+                df = _fetch_one(code)
+                if not df.empty:
+                    frames.append(df)
+                else:
+                    still_failed.append(code)
+                    logger.warning("Investing %s — 데이터 없음 (pass %d)", code, pass_no)
+            except Exception as exc:
+                still_failed.append(code)
+                logger.warning("Investing %s 실패 (pass %d): %s", code, pass_no, exc)
+            if pass_no == 1 and (i % 25 == 0 or i == len(codes)):
+                rows = sum(len(f) for f in frames)
+                logger.info(
+                    "Investing 수집 %d/%d (누적 %d건, 실패 %d)",
+                    i,
+                    total,
+                    rows,
+                    len(still_failed) + (len(codes) - i),
+                )
+        return still_failed
+
+    failed = _run_pass(pending, pass_no=1, delay=0.0)
+    if failed:
+        logger.info("Investing 1차 실패 %d종목 — 60초 후 재시도", len(failed))
+        time.sleep(60)
+        failed = _run_pass(failed, pass_no=2, delay=5.0)
+    if failed:
+        logger.info("Investing 2차 실패 %d종목 — 120초 후 최종 재시도", len(failed))
+        time.sleep(120)
+        failed = _run_pass(failed, pass_no=3, delay=8.0)
 
     if failed:
-        logger.warning("Investing 재수집 실패/빈 응답 %d종목: %s…", len(failed), ", ".join(failed[:10]))
+        logger.warning(
+            "Investing 최종 실패 %d종목 (구 캐시 유지): %s",
+            len(failed),
+            ", ".join(failed[:20]) + ("…" if len(failed) > 20 else ""),
+        )
+    else:
+        logger.info("Investing 전 종목 수집 완료 (%d)", total)
+
     if not frames:
         return pd.DataFrame()
     return pd.concat(frames, ignore_index=True).drop_duplicates(
@@ -180,6 +208,10 @@ def run(
         else:
             investing_df = fresh_df
         save_csv(investing_df, cache_path)
+        refreshed = set(fresh_df["ticker"].astype(str)) if not fresh_df.empty else set()
+        stale = [normalize_ticker_code(t) for t in tickers if normalize_ticker_code(t) not in refreshed]
+        if stale:
+            logger.warning("Investing 미갱신 %d종목: %s", len(stale), ", ".join(stale[:15]))
     elif from_cache and cache_path.exists():
         investing_df = pd.read_csv(cache_path, encoding="utf-8-sig")
         if "ticker" in investing_df.columns:
