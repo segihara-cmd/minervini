@@ -5,9 +5,11 @@ GitHub Actions에서 매일 실행 → docs/index.html 갱신
 """
 import json
 import os
+import re
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+import requests
 import yfinance as yf
 import pandas as pd
 import numpy as np
@@ -43,6 +45,44 @@ def fetch(ticker, period):
     except Exception as e:
         print(f'[경고] {ticker}: {e}')
         return None
+
+ADR_HEADERS = {
+    'User-Agent': (
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    ),
+}
+
+def _parse_adr_embed(html, name):
+    m = re.search(rf'const {name}=\[(.*?)\];', html, re.S)
+    if not m:
+        return [], []
+    pairs = re.findall(r'\[(\d+),\s*([\d.]+)\]', m.group(1))
+    dates = [datetime.fromtimestamp(int(ts) / 1000).strftime('%Y-%m-%d') for ts, _ in pairs]
+    values = [round(float(v), 2) for _, v in pairs]
+    return dates, values
+
+def fetch_adr(days=63):
+    """adrinfo.kr/chart와 동일한 KOSPI/KOSDAQ ADR 시계열 수집"""
+    try:
+        r = requests.get('http://adrinfo.kr/chart', headers=ADR_HEADERS, timeout=30)
+        r.raise_for_status()
+        ks_dates, ks_vals = _parse_adr_embed(r.text, 'kospi_adr')
+        kq_dates, kq_vals = _parse_adr_embed(r.text, 'kosdaq_adr')
+        kq_map = dict(zip(kq_dates, kq_vals))
+        dates, kospi, kosdaq = [], [], []
+        for d, v in zip(ks_dates, ks_vals):
+            if d in kq_map:
+                dates.append(d)
+                kospi.append(v)
+                kosdaq.append(kq_map[d])
+        take = min(days, len(dates))
+        if take == 0:
+            return [], [], []
+        return dates[-take:], kospi[-take:], kosdaq[-take:]
+    except Exception as e:
+        print(f'[경고] ADR: {e}')
+        return [], [], []
 
 def latest(dates, values):
     if not values:
@@ -135,6 +175,8 @@ def main():
     fx_d,   fx_v   = _close_list(fetch('USDKRW=X',  '3mo'))
     wti_d,  wti_v  = _close_list(fetch('CL=F',      '3mo'))
     mu_d,   mu_v   = _close_list(fetch('MU',         '3mo'))
+    skew_d, skew_v = _close_list(fetch('^SKEW',      '3mo'))
+    adr_d, adr_kospi, adr_kosdaq = fetch_adr()
 
     # 1년치 KOSPI for MA computation
     ks11_1y_d, ks11_1y_v = _close_list(fetch('^KS11', '2y'))
@@ -182,6 +224,9 @@ def main():
     fx_last   = latest(fx_d,   fx_v)
     wti_last  = latest(wti_d,  wti_v)
     mu_last   = latest(mu_d,   mu_v)
+    skew_last = latest(skew_d, skew_v)
+    adr_kospi_last = latest(adr_d, adr_kospi)
+    adr_kosdaq_last = latest(adr_d, adr_kosdaq)
 
     sam_pct  = pct_chg(sam_v)
     hyn_pct  = pct_chg(hyn_v)
@@ -193,6 +238,9 @@ def main():
     fx_pct   = pct_chg(fx_v)
     wti_pct  = pct_chg(wti_v)
     mu_pct   = pct_chg(mu_v)
+    skew_pct = pct_chg(skew_v)
+    adr_kospi_pct = pct_chg(adr_kospi)
+    adr_kosdaq_pct = pct_chg(adr_kosdaq)
 
     # ── JSON payload (embed into HTML) ─────────
     data = {
@@ -219,6 +267,9 @@ def main():
             'fx':   {'val': fx_last,   'pct': fx_pct},
             'wti':  {'val': wti_last,  'pct': wti_pct},
             'mu':   {'val': mu_last,   'pct': mu_pct},
+            'skew': {'val': skew_last, 'pct': skew_pct},
+            'adr_kospi':  {'val': adr_kospi_last,  'pct': adr_kospi_pct},
+            'adr_kosdaq': {'val': adr_kosdaq_last, 'pct': adr_kosdaq_pct},
         },
         'charts': {
             'kospi': {
@@ -254,6 +305,15 @@ def main():
                 'dates': sox_mu_dates,
                 'sox':   sox_norm2,
                 'mu':    mu_norm,
+            },
+            'adr': {
+                'dates': adr_d,
+                'kospi': adr_kospi,
+                'kosdaq': adr_kosdaq,
+            },
+            'skew': {
+                'dates': skew_d,
+                'values': skew_v,
             },
         }
     }
@@ -423,6 +483,21 @@ tr:hover td{{background:#f8fafc}}
     <div class="kpi-val">${fmt_val(kpi['mu']['val'],'',2)}</div>
     <div class="kpi-pct">{fmt_pct(kpi['mu']['pct'])}</div>
   </div>
+  <div class="kpi-card">
+    <div class="kpi-label">KOSPI ADR</div>
+    <div class="kpi-val">{fmt_val(kpi['adr_kospi']['val'],'',2)}</div>
+    <div class="kpi-pct">{fmt_pct(kpi['adr_kospi']['pct'])}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">KOSDAQ ADR</div>
+    <div class="kpi-val">{fmt_val(kpi['adr_kosdaq']['val'],'',2)}</div>
+    <div class="kpi-pct">{fmt_pct(kpi['adr_kosdaq']['pct'])}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">CBOE SKEW</div>
+    <div class="kpi-val">{fmt_val(kpi['skew']['val'],'',2)}</div>
+    <div class="kpi-pct">{fmt_pct(kpi['skew']['pct'])}</div>
+  </div>
 </div>
 
 <!-- CHARTS -->
@@ -488,6 +563,26 @@ tr:hover td{{background:#f8fafc}}
       <span class="leg"><span class="leg-dot" style="background:#94a3b8"></span>SOX</span>
     </div>
     <canvas id="cSoxMu"></canvas>
+  </div>
+
+  <!-- ADR KOSPI / KOSDAQ -->
+  <div class="chart-card">
+    <div class="chart-title">ADR 지표 — KOSPI / KOSDAQ (3개월) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#64748b">· adrinfo.kr 기준 · 100=중립</span></div>
+    <div class="chart-legend">
+      <span class="leg"><span class="leg-dot" style="background:#1d4ed8"></span>KOSPI ADR</span>
+      <span class="leg"><span class="leg-dot" style="background:#dc2626"></span>KOSDAQ ADR</span>
+      <span class="leg"><span class="leg-dot" style="background:#64748b;border:1px dashed #64748b;background:transparent;width:16px;height:0;border-radius:0"></span>기준 100</span>
+    </div>
+    <canvas id="cAdr"></canvas>
+  </div>
+
+  <!-- CBOE SKEW -->
+  <div class="chart-card">
+    <div class="chart-title">CBOE SKEW 지수 (3개월) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#64748b">· 꼬리위험 프리미엄</span></div>
+    <div class="chart-legend">
+      <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>SKEW</span>
+    </div>
+    <canvas id="cSkew"></canvas>
   </div>
 
 </div>
@@ -612,6 +707,33 @@ new Chart(document.getElementById('cSoxMu'), cfg(
     ds('SOX',    D.charts.sox_mu.sox, GRAY,   'y'),
   ], '상대수익률(%)'
 ));
+
+// ADR — KOSPI / KOSDAQ (adrinfo.kr style)
+if (D.charts.adr.dates.length) {{
+  const adrRef = D.charts.adr.dates.map(() => 100);
+  new Chart(document.getElementById('cAdr'), cfg(
+    D.charts.adr.dates,
+    [
+      ds('KOSPI ADR',  D.charts.adr.kospi,  BLUE, 'y'),
+      ds('KOSDAQ ADR', D.charts.adr.kosdaq, RED,  'y'),
+      ds('기준 100',   adrRef,              GRAY, 'y', false, [6, 4]),
+    ], 'ADR'
+  ));
+}} else {{
+  document.getElementById('cAdr').parentElement.innerHTML += '<p style="color:#64748b;font-size:.85rem;margin-top:8px">ADR 데이터를 불러오지 못했습니다.</p>';
+}}
+
+// CBOE SKEW
+if (D.charts.skew.dates.length) {{
+  new Chart(document.getElementById('cSkew'), cfg(
+    D.charts.skew.dates,
+    [
+      ds('SKEW', D.charts.skew.values, AMBER, 'y', true),
+    ], 'SKEW'
+  ));
+}} else {{
+  document.getElementById('cSkew').parentElement.innerHTML += '<p style="color:#64748b;font-size:.85rem;margin-top:8px">SKEW 데이터를 불러오지 못했습니다.</p>';
+}}
 </script>
 </body>
 </html>'''
