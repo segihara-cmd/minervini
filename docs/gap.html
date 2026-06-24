@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>목표주가 괴리율 Top 100</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+.header{background:#1e293b;border-bottom:1px solid #334155;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.header h1{font-size:1.05rem;font-weight:700;color:#f1f5f9}
+.updated{font-size:.78rem;color:#94a3b8}
+.refresh-btn{background:#3b82f6;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:.75rem;font-weight:600;cursor:pointer}
+.refresh-btn:hover{background:#2563eb}
+.content{padding:20px;max-width:1800px;margin:0 auto;overflow-x:auto}
+.info-bar{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 18px;margin-bottom:16px;font-size:.85rem;color:#64748b;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.badge{background:#2563eb;color:#eff6ff;padding:3px 10px;border-radius:12px;font-size:.75rem;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:.82rem;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+thead th:hover{background:#334155 !important}
+tr:hover td{filter:brightness(.96)}
+.loading-box{display:flex;flex-direction:column;align-items:center;padding:60px 20px;color:#64748b;gap:12px}
+.loading-box.error{color:#dc2626}
+.spinner{width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.footer{text-align:center;padding:20px;color:#94a3b8;font-size:.75rem}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>📈 목표주가 괴리율 Top 100 (Investing 해외)</h1>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span class="updated" id="updated">데이터 로딩 중...</span>
+    <button type="button" class="refresh-btn" onclick="loadGap()">↻ 새로고침</button>
+  </div>
+</div>
+<nav style="background:#1e293b;border-bottom:2px solid #334155;display:flex;gap:0;flex-wrap:wrap">
+  <a href="index.html" style="padding:12px 24px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid transparent">📊 매크로 대시보드</a>
+  <a href="screener.html" style="padding:12px 24px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid transparent">🔍 ETF 스크리너</a>
+  <a href="gap.html" style="padding:12px 24px;color:#f1f5f9;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid #3b82f6">📈 ETF 괴리율</a>
+</nav>
+<div class="content" id="app-content">
+  <div class="loading-box"><div class="spinner"></div><p>괴리율 데이터 불러오는 중</p></div>
+</div>
+<div class="footer">Investing.com 해외 목표가 · Yahoo 현재가 · 투자 권유 아님</div>
+<script src="gap-app.js?v=20260624-gap100"></script>
+</body>
+</html>

@@ -205,9 +205,10 @@ def screen_etfs(etf_list):
 # ──────────────────────────────────────────────
 # HTML / JSON 출력
 # ──────────────────────────────────────────────
-TAB_NAV = '''<nav style="background:#1e293b;border-bottom:2px solid #334155;display:flex;gap:0">
+TAB_NAV = '''<nav style="background:#1e293b;border-bottom:2px solid #334155;display:flex;gap:0;flex-wrap:wrap">
   <a href="index.html" style="padding:12px 24px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid transparent">📊 매크로 대시보드</a>
   <a href="screener.html" style="padding:12px 24px;color:#f1f5f9;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid #3b82f6">🔍 ETF 스크리너</a>
+  <a href="gap.html" style="padding:12px 24px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid transparent">📈 ETF 괴리율</a>
 </nav>'''
 
 def df_to_api_rows(df):

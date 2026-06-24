@@ -8,7 +8,8 @@ on:
       - 'api/**'
       - 'docs/dashboard-app.js'
       - 'docs/screener-app.js'
-      - 'api/**'
+      - 'generate_gap.py'
+      - 'gap_pipeline/**'
       - '.github/workflows/dashboard.yml'
   schedule:
     - cron: '0/30 * * * 1-5'   # 평일 30분마다 (KST 장중·장후 스냅샷 갱신)
@@ -32,7 +33,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install yfinance pandas numpy requests
+        run: pip install yfinance pandas numpy requests beautifulsoup4 lxml curl_cffi python-dotenv finance-datareader pykrx
 
       - name: Generate dashboard HTML
         run: python generate_dashboard.py
@@ -40,10 +41,13 @@ jobs:
       - name: Generate ETF screener HTML
         run: python generate_screener.py
 
+      - name: Generate gap Top 100 JSON
+        run: python generate_gap.py
+
       - name: Commit and push docs/
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/index.html docs/data.json docs/dashboard-app.js docs/config.json docs/screener.html docs/screener.json docs/screener-app.js
+          git add docs/index.html docs/data.json docs/dashboard-app.js docs/config.json docs/screener.html docs/screener.json docs/screener-app.js docs/gap.html docs/gap.json docs/gap-app.js
           git diff --staged --quiet || git commit -m "chore: dashboard update $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')"
           git push
