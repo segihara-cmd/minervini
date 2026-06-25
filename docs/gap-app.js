@@ -80,6 +80,34 @@ function buildRow(row, rank) {
 }
 
 const COLS = ['#', '산업', '종목명', '괴리율%', '목표가변동', '현재가', '최근목표가', '증권사', '발표일', '건수(6M)'];
+const DATE_COL = 8;
+
+function parseSortValue(text, col) {
+  const t = text.replace(/\s+/g, ' ').trim();
+  if (!t || t === '—' || t === 'N/A') return { type: 'empty', value: '' };
+  if (col === DATE_COL || /^\d{4}-\d{2}-\d{2}/.test(t)) {
+    const ms = Date.parse(t.slice(0, 10));
+    if (!Number.isNaN(ms)) return { type: 'date', value: ms };
+  }
+  const cleaned = t.replace(/[%,원*vs+\s]/g, '').replace(/,/g, '');
+  const num = parseFloat(cleaned);
+  if (!Number.isNaN(num) && /[\d]/.test(cleaned)) return { type: 'num', value: num };
+  return { type: 'str', value: t };
+}
+
+function compareSortValues(a, b, col) {
+  const va = parseSortValue(a, col);
+  const vb = parseSortValue(b, col);
+  if (va.type === 'empty' && vb.type === 'empty') return 0;
+  if (va.type === 'empty') return 1;
+  if (vb.type === 'empty') return -1;
+  if (va.type === vb.type) {
+    if (va.value < vb.value) return -1;
+    if (va.value > vb.value) return 1;
+    return 0;
+  }
+  return a.localeCompare(b, 'ko');
+}
 
 function buildTable(rows) {
   const th = COLS.map((c, i) =>
@@ -174,9 +202,7 @@ function sortTable(col) {
   rows.sort((a, b) => {
     const ca = a.querySelectorAll('td')[col]?.textContent.trim() ?? '';
     const cb = b.querySelectorAll('td')[col]?.textContent.trim() ?? '';
-    const na = parseFloat(ca.replace(/[%,원*vs+\s]/g, ''));
-    const nb = parseFloat(cb.replace(/[%,원*vs+\s]/g, ''));
-    const v = Number.isNaN(na) || Number.isNaN(nb) ? ca.localeCompare(cb, 'ko') : na - nb;
+    const v = compareSortValues(ca, cb, col);
     return sortAsc ? v : -v;
   });
   rows.forEach((r, i) => {
