@@ -82,6 +82,8 @@ def _collect_investing_for_tickers(
     frames: list[pd.DataFrame] = []
     pending = [normalize_ticker_code(t) for t in tickers]
     total = len(pending)
+    no_data: list[str] = []
+    failed_error: list[str] = []
 
     def _fetch_one(code: str) -> pd.DataFrame:
         slug = slug_map.get(code)
@@ -110,6 +112,8 @@ def _collect_investing_for_tickers(
                 df = _fetch_one(code)
                 if not df.empty:
                     frames.append(df)
+                elif pass_no == 1:
+                    no_data.append(code)
                 else:
                     still_failed.append(code)
                     logger.warning("Investing %s — 데이터 없음 (pass %d)", code, pass_no)
@@ -119,32 +123,36 @@ def _collect_investing_for_tickers(
             if pass_no == 1 and (i % 25 == 0 or i == len(codes)):
                 rows = sum(len(f) for f in frames)
                 logger.info(
-                    "Investing 수집 %d/%d (누적 %d건, 실패 %d)",
+                    "Investing 수집 %d/%d (누적 %d건, 커버리지없음 %d, 오류 %d)",
                     i,
                     total,
                     rows,
-                    len(still_failed) + (len(codes) - i),
+                    len(no_data),
+                    len(still_failed),
                 )
         return still_failed
 
-    failed = _run_pass(pending, pass_no=1, delay=0.0)
-    if failed:
-        logger.info("Investing 1차 실패 %d종목 — 60초 후 재시도", len(failed))
-        time.sleep(60)
-        failed = _run_pass(failed, pass_no=2, delay=5.0)
-    if failed:
-        logger.info("Investing 2차 실패 %d종목 — 120초 후 최종 재시도", len(failed))
-        time.sleep(120)
-        failed = _run_pass(failed, pass_no=3, delay=8.0)
+    failed_error = _run_pass(pending, pass_no=1, delay=0.0)
+    if failed_error:
+        logger.info("Investing 오류 %d종목 — 30초 후 재시도", len(failed_error))
+        time.sleep(30)
+        failed_error = _run_pass(failed_error, pass_no=2, delay=3.0)
 
-    if failed:
+    if failed_error:
         logger.warning(
-            "Investing 최종 실패 %d종목 (구 캐시 유지): %s",
-            len(failed),
-            ", ".join(failed[:20]) + ("…" if len(failed) > 20 else ""),
+            "Investing 오류 잔존 %d종목: %s",
+            len(failed_error),
+            ", ".join(failed_error[:20]) + ("…" if len(failed_error) > 20 else ""),
         )
-    else:
-        logger.info("Investing 전 종목 수집 완료 (%d)", total)
+    if no_data:
+        logger.info("Investing 해외 리포트 없음 %d종목 (재시도 생략)", len(no_data))
+    logger.info(
+        "Investing 수집 완료: 성공 %d / %d (커버리지없음 %d, 오류 %d)",
+        total - len(no_data) - len(failed_error),
+        total,
+        len(no_data),
+        len(failed_error),
+    )
 
     if not frames:
         return pd.DataFrame()
