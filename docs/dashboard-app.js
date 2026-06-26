@@ -178,7 +178,7 @@ function exportComboLabelPlugin() {
   return {
     id: 'exportComboLabels',
     afterDatasetsDraw(chart) {
-      const { ctx, chartArea } = chart;
+      const { ctx } = chart;
       const barMeta = chart.getDatasetMeta(0);
       ctx.save();
 
@@ -193,7 +193,7 @@ function exportComboLabelPlugin() {
         ctx.fillText(`$${val.toFixed(1)}B`, el.x, el.y - 4);
       });
 
-      // 2) QoQ / YoY — 막대 위·흰색 외곽선으로 겹침 방지
+      // 2) QoQ / YoY — 막대 안쪽(하단~중앙), 분기 수출 라벨은 막대 상단 유지
       chart.data.datasets.forEach((dataset, di) => {
         if (dataset.type === 'bar') return;
         const meta = chart.getDatasetMeta(di);
@@ -203,11 +203,14 @@ function exportComboLabelPlugin() {
         meta.data.forEach((el, i) => {
           const val = dataset.data[i];
           if (val == null || Number.isNaN(val)) return;
-          const barTop = barMeta.data[i]?.y ?? chartArea.bottom;
-          const stack = isYoy ? 22 : 10;
-          let y = Math.min(el.y - stack, barTop - 6 - (isYoy ? 12 : 0));
-          y = Math.max(y, chartArea.top + 8);
-          drawLabelHalo(ctx, `${val >= 0 ? '+' : ''}${val.toFixed(0)}%`, el.x, y, color);
+          const bar = barMeta.data[i];
+          if (!bar || bar.height < 20) return;
+          const barTop = bar.y;
+          const barH = bar.height;
+          // 막대 안쪽: QoQ 상대적으로 위, YoY 아래 (캔버스 y는 아래로 증가)
+          const ratio = isYoy ? 0.72 : 0.52;
+          const y = barTop + barH * ratio;
+          drawLabelHalo(ctx, `${val >= 0 ? '+' : ''}${val.toFixed(0)}%`, bar.x, y, color);
         });
       });
 
@@ -273,7 +276,7 @@ function exportComboChartCfg(labels, exports, qoq, yoy) {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      layout: { padding: { top: 36 } },
+      layout: { padding: { top: 28 } },
       plugins: {
         legend: {
           display: true,
