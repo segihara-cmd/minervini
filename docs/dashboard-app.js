@@ -171,6 +171,7 @@ function comboChartCfg(labels, datasets, yLabel = '', y2Label = '') {
       responsive: true,
       maintainAspectRatio: true,
       interaction: { mode: 'index', intersect: false },
+      layout: { padding: { top: 28 } },
       plugins: {
         legend: {
           display: true,
@@ -187,6 +188,10 @@ function comboChartCfg(labels, datasets, yLabel = '', y2Label = '') {
               return `${ctx.dataset.label}: ${v >= 0 ? '+' : ''}${v.toFixed(1)}%`;
             },
           },
+        },
+        exportValueLabels: {
+          barFmt: v => `$${v.toFixed(1)}B`,
+          pctFmt: v => `${v >= 0 ? '+' : ''}${v.toFixed(0)}%`,
         },
       },
       scales: {
@@ -205,6 +210,37 @@ function comboChartCfg(labels, datasets, yLabel = '', y2Label = '') {
         },
       },
     },
+    plugins: [{
+      id: 'exportValueLabels',
+      afterDatasetsDraw(chart) {
+        const opts = chart.options.plugins.exportValueLabels || {};
+        const { ctx } = chart;
+        ctx.save();
+        ctx.textAlign = 'center';
+        chart.data.datasets.forEach((dataset, di) => {
+          const meta = chart.getDatasetMeta(di);
+          if (meta.hidden) return;
+          const isBar = dataset.type === 'bar' || dataset.yAxisID === 'y';
+          meta.data.forEach((el, i) => {
+            const val = dataset.data[i];
+            if (val == null || Number.isNaN(val)) return;
+            const x = el.x;
+            const y = el.y;
+            if (isBar) {
+              ctx.font = '600 9px -apple-system,sans-serif';
+              ctx.fillStyle = '#1e40af';
+              ctx.fillText(opts.barFmt ? opts.barFmt(val) : `$${val}B`, x, y - 5);
+            } else {
+              const lineOff = dataset.label === 'YoY' ? -22 : -10;
+              ctx.font = '600 8px -apple-system,sans-serif';
+              ctx.fillStyle = dataset.borderColor || '#64748b';
+              ctx.fillText(opts.pctFmt ? opts.pctFmt(val) : `${val}%`, x, y + lineOff);
+            }
+          });
+        });
+        ctx.restore();
+      },
+    }],
   };
 }
 
@@ -275,18 +311,9 @@ function renderExportCharts(E) {
 
   mkComboChart('cHsExport', labels, [
     { type: 'bar', label: '분기 수출', data: exports, backgroundColor: '#3b82f688', borderColor: '#2563eb', borderWidth: 1, yAxisID: 'y', order: 2 },
-    { type: 'line', label: 'QoQ', data: qoq, borderColor: AMBER, backgroundColor: 'transparent', borderWidth: 2, pointRadius: 2, tension: 0.25, yAxisID: 'y2', order: 1, spanGaps: true },
-    { type: 'line', label: 'YoY', data: yoy, borderColor: RED, backgroundColor: 'transparent', borderWidth: 2, pointRadius: 2, tension: 0.25, yAxisID: 'y2', order: 0, spanGaps: true },
+    { type: 'line', label: 'QoQ', data: qoq, borderColor: AMBER, backgroundColor: 'transparent', borderWidth: 2, pointRadius: 3, tension: 0.25, yAxisID: 'y2', order: 1, spanGaps: true },
+    { type: 'line', label: 'YoY', data: yoy, borderColor: RED, backgroundColor: 'transparent', borderWidth: 2, pointRadius: 3, tension: 0.25, yAxisID: 'y2', order: 0, spanGaps: true },
   ], '수출 (USD)', '증감률 (%)');
-
-  if (E.monthlyLastQuarter?.months?.length || E.monthly2026Q2?.length) {
-    const mq = E.monthlyLastQuarter?.months || E.monthly2026Q2;
-    const mLabels = mq.map(m => (m.est ? `${m.month} (E)` : m.month));
-    const mData = mq.map(m => m.exportB);
-    const mColors = mq.map(m => (m.est ? '#f59e0b99' : '#2563eb99'));
-    const estFlags = mq.map(m => !!m.est);
-    mkBarChart('cHsMonthly', mLabels, mData, mColors, estFlags, '수출 (USD)');
-  }
 
   const latestExport = latestItemsHtml([
     { label: '최근 분기', val: last.exportB, color: BLUE, prefix: '$', dec: 2, unit: 'B' },
@@ -310,13 +337,6 @@ function exportSectionHtml(E) {
   const liveTag = E._live
     ? '<span style="color:#16a34a;font-weight:600">실시간 (관세청 API)</span>'
     : '<span style="color:#64748b">스냅샷 (CI)</span>';
-  const mq = E.monthlyLastQuarter;
-  const monthlyTitle = mq?.quarter
-    ? `${mq.quarter} 월별 수출`
-    : '최근 분기 월별 수출';
-  const monthlySub = (mq?.months || E.monthly2026Q2 || []).some(m => m.est)
-    ? ' · E추정 월 포함'
-    : '';
   return `
 <div class="export-note">
   <strong>⚠️ 주의</strong> ${E.note || ''} · 데이터: ${E.source || ''}${apiHint}${keyWarn} · 기준일: ${E.asOf || ''} · ${liveTag}
@@ -324,7 +344,7 @@ function exportSectionHtml(E) {
 <div class="charts-grid">
   <div class="chart-card chart-card-wide">
     <div class="chart-title-wrap">
-      <div class="chart-title">반도체(HS8542) 분기별 수출 및 증감률 <span class="chart-sub">· QoQ / YoY</span></div>
+      <div class="chart-title">반도체(HS8542) 분기별 수출 및 증감률 <span class="chart-sub">· QoQ / YoY · 막대·선 위 수치</span></div>
       <span class="chart-latest" id="exportLatest"></span>
     </div>
     <div class="chart-legend">
@@ -332,14 +352,8 @@ function exportSectionHtml(E) {
       <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>QoQ</span>
       <span class="leg"><span class="leg-dot" style="background:#dc2626"></span>YoY</span>
     </div>
-    <canvas id="cHsExport" style="max-height:280px"></canvas>
+    <canvas id="cHsExport" style="max-height:320px"></canvas>
     ${summary ? `<div class="export-summary"><strong>해석 요약</strong><ul>${summary}</ul></div>` : ''}
-  </div>
-  <div class="chart-card">
-    <div class="chart-title-wrap">
-      <div class="chart-title">${monthlyTitle} <span class="chart-sub">${monthlySub}</span></div>
-    </div>
-    <canvas id="cHsMonthly"></canvas>
   </div>
 </div>`;
 }
