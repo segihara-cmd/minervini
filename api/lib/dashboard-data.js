@@ -71,9 +71,11 @@ async function yahooChart(symbol, range) {
   const json = await res.json();
   const result = json?.chart?.result?.[0];
   if (!result) throw new Error(`Yahoo ${symbol}: empty`);
+  const meta = result.meta || {};
   const ts = result.timestamp || [];
   const closes = result.indicators?.quote?.[0]?.close || [];
-  const dates = [], values = [];
+  const dates = [];
+  const values = [];
   ts.forEach((t, i) => {
     const c = closes[i];
     if (c != null) {
@@ -81,7 +83,21 @@ async function yahooChart(symbol, range) {
       values.push(Math.round(c * 10000) / 10000);
     }
   });
-  return { dates, values };
+
+  const livePrice = meta.regularMarketPrice ?? meta.previousClose ?? meta.chartPreviousClose;
+  const liveTs = meta.regularMarketTime || meta.currentTradingPeriod?.regular?.end;
+  if (livePrice != null && dates.length) {
+    const liveDate = liveTs
+      ? new Date(liveTs * 1000).toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' })
+      : dates[dates.length - 1];
+    const rounded = Math.round(livePrice * 10000) / 10000;
+    if (liveDate >= dates[dates.length - 1]) {
+      if (liveDate === dates[dates.length - 1]) values[values.length - 1] = rounded;
+      else { dates.push(liveDate); values.push(rounded); }
+    }
+  }
+
+  return { dates, values, livePrice };
 }
 
 function parseAdrEmbed(html, name) {

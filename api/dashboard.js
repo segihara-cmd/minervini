@@ -18,3 +18,4 @@ module.exports = async (req, res) => {
     res.status(500).json({ error: String(err.message || err) });
   }
 };
+module.exports.config = { maxDuration: 60 };

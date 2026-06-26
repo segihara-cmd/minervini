@@ -46,6 +46,27 @@ def fetch(ticker, period):
         print(f'[경고] {ticker}: {e}')
         return None
 
+def fetch_live(ticker, period):
+    """일봉 + Yahoo 현재가(regularMarketPrice) 반영."""
+    dates, values = _close_list(fetch(ticker, period))
+    if not dates:
+        return dates, values
+    try:
+        info = yf.Ticker(ticker).fast_info
+        live = getattr(info, 'last_price', None) or getattr(info, 'regular_market_price', None)
+        if live is not None:
+            today = datetime.now(KST).strftime('%Y-%m-%d')
+            live_f = round(float(live), 4)
+            if today >= dates[-1]:
+                if today == dates[-1]:
+                    values[-1] = live_f
+                else:
+                    dates.append(today)
+                    values.append(live_f)
+    except Exception as e:
+        print(f'[경고] live {ticker}: {e}')
+    return dates, values
+
 ADR_HEADERS = {
     'User-Agent': (
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
@@ -164,21 +185,21 @@ def collect_data():
     now_kst = datetime.now(KST)
 
     # Fetch
-    sam_d,  sam_v  = _close_list(fetch('005930.KS', '3mo'))
-    hyn_d,  hyn_v  = _close_list(fetch('000660.KS', '3mo'))
-    ks11_d, ks11_v = _close_list(fetch('^KS11',     '1y'))
-    sox_d,  sox_v  = _close_list(fetch('^SOX',      '3mo'))
-    nvda_d, nvda_v = _close_list(fetch('NVDA',      '3mo'))
-    vix_d,  vix_v  = _close_list(fetch('^VIX',      '3mo'))
-    tnx_d,  tnx_v  = _close_list(fetch('^TNX',      '3mo'))
-    fx_d,   fx_v   = _close_list(fetch('USDKRW=X',  '3mo'))
-    wti_d,  wti_v  = _close_list(fetch('CL=F',      '3mo'))
-    mu_d,   mu_v   = _close_list(fetch('MU',         '3mo'))
-    skew_d, skew_v = _close_list(fetch('^SKEW',      '3mo'))
+    sam_d,  sam_v  = fetch_live('005930.KS', '3mo')
+    hyn_d,  hyn_v  = fetch_live('000660.KS', '3mo')
+    ks11_d, ks11_v = fetch_live('^KS11',     '1y')
+    sox_d,  sox_v  = fetch_live('^SOX',      '3mo')
+    nvda_d, nvda_v = fetch_live('NVDA',      '3mo')
+    vix_d,  vix_v  = fetch_live('^VIX',      '3mo')
+    tnx_d,  tnx_v  = fetch_live('^TNX',      '3mo')
+    fx_d,   fx_v   = fetch_live('USDKRW=X',  '3mo')
+    wti_d,  wti_v  = fetch_live('CL=F',      '3mo')
+    mu_d,   mu_v   = fetch_live('MU',         '3mo')
+    skew_d, skew_v = fetch_live('^SKEW',      '3mo')
     adr_d, adr_kospi, adr_kosdaq = fetch_adr()
 
     # 1년치 KOSPI for MA computation
-    ks11_1y_d, ks11_1y_v = _close_list(fetch('^KS11', '2y'))
+    ks11_1y_d, ks11_1y_v = fetch_live('^KS11', '2y')
 
     # Exit Level
     exit_result = compute_exit(ks11_1y_v, vix_v, tnx_v)
@@ -393,7 +414,7 @@ tr:hover td{{background:#f8fafc}}
   <div class="loading-box"><div class="spinner"></div><p>시장 데이터 불러오는 중 (약 10~20초)</p></div>
 </div>
 <div class="footer">실시간 대시보드 · 새로고침 시 최신 데이터 반영 · 투자 권유 아님</div>
-<script src="dashboard-app.js?v=20260624-kospi-navy"></script>
+<script src="dashboard-app.js?v=20260625-live-price"></script>
 </body>
 </html>'''
 

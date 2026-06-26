@@ -228,8 +228,8 @@ function renderDashboard(D) {
     { label: 'SMA200', val: lastVal(ch.kospi.ma200), color: PURPLE, dec: 0 },
   ]);
   const latestSamHyn = latestItemsHtml([
-    { label: '삼성전자', val: lastVal(ch.sam_hyn.sam), color: BLUE, pct: true },
-    { label: 'SK하이닉스', val: lastVal(ch.sam_hyn.hyn), color: RED, pct: true },
+    { label: '삼성전자', val: kpi.sam.val, color: BLUE, unit: '원', dec: 0 },
+    { label: 'SK하이닉스', val: kpi.hyn.val, color: RED, unit: '원', dec: 0 },
   ]);
   const latestSoxNvda = latestItemsHtml([
     { label: 'SOX', val: lastVal(ch.sox_nvda.sox), color: BLUE, pct: true },
@@ -249,7 +249,7 @@ function renderDashboard(D) {
   ]);
 
   document.getElementById('updated').textContent =
-    `업데이트: ${D.updated} · ${D._live ? '실시간' : '스냅샷'}`;
+    `업데이트: ${D.updated} · ${D._live ? '실시간 (Yahoo 현재가)' : '스냅샷 (CI)'}`;
 
   document.getElementById('app-content').innerHTML = `
 <div class="exit-panel">
