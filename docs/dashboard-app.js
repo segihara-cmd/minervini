@@ -193,7 +193,7 @@ function exportComboLabelPlugin() {
         ctx.fillText(`$${val.toFixed(1)}B`, el.x, el.y - 4);
       });
 
-      // 2) QoQ / YoY — 막대 안쪽(하단~중앙), 분기 수출 라벨은 막대 상단 유지
+      // 2) QoQ — 막대 안쪽 / YoY — 선 포인트 위 (원래 위치)
       chart.data.datasets.forEach((dataset, di) => {
         if (dataset.type === 'bar') return;
         const meta = chart.getDatasetMeta(di);
@@ -203,14 +203,15 @@ function exportComboLabelPlugin() {
         meta.data.forEach((el, i) => {
           const val = dataset.data[i];
           if (val == null || Number.isNaN(val)) return;
-          const bar = barMeta.data[i];
-          if (!bar || bar.height < 20) return;
-          const barTop = bar.y;
-          const barH = bar.height;
-          // 막대 안쪽: QoQ 상대적으로 위, YoY 아래 (캔버스 y는 아래로 증가)
-          const ratio = isYoy ? 0.72 : 0.52;
-          const y = barTop + barH * ratio;
-          drawLabelHalo(ctx, `${val >= 0 ? '+' : ''}${val.toFixed(0)}%`, bar.x, y, color);
+          const text = `${val >= 0 ? '+' : ''}${val.toFixed(0)}%`;
+          if (isYoy) {
+            drawLabelHalo(ctx, text, el.x, el.y - 10, color);
+          } else {
+            const bar = barMeta.data[i];
+            if (!bar || bar.height < 20) return;
+            const y = bar.y + bar.height * 0.52;
+            drawLabelHalo(ctx, text, bar.x, y, color);
+          }
         });
       });
 
