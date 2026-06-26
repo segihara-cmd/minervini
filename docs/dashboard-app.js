@@ -163,25 +163,26 @@ function mkChart(id, labels, datasets, yLabel = '', y2Label = '') {
   chartInstances.push(ch);
 }
 
-function valueLabelPlugin(mode = 'bar') {
+function exportComboLabelPlugin() {
   return {
-    id: `exportValueLabels_${mode}`,
+    id: 'exportComboLabels',
     afterDatasetsDraw(chart) {
       const { ctx } = chart;
       ctx.save();
       ctx.textAlign = 'center';
-      chart.data.datasets.forEach((dataset, di) => {
-        const meta = chart.getDatasetMeta(di);
+      chart.data.datasets.forEach((dataset) => {
+        const meta = chart.getDatasetMeta(chart.data.datasets.indexOf(dataset));
         if (meta.hidden) return;
+        const isBar = dataset.type === 'bar';
         meta.data.forEach((el, i) => {
           const val = dataset.data[i];
           if (val == null || Number.isNaN(val)) return;
-          if (mode === 'bar') {
+          if (isBar) {
             ctx.font = '600 9px -apple-system,sans-serif';
             ctx.fillStyle = '#1e40af';
             ctx.fillText(`$${val.toFixed(1)}B`, el.x, el.y - 5);
           } else {
-            const off = dataset.label === 'YoY' ? -20 : -8;
+            const off = dataset.label === 'YoY' ? -22 : -10;
             ctx.font = '600 8px -apple-system,sans-serif';
             ctx.fillStyle = dataset.borderColor || '#64748b';
             ctx.fillText(`${val >= 0 ? '+' : ''}${val.toFixed(0)}%`, el.x, el.y + off);
@@ -193,53 +194,31 @@ function valueLabelPlugin(mode = 'bar') {
   };
 }
 
-function exportBarChartCfg(labels, data) {
-  const maxV = Math.max(...data);
-  return {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: '분기 수출',
-        data,
-        backgroundColor: '#3b82f688',
-        borderColor: '#2563eb',
-        borderWidth: 1,
-        borderRadius: 3,
-      }],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      layout: { padding: { top: 22 } },
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { ticks: { color: '#64748b', maxRotation: 45, minRotation: 45, font: { size: 9 } }, grid: { display: false } },
-        y: {
-          beginAtZero: true,
-          min: 0,
-          suggestedMax: maxV * 1.15,
-          ticks: { color: '#64748b', font: { size: 10 }, callback: v => `$${v}B` },
-          grid: { color: '#94a3b844' },
-          title: { display: true, text: '수출 (USD)', color: '#64748b', font: { size: 10 } },
-        },
-      },
-    },
-    plugins: [valueLabelPlugin('bar')],
-  };
-}
-
-function exportGrowthChartCfg(labels, qoq, yoy) {
+function exportComboChartCfg(labels, exports, qoq, yoy) {
+  const maxExport = Math.max(...exports);
   const pctVals = [...qoq, ...yoy].filter(v => v != null && !Number.isNaN(v));
   const lo = pctVals.length ? Math.min(...pctVals) : -20;
   const hi = pctVals.length ? Math.max(...pctVals) : 140;
   const pad = Math.max(12, (hi - lo) * 0.12);
+
   return {
-    type: 'line',
+    type: 'bar',
     data: {
       labels,
       datasets: [
         {
+          type: 'bar',
+          label: '분기 수출',
+          data: exports,
+          backgroundColor: '#3b82f688',
+          borderColor: '#2563eb',
+          borderWidth: 1,
+          borderRadius: 3,
+          yAxisID: 'y',
+          order: 2,
+        },
+        {
+          type: 'line',
           label: 'QoQ',
           data: qoq,
           borderColor: AMBER,
@@ -248,9 +227,12 @@ function exportGrowthChartCfg(labels, qoq, yoy) {
           pointRadius: 3,
           pointBackgroundColor: AMBER,
           tension: 0.2,
+          yAxisID: 'y2',
+          order: 1,
           spanGaps: true,
         },
         {
+          type: 'line',
           label: 'YoY',
           data: yoy,
           borderColor: RED,
@@ -259,14 +241,17 @@ function exportGrowthChartCfg(labels, qoq, yoy) {
           pointRadius: 3,
           pointBackgroundColor: RED,
           tension: 0.2,
+          yAxisID: 'y2',
+          order: 0,
           spanGaps: true,
         },
       ],
     },
     options: {
       responsive: true,
-      maintainAspectRatio: true,
-      layout: { padding: { top: 24 } },
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      layout: { padding: { top: 28 } },
       plugins: {
         legend: {
           display: true,
@@ -276,15 +261,26 @@ function exportGrowthChartCfg(labels, qoq, yoy) {
       scales: {
         x: { ticks: { color: '#64748b', maxRotation: 45, minRotation: 45, font: { size: 9 } }, grid: { display: false } },
         y: {
+          type: 'linear',
+          position: 'left',
+          min: 0,
+          max: Math.ceil(maxExport * 1.15),
+          ticks: { color: '#2563eb', font: { size: 10 }, callback: v => `$${v}B` },
+          grid: { color: '#94a3b844' },
+          title: { display: true, text: '수출 (USD)', color: '#2563eb', font: { size: 10 } },
+        },
+        y2: {
+          type: 'linear',
+          position: 'right',
           min: Math.floor(lo - pad),
           max: Math.ceil(hi + pad),
           ticks: { color: '#64748b', font: { size: 10 }, callback: v => `${v}%` },
-          grid: { color: '#94a3b844' },
+          grid: { drawOnChartArea: false },
           title: { display: true, text: '증감률 (%)', color: '#64748b', font: { size: 10 } },
         },
       },
     },
-    plugins: [valueLabelPlugin('line')],
+    plugins: [exportComboLabelPlugin()],
   };
 }
 
@@ -302,8 +298,7 @@ function renderExportCharts(E) {
   const yoy = E.quarters.map(r => r.yoy);
   const last = E.quarters[E.quarters.length - 1];
 
-  mkExportChart('cHsExport', exportBarChartCfg(labels, exports));
-  mkExportChart('cHsGrowth', exportGrowthChartCfg(labels, qoq, yoy));
+  mkExportChart('cHsExport', exportComboChartCfg(labels, exports, qoq, yoy));
 
   const latestExport = latestItemsHtml([
     { label: '최근 분기', val: last.exportB, color: BLUE, prefix: '$', dec: 2, unit: 'B' },
@@ -334,18 +329,15 @@ function exportSectionHtml(E) {
 <div class="charts-grid">
   <div class="chart-card chart-card-wide">
     <div class="chart-title-wrap">
-      <div class="chart-title">반도체(HS8542) 분기별 수출 <span class="chart-sub">· USD · 막대 위 수치</span></div>
+      <div class="chart-title">반도체(HS8542) 분기별 수출 및 증감률 <span class="chart-sub">· USD 막대 + QoQ/YoY · 수치 표시</span></div>
       <span class="chart-latest" id="exportLatest"></span>
     </div>
-    <canvas id="cHsExport" style="max-height:240px"></canvas>
-    <div class="chart-title-wrap" style="margin-top:16px">
-      <div class="chart-title">QoQ / YoY 증감률 <span class="chart-sub">· % · 포인트 위 수치</span></div>
-    </div>
     <div class="chart-legend">
+      <span class="leg"><span class="leg-dot" style="background:#2563eb"></span>분기 수출</span>
       <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>QoQ</span>
       <span class="leg"><span class="leg-dot" style="background:#dc2626"></span>YoY</span>
     </div>
-    <canvas id="cHsGrowth" style="max-height:220px"></canvas>
+    <div class="chart-wrap-tall"><canvas id="cHsExport"></canvas></div>
     ${summary ? `<div class="export-summary"><strong>해석 요약</strong><ul>${summary}</ul></div>` : ''}
   </div>
 </div>`;

@@ -44,6 +44,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .chart-legend{display:flex;gap:16px;margin-bottom:8px;flex-wrap:wrap}
 .leg{display:flex;align-items:center;gap:5px;font-size:.75rem;color:#64748b}
 .leg-dot{width:10px;height:10px;border-radius:50%}
+.chart-wrap-tall{position:relative;height:320px;width:100%}
+.chart-wrap-tall canvas{max-height:none!important;height:100%!important;width:100%!important}
 canvas{max-height:220px}
 .signals-card h3{font-size:.85rem;font-weight:600;color:#64748b;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em}
 table{width:100%;border-collapse:collapse}
@@ -75,6 +77,6 @@ tr:hover td{background:#f8fafc}
   <div class="loading-box"><div class="spinner"></div><p>시장 데이터 불러오는 중 (약 10~20초)</p></div>
 </div>
 <div class="footer">실시간 대시보드 · 새로고침 시 최신 데이터 반영 · 투자 권유 아님</div>
-<script src="dashboard-app.js?v=20260626-export-split"></script>
+<script src="dashboard-app.js?v=20260626-export-combo"></script>
 </body>
 </html>
