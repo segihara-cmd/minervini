@@ -170,8 +170,8 @@ function exportComboLabelPlugin() {
       const { ctx } = chart;
       ctx.save();
       ctx.textAlign = 'center';
-      chart.data.datasets.forEach((dataset) => {
-        const meta = chart.getDatasetMeta(chart.data.datasets.indexOf(dataset));
+      chart.data.datasets.forEach((dataset, di) => {
+        const meta = chart.getDatasetMeta(di);
         if (meta.hidden) return;
         const isBar = dataset.type === 'bar';
         meta.data.forEach((el, i) => {
