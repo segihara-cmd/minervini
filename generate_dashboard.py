@@ -6,6 +6,7 @@ GitHub Actions에서 매일 실행 → docs/index.html 갱신
 import json
 import os
 import re
+import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -14,8 +15,12 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 
+sys.path.insert(0, str(Path(__file__).parent / 'nowcast_pipeline'))
+from pipeline.export_dashboard import build_export_payload
+
 KST = timezone(timedelta(hours=9))
 OUTPUT = Path(__file__).parent / 'docs' / 'index.html'
+EXPORT_JSON = Path(__file__).parent / 'docs' / 'semiconductor-export.json'
 
 # ──────────────────────────────────────────────
 # 데이터 수집
@@ -370,6 +375,11 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
 .kpi-val{{font-size:1.1rem;font-weight:700;color:#0f172a}}
 .kpi-pct{{font-size:.8rem;margin-top:2px}}
 .charts-grid{{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}}
+.chart-card-wide{{grid-column:1/-1}}
+.export-note{{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.8rem;color:#78350f;line-height:1.55}}
+.export-note ul{{margin:8px 0 0 18px}}
+.export-summary{{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-top:12px;font-size:.8rem;color:#166534;line-height:1.55}}
+.export-summary ul{{margin:6px 0 0 18px}}
 @media(max-width:900px){{.charts-grid{{grid-template-columns:1fr}}}}
 .chart-card{{background:#fff;border-radius:8px;padding:16px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.07)}}
 .chart-title-wrap{{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;margin-bottom:10px}}
@@ -414,9 +424,26 @@ tr:hover td{{background:#f8fafc}}
   <div class="loading-box"><div class="spinner"></div><p>시장 데이터 불러오는 중 (약 10~20초)</p></div>
 </div>
 <div class="footer">실시간 대시보드 · 새로고침 시 최신 데이터 반영 · 투자 권유 아님</div>
-<script src="dashboard-app.js?v=20260625-live-price"></script>
+<script src="dashboard-app.js?v=20260626-hs8542-export-v2"></script>
 </body>
 </html>'''
+
+
+def build_semiconductor_export_json() -> None:
+    """관세청 API(nowcast_pipeline) → docs/semiconductor-export.json 스냅샷."""
+    try:
+        as_of = datetime.now(KST).date()
+        payload = build_export_payload(as_of=as_of, use_cache=True)
+        payload['_live'] = False
+        EXPORT_JSON.parent.mkdir(parents=True, exist_ok=True)
+        EXPORT_JSON.write_text(json.dumps(payload, ensure_ascii=False), encoding='utf-8')
+        print(f'[OK] {EXPORT_JSON} (관세청 API, as-of {as_of})')
+    except Exception as exc:
+        print(f'[WARN] 수출 API 실패: {exc}')
+        if EXPORT_JSON.exists():
+            print(f'[SKIP] 기존 {EXPORT_JSON} 유지')
+        else:
+            print('[SKIP] semiconductor-export.json 미생성')
 
 
 def main():
@@ -431,6 +458,7 @@ def main():
     )
     print(f'[OK] Shell -> {OUTPUT}')
     print(f'[OK] Fallback data.json -> {OUTPUT.parent / "data.json"}')
+    build_semiconductor_export_json()
 
 
 if __name__ == '__main__':

@@ -1,0 +1,546 @@
+{
+  "updated_at": "2026-06-26T13:07:01.784524",
+  "data": {
+    "updated_at": "2026-06-26T10:05:41.970534",
+    "data": {
+      "updated_at": "2026-06-26T10:05:14.042958",
+      "data": {
+        "updated_at": "2026-06-26T10:04:51.315418",
+        "data": {
+          "updated_at": "2026-06-26T10:04:33.696176",
+          "data": {
+            "updated_at": "2026-06-26T10:04:19.594124",
+            "data": {
+              "updated_at": "2026-06-26T10:03:37.011808",
+              "data": {
+                "updated_at": "2026-06-26T10:02:37.410245",
+                "data": {
+                  "updated_at": "2026-06-26T10:02:01.886001",
+                  "data": {
+                    "updated_at": "2026-06-26T10:01:16.805852",
+                    "data": {
+                      "updated_at": "2026-06-26T10:00:46.380568",
+                      "data": {
+                        "updated_at": "2026-06-26T10:00:14.437279",
+                        "data": {
+                          "updated_at": "2026-06-26T09:59:56.421127",
+                          "data": {
+                            "updated_at": "2026-06-26T09:59:39.559280",
+                            "data": {
+                              "updated_at": "2026-06-26T09:58:47.101264",
+                              "data": {
+                                "updated_at": "2026-06-26T09:58:36.960513",
+                                "data": {
+                                  "updated_at": "2026-06-26T09:58:26.330307",
+                                  "data": {
+                                    "updated_at": "2026-06-26T09:58:11.957366",
+                                    "data": {
+                                      "updated_at": "2026-06-26T09:57:59.133175",
+                                      "data": {
+                                        "updated_at": "2026-06-26T09:57:48.855288",
+                                        "data": {
+                                          "updated_at": "2026-06-26T09:57:35.779950",
+                                          "data": {
+                                            "updated_at": "2026-06-26T09:57:24.823706",
+                                            "data": {
+                                              "updated_at": "2026-06-26T09:57:12.542596",
+                                              "data": {
+                                                "updated_at": "2026-06-26T09:56:59.133250",
+                                                "data": {
+                                                  "updated_at": "2026-06-26T09:56:45.862242",
+                                                  "data": {
+                                                    "updated_at": "2026-06-26T09:56:37.428725",
+                                                    "data": {
+                                                      "updated_at": "2026-06-26T09:56:27.471571",
+                                                      "data": {
+                                                        "updated_at": "2026-06-26T09:56:20.076698",
+                                                        "data": {
+                                                          "updated_at": "2026-06-26T09:56:11.726073",
+                                                          "data": {
+                                                            "8542:202504:export": {
+                                                              "export_usd": 9765632227.0,
+                                                              "import_usd": 4725897613.0,
+                                                              "net_export_usd": 5039734614.0
+                                                            }
+                                                          },
+                                                          "8542:202505:export": {
+                                                            "export_usd": 11560834977.0,
+                                                            "import_usd": 4606985768.0,
+                                                            "net_export_usd": 6953849209.0
+                                                          }
+                                                        },
+                                                        "8542:202506:export": {
+                                                          "export_usd": 12244843307.0,
+                                                          "import_usd": 5092489525.0,
+                                                          "net_export_usd": 7152353782.0
+                                                        }
+                                                      },
+                                                      "8542:202507:export": {
+                                                        "export_usd": 12271814779.0,
+                                                        "import_usd": 5359020905.0,
+                                                        "net_export_usd": 6912793874.0
+                                                      }
+                                                    },
+                                                    "8542:202508:export": {
+                                                      "export_usd": 12599544674.0,
+                                                      "import_usd": 5179405223.0,
+                                                      "net_export_usd": 7420139451.0
+                                                    }
+                                                  },
+                                                  "8542:202509:export": {
+                                                    "export_usd": 13608345119.0,
+                                                    "import_usd": 5062254231.0,
+                                                    "net_export_usd": 8546090888.0
+                                                  }
+                                                },
+                                                "8542:202510:export": {
+                                                  "export_usd": 13153729892.0,
+                                                  "import_usd": 5250064118.0,
+                                                  "net_export_usd": 7903665774.0
+                                                }
+                                              },
+                                              "8542:202511:export": {
+                                                "export_usd": 13933250146.0,
+                                                "import_usd": 5086380238.0,
+                                                "net_export_usd": 8846869908.0
+                                              }
+                                            },
+                                            "8542:202512:export": {
+                                              "export_usd": 16697591616.0,
+                                              "import_usd": 6214792589.0,
+                                              "net_export_usd": 10482799027.0
+                                            }
+                                          },
+                                          "8542:202601:export": {
+                                            "export_usd": 16383699430.0,
+                                            "import_usd": 6093240856.0,
+                                            "net_export_usd": 10290458574.0
+                                          }
+                                        },
+                                        "8542:202602:export": {
+                                          "export_usd": 19424564169.0,
+                                          "import_usd": 5630731359.0,
+                                          "net_export_usd": 13793832810.0
+                                        }
+                                      },
+                                      "8542:202603:export": {
+                                        "export_usd": 24880298299.0,
+                                        "import_usd": 7210561779.0,
+                                        "net_export_usd": 17669736520.0
+                                      }
+                                    },
+                                    "8542:202604:export": {
+                                      "export_usd": 25207210065.0,
+                                      "import_usd": 7587393123.0,
+                                      "net_export_usd": 17619816942.0
+                                    }
+                                  },
+                                  "8542:202605:export": {
+                                    "export_usd": 29399417383.0,
+                                    "import_usd": 7681001444.0,
+                                    "net_export_usd": 21718415939.0
+                                  }
+                                },
+                                "8542:202606:export": {
+                                  "export_usd": 0.0,
+                                  "import_usd": 0.0,
+                                  "net_export_usd": 0.0
+                                }
+                              },
+                              "8542:202504:export": {
+                                "export_usd": 9765632227.0,
+                                "import_usd": 4725897613.0,
+                                "net_export_usd": 5039734614.0
+                              }
+                            },
+                            "8542:202505:export": {
+                              "export_usd": 11560834977.0,
+                              "import_usd": 4606985768.0,
+                              "net_export_usd": 6953849209.0
+                            }
+                          },
+                          "8542:202506:export": {
+                            "export_usd": 12244843307.0,
+                            "import_usd": 5092489525.0,
+                            "net_export_usd": 7152353782.0
+                          }
+                        },
+                        "8542:202507:export": {
+                          "export_usd": 12271814779.0,
+                          "import_usd": 5359020905.0,
+                          "net_export_usd": 6912793874.0
+                        }
+                      },
+                      "8542:202604:export": {
+                        "export_usd": 25207210065.0,
+                        "import_usd": 7587393123.0,
+                        "net_export_usd": 17619816942.0
+                      }
+                    },
+                    "8542:202605:export": {
+                      "export_usd": 29399417383.0,
+                      "import_usd": 7681001444.0,
+                      "net_export_usd": 21718415939.0
+                    }
+                  },
+                  "8542:202606:export": {
+                    "export_usd": 0.0,
+                    "import_usd": 0.0,
+                    "net_export_usd": 0.0
+                  }
+                },
+                "8542:202504:export": {
+                  "export_usd": 9765632227.0,
+                  "import_usd": 4725897613.0,
+                  "net_export_usd": 5039734614.0
+                }
+              },
+              "8542:202505:export": {
+                "export_usd": 11560834977.0,
+                "import_usd": 4606985768.0,
+                "net_export_usd": 6953849209.0
+              }
+            },
+            "8542:202506:export": {
+              "export_usd": 12244843307.0,
+              "import_usd": 5092489525.0,
+              "net_export_usd": 7152353782.0
+            }
+          },
+          "8542:202507:export": {
+            "export_usd": 12271814779.0,
+            "import_usd": 5359020905.0,
+            "net_export_usd": 6912793874.0
+          }
+        },
+        "8542:202604:export": {
+          "export_usd": 25207210065.0,
+          "import_usd": 7587393123.0,
+          "net_export_usd": 17619816942.0
+        }
+      },
+      "8542:202605:export": {
+        "export_usd": 29399417383.0,
+        "import_usd": 7681001444.0,
+        "net_export_usd": 21718415939.0
+      }
+    },
+    "8542:202606:export": {
+      "export_usd": 0.0,
+      "import_usd": 0.0,
+      "net_export_usd": 0.0
+    },
+    "8542:202504:export": {
+      "export_usd": 9765632227.0,
+      "import_usd": 4725897613.0,
+      "net_export_usd": 5039734614.0
+    },
+    "8542:202505:export": {
+      "export_usd": 11560834977.0,
+      "import_usd": 4606985768.0,
+      "net_export_usd": 6953849209.0
+    },
+    "8542:202506:export": {
+      "export_usd": 12244843307.0,
+      "import_usd": 5092489525.0,
+      "net_export_usd": 7152353782.0
+    },
+    "8542:202507:export": {
+      "export_usd": 12271814779.0,
+      "import_usd": 5359020905.0,
+      "net_export_usd": 6912793874.0
+    },
+    "8542:202604:export": {
+      "export_usd": 25207210065.0,
+      "import_usd": 7587393123.0,
+      "net_export_usd": 17619816942.0
+    },
+    "8542:202605:export": {
+      "export_usd": 29399417383.0,
+      "import_usd": 7681001444.0,
+      "net_export_usd": 21718415939.0
+    },
+    "8542:202201:export": {
+      "export_usd": 9208615952.0,
+      "import_usd": 4411041848.0,
+      "net_export_usd": 4797574104.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202202:export": {
+      "export_usd": 8723952835.0,
+      "import_usd": 4419043693.0,
+      "net_export_usd": 4304909142.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202203:export": {
+      "export_usd": 10981015101.0,
+      "import_usd": 4790151861.0,
+      "net_export_usd": 6190863240.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202204:export": {
+      "export_usd": 9111583973.0,
+      "import_usd": 4699895016.0,
+      "net_export_usd": 4411688957.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202205:export": {
+      "export_usd": 9651471271.0,
+      "import_usd": 4881544099.0,
+      "net_export_usd": 4769927172.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202206:export": {
+      "export_usd": 10408167322.0,
+      "import_usd": 5456856524.0,
+      "net_export_usd": 4951310798.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202207:export": {
+      "export_usd": 9755334976.0,
+      "import_usd": 5425082179.0,
+      "net_export_usd": 4330252797.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202208:export": {
+      "export_usd": 9408117655.0,
+      "import_usd": 5595932708.0,
+      "net_export_usd": 3812184947.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202209:export": {
+      "export_usd": 9629996793.0,
+      "import_usd": 5647292556.0,
+      "net_export_usd": 3982704237.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202210:export": {
+      "export_usd": 8168308283.0,
+      "import_usd": 5160387586.0,
+      "net_export_usd": 3007920697.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202211:export": {
+      "export_usd": 7493340568.0,
+      "import_usd": 4410764636.0,
+      "net_export_usd": 3082575932.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202212:export": {
+      "export_usd": 7500144941.0,
+      "import_usd": 4631773656.0,
+      "net_export_usd": 2868371285.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202301:export": {
+      "export_usd": 5209133735.0,
+      "import_usd": 4139154664.0,
+      "net_export_usd": 1069979071.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202302:export": {
+      "export_usd": 5104875513.0,
+      "import_usd": 4077529311.0,
+      "net_export_usd": 1027346202.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202303:export": {
+      "export_usd": 7066786749.0,
+      "import_usd": 4449219250.0,
+      "net_export_usd": 2617567499.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202304:export": {
+      "export_usd": 5563637753.0,
+      "import_usd": 3785424968.0,
+      "net_export_usd": 1778212785.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202305:export": {
+      "export_usd": 6443775925.0,
+      "import_usd": 4096670040.0,
+      "net_export_usd": 2347105885.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202306:export": {
+      "export_usd": 7618035395.0,
+      "import_usd": 4207452754.0,
+      "net_export_usd": 3410582641.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202307:export": {
+      "export_usd": 6341837529.0,
+      "import_usd": 4258810445.0,
+      "net_export_usd": 2083027084.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202308:export": {
+      "export_usd": 7466520680.0,
+      "import_usd": 4328833431.0,
+      "net_export_usd": 3137687249.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202309:export": {
+      "export_usd": 8178069091.0,
+      "import_usd": 4175654599.0,
+      "net_export_usd": 4002414492.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202310:export": {
+      "export_usd": 7606544773.0,
+      "import_usd": 4508630744.0,
+      "net_export_usd": 3097914029.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202311:export": {
+      "export_usd": 7944520791.0,
+      "import_usd": 4219965441.0,
+      "net_export_usd": 3724555350.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202312:export": {
+      "export_usd": 8732721859.0,
+      "import_usd": 4088423876.0,
+      "net_export_usd": 4644297983.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202401:export": {
+      "export_usd": 7934110405.0,
+      "import_usd": 4515606911.0,
+      "net_export_usd": 3418503494.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202402:export": {
+      "export_usd": 8328040326.0,
+      "import_usd": 4424168357.0,
+      "net_export_usd": 3903871969.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202403:export": {
+      "export_usd": 9269867805.0,
+      "import_usd": 4702036206.0,
+      "net_export_usd": 4567831599.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202404:export": {
+      "export_usd": 8335138713.0,
+      "import_usd": 4731782829.0,
+      "net_export_usd": 3603355884.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202405:export": {
+      "export_usd": 9558892099.0,
+      "import_usd": 4847854425.0,
+      "net_export_usd": 4711037674.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202406:export": {
+      "export_usd": 10961627046.0,
+      "import_usd": 4195143902.0,
+      "net_export_usd": 6766483144.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202407:export": {
+      "export_usd": 9451994667.0,
+      "import_usd": 4986314080.0,
+      "net_export_usd": 4465680587.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202408:export": {
+      "export_usd": 9799125099.0,
+      "import_usd": 5027926162.0,
+      "net_export_usd": 4771198937.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202409:export": {
+      "export_usd": 11067691505.0,
+      "import_usd": 5352003602.0,
+      "net_export_usd": 5715687903.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202410:export": {
+      "export_usd": 10600596066.0,
+      "import_usd": 5496775937.0,
+      "net_export_usd": 5103820129.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202411:export": {
+      "export_usd": 10180658746.0,
+      "import_usd": 5360281507.0,
+      "net_export_usd": 4820377239.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202412:export": {
+      "export_usd": 11463358087.0,
+      "import_usd": 5683787425.0,
+      "net_export_usd": 5779570662.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202501:export": {
+      "export_usd": 8046684769.0,
+      "import_usd": 4856613508.0,
+      "net_export_usd": 3190071261.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202502:export": {
+      "export_usd": 7850050827.0,
+      "import_usd": 4684565361.0,
+      "net_export_usd": 3165485466.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202503:export": {
+      "export_usd": 10220392053.0,
+      "import_usd": 5239193942.0,
+      "net_export_usd": 4981198111.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202508:export": {
+      "export_usd": 12348488142.0,
+      "import_usd": 5090273039.0,
+      "net_export_usd": 7258215103.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202509:export": {
+      "export_usd": 13337631596.0,
+      "import_usd": 4980480295.0,
+      "net_export_usd": 8357151301.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202510:export": {
+      "export_usd": 12880918917.0,
+      "import_usd": 5175978628.0,
+      "net_export_usd": 7704940289.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202511:export": {
+      "export_usd": 13659456787.0,
+      "import_usd": 5013968538.0,
+      "net_export_usd": 8645488249.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202512:export": {
+      "export_usd": 16402247611.0,
+      "import_usd": 6122927130.0,
+      "net_export_usd": 10279320481.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202601:export": {
+      "export_usd": 16068304986.0,
+      "import_usd": 5990971925.0,
+      "net_export_usd": 10077333061.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202602:export": {
+      "export_usd": 19025737257.0,
+      "import_usd": 5559563704.0,
+      "net_export_usd": 13466173553.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202603:export": {
+      "export_usd": 24422986999.0,
+      "import_usd": 7095965977.0,
+      "net_export_usd": 17327021022.0,
+      "api_source": "nitemtrade"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "_comment": "관세청 10일 단위 잠정치(1~10일/1~20일) 수출 USD. API 미구독 시 수동 입력.",
+  "partials": {
+    "2026-06": {
+      "partial_export_usd": 12400000000,
+      "days_covered": 20,
+      "source": "관세청 보도자료 또는 tradedata.go.kr 1~20일 잠정치",
+      "note": "HS 8542 합산과 단위(USD)를 맞출 것"
+    }
+  }
+}

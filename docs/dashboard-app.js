@@ -17,12 +17,22 @@ const API_CANDIDATES = () => {
 
 async function loadApiConfig() {
   try {
-    const res = await fetch(`./config.json?t=${Date.now()}`, { cache: 'no-store' });
+    const res = await fetchWithTimeout(`./config.json?t=${Date.now()}`, 8000);
     if (res.ok) {
       const cfg = await res.json();
       window.__DASHBOARD_API_BASES = cfg.apiBases || [];
     }
   } catch (_) { /* optional */ }
+}
+
+async function fetchWithTimeout(url, timeoutMs = 12000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    return await fetch(url, { cache: 'no-store', signal: ctrl.signal });
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function fmtVal(v, unit = '', decimals = 2) {
@@ -52,6 +62,7 @@ function latestItemsHtml(items) {
     .map(it => {
       let v;
       if (it.pct) v = `${it.val >= 0 ? '+' : ''}${it.val.toFixed(it.dec ?? 2)}%`;
+      else if (it.prefix && it.unit) v = `${it.prefix}${fmtVal(it.val, '', it.dec ?? 2)}${it.unit}`;
       else if (it.prefix) v = `${it.prefix}${fmtVal(it.val, '', it.dec ?? 2)}`;
       else v = fmtVal(it.val, it.unit || '', it.dec ?? 2);
       return `<span class="latest-item"><span class="latest-dot" style="background:${it.color}"></span>${it.label} <strong style="color:${it.color}">${v}</strong></span>`;
@@ -152,7 +163,188 @@ function mkChart(id, labels, datasets, yLabel = '', y2Label = '') {
   chartInstances.push(ch);
 }
 
-function renderCharts(D) {
+function comboChartCfg(labels, datasets, yLabel = '', y2Label = '') {
+  return {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: '#64748b', font: { size: 10 }, boxWidth: 12 },
+        },
+        tooltip: {
+          backgroundColor: '#1e293b', titleColor: '#94a3b8', bodyColor: '#e2e8f0',
+          borderColor: '#334155', borderWidth: 1,
+          callbacks: {
+            label(ctx) {
+              const v = ctx.parsed.y;
+              if (v == null) return null;
+              if (ctx.dataset.yAxisID === 'y') return `${ctx.dataset.label}: $${v.toFixed(2)}B`;
+              return `${ctx.dataset.label}: ${v >= 0 ? '+' : ''}${v.toFixed(1)}%`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', maxRotation: 45, minRotation: 45, font: { size: 9 } }, grid: { display: false } },
+        y: {
+          position: 'left',
+          ticks: { color: '#64748b', font: { size: 10 }, callback: v => `$${v}B` },
+          grid: { color: '#94a3b844' },
+          title: { display: !!yLabel, text: yLabel, color: '#64748b', font: { size: 10 } },
+        },
+        y2: {
+          type: 'linear', position: 'right',
+          ticks: { color: '#64748b', font: { size: 10 }, callback: v => `${v}%` },
+          grid: { drawOnChartArea: false },
+          title: { display: !!y2Label, text: y2Label, color: '#64748b', font: { size: 10 } },
+        },
+      },
+    },
+  };
+}
+
+function mkComboChart(id, labels, datasets, yLabel = '', y2Label = '') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const ch = new Chart(el, comboChartCfg(labels, datasets, yLabel, y2Label));
+  chartInstances.push(ch);
+}
+
+function barChartCfg(labels, data, colors, yLabel = '') {
+  return {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: '월별 수출',
+        data,
+        backgroundColor: colors,
+        borderRadius: 4,
+        borderSkipped: false,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e293b',
+          callbacks: {
+            label(ctx) {
+              const est = ctx.chart.data.datasets[0].estFlags?.[ctx.dataIndex];
+              const suffix = est ? ' (E추정)' : '';
+              return `$${ctx.parsed.y.toFixed(2)}B${suffix}`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { display: false } },
+        y: {
+          ticks: { color: '#64748b', font: { size: 10 }, callback: v => `$${v}B` },
+          grid: { color: '#94a3b844' },
+          title: { display: !!yLabel, text: yLabel, color: '#64748b', font: { size: 10 } },
+        },
+      },
+    },
+  };
+}
+
+function mkBarChart(id, labels, data, colors, estFlags = [], yLabel = '') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const cfg = barChartCfg(labels, data, colors, yLabel);
+  cfg.data.datasets[0].estFlags = estFlags;
+  const ch = new Chart(el, cfg);
+  chartInstances.push(ch);
+}
+
+function renderExportCharts(E) {
+  if (!E?.quarters?.length) return;
+  const labels = E.quarters.map(r => r.q);
+  const exports = E.quarters.map(r => r.exportB);
+  const qoq = E.quarters.map(r => r.qoq);
+  const yoy = E.quarters.map(r => r.yoy);
+  const last = E.quarters[E.quarters.length - 1];
+
+  mkComboChart('cHsExport', labels, [
+    { type: 'bar', label: '분기 수출', data: exports, backgroundColor: '#3b82f688', borderColor: '#2563eb', borderWidth: 1, yAxisID: 'y', order: 2 },
+    { type: 'line', label: 'QoQ', data: qoq, borderColor: AMBER, backgroundColor: 'transparent', borderWidth: 2, pointRadius: 2, tension: 0.25, yAxisID: 'y2', order: 1, spanGaps: true },
+    { type: 'line', label: 'YoY', data: yoy, borderColor: RED, backgroundColor: 'transparent', borderWidth: 2, pointRadius: 2, tension: 0.25, yAxisID: 'y2', order: 0, spanGaps: true },
+  ], '수출 (USD)', '증감률 (%)');
+
+  if (E.monthlyLastQuarter?.months?.length || E.monthly2026Q2?.length) {
+    const mq = E.monthlyLastQuarter?.months || E.monthly2026Q2;
+    const mLabels = mq.map(m => (m.est ? `${m.month} (E)` : m.month));
+    const mData = mq.map(m => m.exportB);
+    const mColors = mq.map(m => (m.est ? '#f59e0b99' : '#2563eb99'));
+    const estFlags = mq.map(m => !!m.est);
+    mkBarChart('cHsMonthly', mLabels, mData, mColors, estFlags, '수출 (USD)');
+  }
+
+  const latestExport = latestItemsHtml([
+    { label: '최근 분기', val: last.exportB, color: BLUE, prefix: '$', dec: 2, unit: 'B' },
+    { label: 'QoQ', val: last.qoq, color: AMBER, pct: true },
+    { label: 'YoY', val: last.yoy, color: RED, pct: true },
+  ]);
+  const wrap = document.getElementById('exportLatest');
+  if (wrap) wrap.innerHTML = latestExport;
+}
+
+function exportSectionHtml(E) {
+  if (!E?.quarters?.length) return '';
+  const summary = (E.summary || []).map(s => `<li>${s}</li>`).join('');
+  const api = E.customsApi;
+  const apiHint = api
+    ? ` · API: data.go.kr HS${api.hsCode || '8542'} (${api.countryCount || 15}개국)`
+    : '';
+  const keyWarn = api && !api.keyConfigured
+    ? ' · <strong style="color:#b45309">DATA_GO_KR_API_KEY 미설정</strong>'
+    : '';
+  const liveTag = E._live
+    ? '<span style="color:#16a34a;font-weight:600">실시간 (관세청 API)</span>'
+    : '<span style="color:#64748b">스냅샷 (CI)</span>';
+  const mq = E.monthlyLastQuarter;
+  const monthlyTitle = mq?.quarter
+    ? `${mq.quarter} 월별 수출`
+    : '최근 분기 월별 수출';
+  const monthlySub = (mq?.months || E.monthly2026Q2 || []).some(m => m.est)
+    ? ' · E추정 월 포함'
+    : '';
+  return `
+<div class="export-note">
+  <strong>⚠️ 주의</strong> ${E.note || ''} · 데이터: ${E.source || ''}${apiHint}${keyWarn} · 기준일: ${E.asOf || ''} · ${liveTag}
+</div>
+<div class="charts-grid">
+  <div class="chart-card chart-card-wide">
+    <div class="chart-title-wrap">
+      <div class="chart-title">반도체(HS8542) 분기별 수출 및 증감률 <span class="chart-sub">· QoQ / YoY</span></div>
+      <span class="chart-latest" id="exportLatest"></span>
+    </div>
+    <div class="chart-legend">
+      <span class="leg"><span class="leg-dot" style="background:#2563eb"></span>분기 수출</span>
+      <span class="leg"><span class="leg-dot" style="background:#f59e0b"></span>QoQ</span>
+      <span class="leg"><span class="leg-dot" style="background:#dc2626"></span>YoY</span>
+    </div>
+    <canvas id="cHsExport" style="max-height:280px"></canvas>
+    ${summary ? `<div class="export-summary"><strong>해석 요약</strong><ul>${summary}</ul></div>` : ''}
+  </div>
+  <div class="chart-card">
+    <div class="chart-title-wrap">
+      <div class="chart-title">${monthlyTitle} <span class="chart-sub">${monthlySub}</span></div>
+    </div>
+    <canvas id="cHsMonthly"></canvas>
+  </div>
+</div>`;
+}
+
+function renderCharts(D, exportData) {
   destroyCharts();
   mkChart('cKospi', D.charts.kospi.dates, [
     ds('KOSPI', D.charts.kospi.price, KOSPI_LINE, 'y', true, [], 1.5),
@@ -195,9 +387,10 @@ function renderCharts(D) {
   if (D.charts.skew.dates.length) {
     mkChart('cSkew', D.charts.skew.dates, [ds('SKEW', D.charts.skew.values, AMBER, 'y', true)], 'SKEW');
   }
+  renderExportCharts(exportData);
 }
 
-function renderDashboard(D) {
+function renderDashboard(D, exportData) {
   const kpi = D.kpi;
   const ex = D.exit;
   const alignedOk = ex.aligned === true;
@@ -297,6 +490,8 @@ function renderDashboard(D) {
   `).join('')}
 </div>
 
+${exportSectionHtml(exportData)}
+
 <div class="charts-grid">
   <div class="chart-card">
     <div class="chart-title-wrap">
@@ -364,18 +559,84 @@ function renderDashboard(D) {
   </div>
 </div>`;
 
-  renderCharts(D);
+  renderCharts(D, exportData);
+}
+
+async function loadExportData() {
+  const ts = Date.now();
+  const errors = [];
+  const onGhPages = location.hostname.includes('github.io');
+
+  if (onGhPages) {
+    try {
+      const res = await fetchWithTimeout(`./semiconductor-export.json?t=${ts}`, 8000);
+      if (res.ok) {
+        const data = await res.json();
+        data._live = false;
+        return data;
+      }
+      errors.push(`semiconductor-export.json: ${res.status}`);
+    } catch (e) {
+      errors.push(`semiconductor-export.json: ${e.message}`);
+    }
+  }
+
+  for (const base of API_CANDIDATES()) {
+    const url = base
+      ? `${base}/api/semiconductor-export?t=${ts}`
+      : `/api/semiconductor-export?t=${ts}`;
+    try {
+      const res = await fetchWithTimeout(url, 15000);
+      if (!res.ok) throw new Error(`${res.status}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      data._live = true;
+      return data;
+    } catch (e) {
+      errors.push(`${url}: ${e.message}`);
+    }
+  }
+
+  if (!onGhPages) {
+    try {
+      const res = await fetchWithTimeout(`./semiconductor-export.json?t=${ts}`, 8000);
+      if (res.ok) {
+        const data = await res.json();
+        data._live = false;
+        return data;
+      }
+      errors.push(`semiconductor-export.json: ${res.status}`);
+    } catch (e) {
+      errors.push(`semiconductor-export.json: ${e.message}`);
+    }
+  }
+  console.warn('수출 데이터 로드 실패:', errors.join(' | '));
+  return null;
 }
 
 async function fetchLiveData() {
   const ts = Date.now();
   const errors = [];
-  let fromSnapshot = false;
+  const onGhPages = location.hostname.includes('github.io');
+
+  if (onGhPages) {
+    try {
+      const res = await fetchWithTimeout(`./data.json?t=${ts}`, 8000);
+      if (res.ok) {
+        const data = await res.json();
+        data._live = false;
+        return data;
+      }
+      errors.push(`data.json: ${res.status}`);
+    } catch (e) {
+      errors.push(`data.json: ${e.message}`);
+    }
+  }
 
   for (const base of API_CANDIDATES()) {
     const url = base ? `${base}/api/dashboard?t=${ts}` : `/api/dashboard?t=${ts}`;
     try {
-      const res = await fetch(url, { cache: 'no-store' });
+      const res = await fetchWithTimeout(url, 15000);
       if (!res.ok) throw new Error(`${res.status}`);
       const data = await res.json();
       data._live = true;
@@ -384,15 +645,20 @@ async function fetchLiveData() {
       errors.push(`${url}: ${e.message}`);
     }
   }
-  try {
-    const res = await fetch(`./data.json?t=${ts}`, { cache: 'no-store' });
-    if (res.ok) {
-      const data = await res.json();
-      data._live = false;
-      return data;
+
+  if (!onGhPages) {
+    try {
+      const res = await fetchWithTimeout(`./data.json?t=${ts}`, 8000);
+      if (res.ok) {
+        const data = await res.json();
+        data._live = false;
+        return data;
+      }
+      errors.push(`data.json: ${res.status}`);
+    } catch (e) {
+      errors.push(`data.json: ${e.message}`);
     }
-    errors.push(`data.json: ${res.status}`);
-  } catch (e) { errors.push(`data.json: ${e.message}`); }
+  }
   throw new Error(errors.join(' | '));
 }
 
@@ -412,8 +678,8 @@ async function loadDashboard() {
   showLoading();
   try {
     await loadApiConfig();
-    const data = await fetchLiveData();
-    renderDashboard(data);
+    const [data, exportData] = await Promise.all([fetchLiveData(), loadExportData()]);
+    renderDashboard(data, exportData);
   } catch (e) {
     showError(e.message);
   }
