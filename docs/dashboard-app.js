@@ -163,32 +163,54 @@ function mkChart(id, labels, datasets, yLabel = '', y2Label = '') {
   chartInstances.push(ch);
 }
 
+function drawLabelHalo(ctx, text, x, y, fillColor) {
+  ctx.font = '600 8px -apple-system,sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = '#ffffff';
+  ctx.strokeText(text, x, y);
+  ctx.fillStyle = fillColor;
+  ctx.fillText(text, x, y);
+}
+
 function exportComboLabelPlugin() {
   return {
     id: 'exportComboLabels',
     afterDatasetsDraw(chart) {
-      const { ctx } = chart;
+      const { ctx, chartArea } = chart;
+      const barMeta = chart.getDatasetMeta(0);
       ctx.save();
+
+      // 1) 막대 수출 라벨
       ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      barMeta.data.forEach((el, i) => {
+        const val = chart.data.datasets[0].data[i];
+        if (val == null || Number.isNaN(val)) return;
+        ctx.font = '600 9px -apple-system,sans-serif';
+        ctx.fillStyle = '#1e40af';
+        ctx.fillText(`$${val.toFixed(1)}B`, el.x, el.y - 4);
+      });
+
+      // 2) QoQ / YoY — 막대 위·흰색 외곽선으로 겹침 방지
       chart.data.datasets.forEach((dataset, di) => {
+        if (dataset.type === 'bar') return;
         const meta = chart.getDatasetMeta(di);
         if (meta.hidden) return;
-        const isBar = dataset.type === 'bar';
+        const isYoy = dataset.label === 'YoY';
+        const color = dataset.borderColor || '#64748b';
         meta.data.forEach((el, i) => {
           const val = dataset.data[i];
           if (val == null || Number.isNaN(val)) return;
-          if (isBar) {
-            ctx.font = '600 9px -apple-system,sans-serif';
-            ctx.fillStyle = '#1e40af';
-            ctx.fillText(`$${val.toFixed(1)}B`, el.x, el.y - 5);
-          } else {
-            const off = dataset.label === 'YoY' ? -22 : -10;
-            ctx.font = '600 8px -apple-system,sans-serif';
-            ctx.fillStyle = dataset.borderColor || '#64748b';
-            ctx.fillText(`${val >= 0 ? '+' : ''}${val.toFixed(0)}%`, el.x, el.y + off);
-          }
+          const barTop = barMeta.data[i]?.y ?? chartArea.bottom;
+          const stack = isYoy ? 22 : 10;
+          let y = Math.min(el.y - stack, barTop - 6 - (isYoy ? 12 : 0));
+          y = Math.max(y, chartArea.top + 8);
+          drawLabelHalo(ctx, `${val >= 0 ? '+' : ''}${val.toFixed(0)}%`, el.x, y, color);
         });
       });
+
       ctx.restore();
     },
   };
@@ -251,7 +273,7 @@ function exportComboChartCfg(labels, exports, qoq, yoy) {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      layout: { padding: { top: 28 } },
+      layout: { padding: { top: 36 } },
       plugins: {
         legend: {
           display: true,
