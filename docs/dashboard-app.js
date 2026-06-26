@@ -174,6 +174,16 @@ function drawLabelHalo(ctx, text, x, y, fillColor) {
   ctx.fillText(text, x, y);
 }
 
+function resolveYoyLabelY(bar, linePointY) {
+  const abovePoint = linePointY - 10;
+  // 막대 상단 $ 라벨 영역(bar.y ~ bar.y-14)과 겹치면 막대 안쪽으로
+  const exportLabelBottom = bar.y + 8;
+  if (abovePoint < exportLabelBottom) {
+    return bar.y + bar.height * 0.30;
+  }
+  return abovePoint;
+}
+
 function exportComboLabelPlugin() {
   return {
     id: 'exportComboLabels',
@@ -193,7 +203,7 @@ function exportComboLabelPlugin() {
         ctx.fillText(`$${val.toFixed(1)}B`, el.x, el.y - 4);
       });
 
-      // 2) QoQ — 막대 안쪽 / YoY — 선 포인트 위 (원래 위치)
+      // 2) QoQ — 막대 안쪽 / YoY — 선 위, 수출 라벨과 겹치면 막대 안쪽 상단
       chart.data.datasets.forEach((dataset, di) => {
         if (dataset.type === 'bar') return;
         const meta = chart.getDatasetMeta(di);
@@ -203,15 +213,18 @@ function exportComboLabelPlugin() {
         meta.data.forEach((el, i) => {
           const val = dataset.data[i];
           if (val == null || Number.isNaN(val)) return;
+          const bar = barMeta.data[i];
+          if (!bar || bar.height < 20) return;
           const text = `${val >= 0 ? '+' : ''}${val.toFixed(0)}%`;
+          let y;
           if (isYoy) {
-            drawLabelHalo(ctx, text, el.x, el.y - 10, color);
+            y = resolveYoyLabelY(bar, el.y);
+            const qoqY = bar.y + bar.height * 0.52;
+            if (Math.abs(y - qoqY) < 13) y = bar.y + bar.height * 0.34;
           } else {
-            const bar = barMeta.data[i];
-            if (!bar || bar.height < 20) return;
-            const y = bar.y + bar.height * 0.52;
-            drawLabelHalo(ctx, text, bar.x, y, color);
+            y = bar.y + bar.height * 0.52;
           }
+          drawLabelHalo(ctx, text, bar.x, y, color);
         });
       });
 

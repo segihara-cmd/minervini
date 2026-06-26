@@ -426,7 +426,7 @@ tr:hover td{{background:#f8fafc}}
   <div class="loading-box"><div class="spinner"></div><p>시장 데이터 불러오는 중 (약 10~20초)</p></div>
 </div>
 <div class="footer">실시간 대시보드 · 새로고침 시 최신 데이터 반영 · 투자 권유 아님</div>
-<script src="dashboard-app.js?v=20260626-export-yoy-revert"></script>
+<script src="dashboard-app.js?v=20260626-export-yoy-collision"></script>
 </body>
 </html>'''
 
