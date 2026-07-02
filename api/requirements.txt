@@ -1,4 +1,7 @@
 requests
 pandas
 numpy
+beautifulsoup4
+curl_cffi
 python-dotenv
+yfinance

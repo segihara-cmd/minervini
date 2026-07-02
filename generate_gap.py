@@ -116,43 +116,41 @@ tr:hover td{{filter:brightness(.96)}}
   <div class="loading-box"><div class="spinner"></div><p>괴리율 데이터 수집 중 (실시간 API, 최대 3분)</p></div>
 </div>
 <div class="footer">Investing.com 해외 목표가 · 네이버 현재가 · 새로고침 시 실시간 갱신 · 투자 권유 아님</div>
-<script src="gap-app.js?v=20260702-live-refresh"></script>
+<script src="gap-app.js?v=20260702-investing-live"></script>
 </body>
 </html>"""
 
 
 def main() -> None:
     now = datetime.now(KST)
-    logger.info("[%s KST] gap Top %d 생성", now.strftime("%Y-%m-%d %H:%M"), TOP_N)
+    logger.info("[%s KST] gap Top %d 생성 (Investing+네이버)", now.strftime("%Y-%m-%d %H:%M"), TOP_N)
 
-    summary_path = GAP_ROOT / "data" / "processed" / "sector_target_summary.csv"
     skip_refresh = "--no-refresh" in sys.argv
+    parallel = 4 if "--fast" in sys.argv else 0
 
-    if not skip_refresh:
-        cache = GAP_ROOT / "data" / "raw" / "sector_investing_reports.csv"
-        try:
-            run(
-                from_cache=cache.exists(),
-                refresh_investing=True,
-                skip_etf=True,
-                top_gap=TOP_N,
-            )
-        except Exception as e:
-            logger.warning("파이프라인 갱신 실패 (%s) — 기존 요약 CSV 사용", e)
+    if skip_refresh:
+        summary_path = GAP_ROOT / "data" / "processed" / "sector_target_summary.csv"
+        if not summary_path.exists():
+            raise FileNotFoundError(f"요약 없음: {summary_path}")
+        summary = pd.read_csv(summary_path, encoding="utf-8-sig")
+        top = top_gap_stocks(summary, n=TOP_N)
+        rows = [row_to_dict(r) for _, r in top.iterrows()]
+        payload = {
+            "updated": now.strftime("%Y-%m-%d %H:%M KST"),
+            "count": len(rows),
+            "title": f"목표주가 괴리율 Top {len(rows)} (Investing 해외)",
+            "rows": rows,
+        }
+    else:
+        from pipeline.gap_dashboard import build_gap_payload
 
-    if not summary_path.exists():
-        raise FileNotFoundError(f"요약 없음: {summary_path} (--refresh 로 생성)")
-
-    summary = pd.read_csv(summary_path, encoding="utf-8-sig")
-    top = top_gap_stocks(summary, n=TOP_N)
-    rows = [row_to_dict(r) for _, r in top.iterrows()]
-
-    payload = {
-        "updated": now.strftime("%Y-%m-%d %H:%M KST"),
-        "count": len(rows),
-        "title": f"목표주가 괴리율 Top {len(rows)} (Investing 해외)",
-        "rows": rows,
-    }
+        payload = build_gap_payload(
+            top_n=TOP_N,
+            refresh_investing=True,
+            investing_parallel=parallel,
+        )
+        del payload["_live"]
+        rows = payload["rows"]
 
     DOCS.mkdir(parents=True, exist_ok=True)
     OUTPUT_JSON.write_text(

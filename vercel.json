@@ -3,6 +3,7 @@
   "builds": [
     { "src": "api/dashboard.js", "use": "@vercel/node" },
     { "src": "api/screener.js", "use": "@vercel/node" },
+    { "src": "api/gap.py", "use": "@vercel/python" },
     { "src": "api/gap.js", "use": "@vercel/node" },
     { "src": "api/semiconductor-export.py", "use": "@vercel/python" },
     { "src": "docs/**", "use": "@vercel/static" }
@@ -10,7 +11,7 @@
   "routes": [
     { "src": "/api/dashboard", "dest": "/api/dashboard.js" },
     { "src": "/api/screener", "dest": "/api/screener.js" },
-    { "src": "/api/gap", "dest": "/api/gap.js" },
+    { "src": "/api/gap", "dest": "/api/gap.py" },
     { "src": "/api/semiconductor-export", "dest": "/api/semiconductor-export.py" },
     { "src": "/(.*)", "dest": "/docs/$1" }
   ],
@@ -32,6 +33,9 @@
     },
     "api/semiconductor-export.py": {
       "maxDuration": 60
+    },
+    "api/gap.py": {
+      "maxDuration": 300
     },
     "api/gap.js": {
       "maxDuration": 300

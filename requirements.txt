@@ -4,3 +4,4 @@ pandas
 numpy
 yfinance
 python-dotenv
+curl_cffi

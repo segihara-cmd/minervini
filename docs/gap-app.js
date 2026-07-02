@@ -130,13 +130,14 @@ function buildTable(rows) {
 }
 
 function renderGap(data) {
-  const mode = data._live ? '실시간 (네이버 현재가)' : '스냅샷 (CI)';
+  const mode = data._live ? '실시간 (Investing+네이버)' : '스냅샷 (CI)';
   let extra = '';
   if (data._live) {
     if (data.refreshedTickers != null && data.refreshedTickers > 0) {
-      extra = ` · Investing ${data.refreshedTickers}/${data.totalTargets || '?'}종목 갱신`;
-    } else if (data.pricesRefreshed != null) {
-      extra = ` · 현재가 ${data.pricesRefreshed}종목 갱신`;
+      extra = ` · Investing 목표가 ${data.refreshedTickers}/${data.totalTargets || '?'}종목 갱신`;
+    }
+    if (data.pricesRefreshed != null) {
+      extra += ` · 현재가 ${data.pricesRefreshed}종목`;
     }
   }
   document.getElementById('updated').textContent =
@@ -147,7 +148,7 @@ function renderGap(data) {
         <span class="badge">${data.count}종목</span>
         &nbsp; Investing.com 해외 목표가 · 네이버 현재가 · 괴리율 = (목표−현재)/현재
         &nbsp;|&nbsp; * = 타 기관 목표 대비
-        ${data._live ? '&nbsp;|&nbsp; <b style="color:#2563eb">새로고침 시 현재가·괴리율 재계산</b>' : ''}
+        ${data._live ? '&nbsp;|&nbsp; <b style="color:#2563eb">새로고침 시 목표가·현재가 재수집</b>' : ''}
       </div>
       <div style="font-size:.78rem;color:#475569">괴리율 높은 순 · Top ${data.count}</div>
     </div>

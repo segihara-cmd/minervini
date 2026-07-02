@@ -32,8 +32,6 @@
 000720,현대건설,Macquarie,2026-03-02,191000.0,130000.0,,46.92,매수,investing.com,foreign,investing_hyundai-engineering---construction_Macquarie_2026-03-02,hyundai-engineering---construction
 004370,농심,CLSA,2026-03-12,422000.0,520000.0,,-18.85,보유,investing.com,foreign,investing_nongshim_CLSA_2026-03-12,nongshim
 139480,이마트,UBS,2026-05-14,115000.0,89000.0,,29.21,보유,investing.com,foreign,investing_e-mart_UBS_2026-05-14,e-mart
-271560,오리온,Citi,2026-02-11,165000.0,120000.0,,37.5,매수,investing.com,foreign,investing_orion-corp_Citi_2026-02-11,orion-corp
-271560,오리온,Morgan Stanley,2026-01-27,140000.0,114000.0,,22.81,매수,investing.com,foreign,investing_orion-corp_Morgan Stanley_2026-01-27,orion-corp
 047810,한국항공우주,JP Morgan,2026-04-08,240000.0,180000.0,,33.33,매수,investing.com,foreign,investing_korea-aerospac_JPMorgan_2026-04-08,korea-aerospac
 047810,한국항공우주,Macquarie,2026-02-06,150000.0,,,,보유,investing.com,foreign,investing_korea-aerospac_Macquarie_2026-02-06,korea-aerospac
 047810,한국항공우주,Nomura,2026-01-14,190000.0,130000.0,,46.15,매수,investing.com,foreign,investing_korea-aerospac_Nomura/Instinet_2026-01-14,korea-aerospac
@@ -42,31 +40,53 @@
 192080,더블유게임즈,Morgan Stanley,2026-05-21,73000.0,60000.0,,21.67,매수,investing.com,foreign,investing_doubleu-games-co-ltd_Morgan Stanley_2026-05-21,doubleu-games-co-ltd
 192080,더블유게임즈,Morgan Stanley,2026-04-10,60000.0,58000.0,,3.45,매수,investing.com,foreign,investing_doubleu-games-co-ltd_Morgan Stanley_2026-04-10,doubleu-games-co-ltd
 035250,강원랜드,JP Morgan,2026-01-22,18000.0,20000.0,,-10.0,보유,investing.com,foreign,investing_kangwon-land_JPMorgan_2026-01-22,kangwon-land
-006360,GS건설,Macquarie,2026-05-04,16200.0,15500.0,,4.52,매도,investing.com,foreign,investing_gs-engineering---construction_Macquarie_2026-05-04,gs-engineering---construction
-006360,GS건설,HSBC,2026-03-18,26000.0,20000.0,,30.0,보유,investing.com,foreign,investing_gs-engineering---construction_HSBC_2026-03-18,gs-engineering---construction
 051900,LG생활건강,Macquarie,2026-05-04,267000.0,281000.0,,-4.98,보유,investing.com,foreign,investing_lg-household---healthcare_Macquarie_2026-05-04,lg-household---healthcare
 051900,LG생활건강,JP Morgan,2026-05-04,190000.0,180000.0,,5.56,매도,investing.com,foreign,investing_lg-household---healthcare_JPMorgan_2026-05-04,lg-household---healthcare
 051900,LG생활건강,Macquarie,2026-01-29,281000.0,277000.0,,1.44,보유,investing.com,foreign,investing_lg-household---healthcare_Macquarie_2026-01-29,lg-household---healthcare
 051900,LG생활건강,JP Morgan,2026-01-29,180000.0,190000.0,,-5.26,매도,investing.com,foreign,investing_lg-household---healthcare_JPMorgan_2026-01-29,lg-household---healthcare
 051900,LG생활건강,Macquarie,2026-01-16,277000.0,302000.0,,-8.28,보유,investing.com,foreign,investing_lg-household---healthcare_Macquarie_2026-01-16,lg-household---healthcare
-204320,HL만도,Nomura,2026-04-30,63000.0,65000.0,,-3.08,보유,investing.com,foreign,investing_mando-corp_Nomura/Instinet_2026-04-30,mando-corp
-204320,HL만도,Nomura,2026-02-24,65000.0,34000.0,,91.18,보유,investing.com,foreign,investing_mando-corp_Nomura/Instinet_2026-02-24,mando-corp
-204320,HL만도,Macquarie,2026-02-06,65000.0,,,,보유,investing.com,foreign,investing_mando-corp_Macquarie_2026-02-06,mando-corp
+214150,클래시스,Citi,2026-05-15,70000.0,75000.0,,-6.67,매수,investing.com,foreign,investing_ktb-special-purpose-acquisition-2_Citi_2026-05-15,ktb-special-purpose-acquisition-2
+214150,클래시스,JP Morgan,2026-05-14,740000.0,80000.0,,825.0,매수,investing.com,foreign,investing_ktb-special-purpose-acquisition-2_JPMorgan_2026-05-14,ktb-special-purpose-acquisition-2
+214150,클래시스,CLSA,2026-02-16,94000.0,93000.0,,1.08,매수,investing.com,foreign,investing_ktb-special-purpose-acquisition-2_CLSA_2026-02-16,ktb-special-purpose-acquisition-2
+214150,클래시스,JP Morgan,2026-02-16,80000.0,75000.0,,6.67,매수,investing.com,foreign,investing_ktb-special-purpose-acquisition-2_JPMorgan_2026-02-16,ktb-special-purpose-acquisition-2
+214150,클래시스,Nomura,2026-01-23,70000.0,62000.0,,12.9,매수,investing.com,foreign,investing_ktb-special-purpose-acquisition-2_Nomura/Instinet_2026-01-23,ktb-special-purpose-acquisition-2
+293490,카카오게임즈,Macquarie,2026-02-12,9000.0,10000.0,,-10.0,매도,investing.com,foreign,investing_kakao-games-corp_Macquarie_2026-02-12,kakao-games-corp
+251270,넷마블,Citi,2026-05-19,57000.0,61000.0,,-6.56,매수,investing.com,foreign,investing_netmarble-games-corp_Citi_2026-05-19,netmarble-games-corp
+251270,넷마블,Morgan Stanley,2026-05-15,43000.0,46000.0,,-6.52,보유,investing.com,foreign,investing_netmarble-games-corp_Morgan Stanley_2026-05-15,netmarble-games-corp
+251270,넷마블,JP Morgan,2026-05-08,47000.0,54000.0,,-12.96,보유,investing.com,foreign,investing_netmarble-games-corp_JPMorgan_2026-05-08,netmarble-games-corp
+251270,넷마블,Citi,2026-04-28,61000.0,50000.0,,22.0,매수,investing.com,foreign,investing_netmarble-games-corp_Citi_2026-04-28,netmarble-games-corp
+251270,넷마블,Goldman Sachs,2026-03-17,62000.0,56000.0,,10.71,보유,investing.com,foreign,investing_netmarble-games-corp_Goldman Sachs_2026-03-17,netmarble-games-corp
+035760,CJ ENM,Citi,2026-05-28,40000.0,43000.0,,-6.98,매도,investing.com,foreign,investing_cj-o-shopping-co-ltd_Citi_2026-05-28,cj-o-shopping-co-ltd
+298040,효성중공업,Citi,2026-04-27,4500000.0,3200000.0,,40.62,매수,investing.com,foreign,investing_hyosung-heavy-industries_Citi_2026-04-27,hyosung-heavy-industries
+298040,효성중공업,Macquarie,2026-04-27,4700000.0,3600000.0,,30.56,매수,investing.com,foreign,investing_hyosung-heavy-industries_Macquarie_2026-04-27,hyosung-heavy-industries
+298040,효성중공업,JP Morgan,2026-04-27,3900000.0,3300000.0,,18.18,매수,investing.com,foreign,investing_hyosung-heavy-industries_JPMorgan_2026-04-27,hyosung-heavy-industries
+298040,효성중공업,Macquarie,2026-04-24,4700000.0,3600000.0,,30.56,매수,investing.com,foreign,investing_hyosung-heavy-industries_Macquarie_2026-04-24,hyosung-heavy-industries
+298040,효성중공업,JP Morgan,2026-04-09,3300000.0,3000000.0,,10.0,매수,investing.com,foreign,investing_hyosung-heavy-industries_JPMorgan_2026-04-09,hyosung-heavy-industries
+267260,HD현대일렉트릭,Macquarie,2026-04-29,1600000.0,1200000.0,,33.33,매수,investing.com,foreign,investing_hyundai-electric-energy-systems_Macquarie_2026-04-29,hyundai-electric-energy-systems
+267260,HD현대일렉트릭,JP Morgan,2026-04-29,1315000.0,1100000.0,,19.55,매수,investing.com,foreign,investing_hyundai-electric-energy-systems_JPMorgan_2026-04-29,hyundai-electric-energy-systems
+267260,HD현대일렉트릭,Citi,2026-04-28,1440000.0,1200000.0,,20.0,매수,investing.com,foreign,investing_hyundai-electric-energy-systems_Citi_2026-04-28,hyundai-electric-energy-systems
+267260,HD현대일렉트릭,Morgan Stanley,2026-04-28,1500000.0,1200000.0,,25.0,매수,investing.com,foreign,investing_hyundai-electric-energy-systems_Morgan Stanley_2026-04-28,hyundai-electric-energy-systems
+267260,HD현대일렉트릭,JP Morgan,2026-04-09,1100000.0,1050000.0,,4.76,매수,investing.com,foreign,investing_hyundai-electric-energy-systems_JPMorgan_2026-04-09,hyundai-electric-energy-systems
+042700,한미반도체,JP Morgan,2026-06-12,200000.0,150000.0,,33.33,매도,investing.com,foreign,investing_hanmi-semicon_JPMorgan_2026-06-12,hanmi-semicon
+042700,한미반도체,CLSA,2026-05-18,325000.0,230000.0,,41.3,보유,investing.com,foreign,investing_hanmi-semicon_CLSA_2026-05-18,hanmi-semicon
+042700,한미반도체,Macquarie,2026-02-10,100000.0,89000.0,,12.36,매도,investing.com,foreign,investing_hanmi-semicon_Macquarie_2026-02-10,hanmi-semicon
+042700,한미반도체,Citi,2026-02-04,110000.0,,,,매도,investing.com,foreign,investing_hanmi-semicon_Citi_2026-02-04,hanmi-semicon
+042700,한미반도체,CLSA,2026-02-03,230000.0,180000.0,,27.78,매수,investing.com,foreign,investing_hanmi-semicon_CLSA_2026-02-03,hanmi-semicon
+009150,삼성전기,CLSA,2026-07-01,3200000.0,,,,매도,investing.com,foreign,investing_samsung-electro-mechanics_CLSA_2026-07-01,samsung-electro-mechanics
+009150,삼성전기,Nomura,2026-06-26,2500000.0,1300000.0,,92.31,매수,investing.com,foreign,investing_samsung-electro-mechanics_Nomura/Instinet_2026-06-26,samsung-electro-mechanics
 009150,삼성전기,JP Morgan,2026-06-15,2400000.0,1450000.0,,65.52,매수,investing.com,foreign,investing_samsung-electro-mechanics_JPMorgan_2026-06-15,samsung-electro-mechanics
 009150,삼성전기,CLSA,2026-06-03,3200000.0,2200000.0,,45.45,매수,investing.com,foreign,investing_samsung-electro-mechanics_CLSA_2026-06-03,samsung-electro-mechanics
 009150,삼성전기,CLSA,2026-05-28,2200000.0,1700000.0,,29.41,매수,investing.com,foreign,investing_samsung-electro-mechanics_CLSA_2026-05-28,samsung-electro-mechanics
-009150,삼성전기,Citi,2026-05-28,2000000.0,1100000.0,,81.82,매수,investing.com,foreign,investing_samsung-electro-mechanics_Citi_2026-05-28,samsung-electro-mechanics
-009150,삼성전기,Macquarie,2026-05-27,2150000.0,1250000.0,,72.0,매수,investing.com,foreign,investing_samsung-electro-mechanics_Macquarie_2026-05-27,samsung-electro-mechanics
 011070,LG이노텍,CLSA,2026-05-28,1500000.0,650000.0,,130.77,매수,investing.com,foreign,investing_lg-innotek-co-ltd_CLSA_2026-05-28,lg-innotek-co-ltd
 011070,LG이노텍,Goldman Sachs,2026-04-28,550000.0,245000.0,,124.49,보유,investing.com,foreign,investing_lg-innotek-co-ltd_Goldman Sachs_2026-04-28,lg-innotek-co-ltd
 011070,LG이노텍,CLSA,2026-04-28,650000.0,460000.0,,41.3,매수,investing.com,foreign,investing_lg-innotek-co-ltd_CLSA_2026-04-28,lg-innotek-co-ltd
 011070,LG이노텍,JP Morgan,2026-04-28,700000.0,285000.0,,145.61,매수,investing.com,foreign,investing_lg-innotek-co-ltd_JPMorgan_2026-04-28,lg-innotek-co-ltd
 011070,LG이노텍,Nomura,2026-04-28,540000.0,280000.0,,92.86,보유,investing.com,foreign,investing_lg-innotek-co-ltd_Nomura/Instinet_2026-04-28,lg-innotek-co-ltd
+034730,SK,CLSA,2026-06-30,1100000.0,900000.0,,22.22,매수,investing.com,foreign,investing_sk-c-c_CLSA_2026-06-30,sk-c-c
 034730,SK,CLSA,2026-06-02,900000.0,770000.0,,16.88,매수,investing.com,foreign,investing_sk-c-c_CLSA_2026-06-02,sk-c-c
 034730,SK,JP Morgan,2026-05-22,870000.0,350000.0,,148.57,매수,investing.com,foreign,investing_sk-c-c_JPMorgan_2026-05-22,sk-c-c
 034730,SK,CLSA,2026-05-07,770000.0,500000.0,,54.0,매수,investing.com,foreign,investing_sk-c-c_CLSA_2026-05-07,sk-c-c
 034730,SK,CLSA,2026-03-06,500000.0,420000.0,,19.05,매수,investing.com,foreign,investing_sk-c-c_CLSA_2026-03-06,sk-c-c
-034730,SK,CLSA,2026-01-19,420000.0,375000.0,,12.0,매수,investing.com,foreign,investing_sk-c-c_CLSA_2026-01-19,sk-c-c
 096770,SK이노베이션,Nomura,2026-06-12,118000.0,90000.0,,31.11,보유,investing.com,foreign,investing_sk-innovation_Nomura/Instinet_2026-06-12,sk-innovation
 096770,SK이노베이션,JP Morgan,2026-05-15,165000.0,,,,매수,investing.com,foreign,investing_sk-innovation_JPMorgan_2026-05-15,sk-innovation
 096770,SK이노베이션,Nomura,2026-01-29,90000.0,110000.0,,-18.18,매도,investing.com,foreign,investing_sk-innovation_Nomura/Instinet_2026-01-29,sk-innovation
@@ -83,46 +103,37 @@
 214450,파마리서치,Macquarie,2026-02-09,370000.0,700000.0,,-47.14,보유,investing.com,foreign,investing_pharma-reaserch-products-co-ltd_Macquarie_2026-02-09,pharma-reaserch-products-co-ltd
 214450,파마리서치,Macquarie,2026-01-14,700000.0,840000.0,,-16.67,매수,investing.com,foreign,investing_pharma-reaserch-products-co-ltd_Macquarie_2026-01-14,pharma-reaserch-products-co-ltd
 214450,파마리서치,Morgan Stanley,2026-01-02,803000.0,881000.0,,-8.85,매수,investing.com,foreign,investing_pharma-reaserch-products-co-ltd_Morgan Stanley_2026-01-02,pharma-reaserch-products-co-ltd
-214150,클래시스,Citi,2026-05-15,70000.0,75000.0,,-6.67,매수,investing.com,foreign,investing_ktb-special-purpose-acquisition-2_Citi_2026-05-15,ktb-special-purpose-acquisition-2
-214150,클래시스,JP Morgan,2026-05-14,740000.0,80000.0,,825.0,매수,investing.com,foreign,investing_ktb-special-purpose-acquisition-2_JPMorgan_2026-05-14,ktb-special-purpose-acquisition-2
-214150,클래시스,CLSA,2026-02-16,94000.0,93000.0,,1.08,매수,investing.com,foreign,investing_ktb-special-purpose-acquisition-2_CLSA_2026-02-16,ktb-special-purpose-acquisition-2
-214150,클래시스,JP Morgan,2026-02-16,80000.0,75000.0,,6.67,매수,investing.com,foreign,investing_ktb-special-purpose-acquisition-2_JPMorgan_2026-02-16,ktb-special-purpose-acquisition-2
-214150,클래시스,Nomura,2026-01-23,70000.0,62000.0,,12.9,매수,investing.com,foreign,investing_ktb-special-purpose-acquisition-2_Nomura/Instinet_2026-01-23,ktb-special-purpose-acquisition-2
+011810,STX,Cantor Fitzgerald,2026-06-29,1300.0,1000.0,,30.0,매수,investing.com,domestic,investing_seagate-technology_Cantor Fitzgerald_2026-06-29,seagate-technology
+011810,STX,Melius,2026-06-29,1600.0,,,,매수,investing.com,domestic,investing_seagate-technology_Melius_2026-06-29,seagate-technology
 011810,STX,Morgan Stanley,2026-06-15,1035.0,767.0,,34.94,매수,investing.com,foreign,investing_seagate-technology_Morgan Stanley_2026-06-15,seagate-technology
 011810,STX,Mizuho,2026-06-08,1090.0,875.0,,24.57,매수,investing.com,domestic,investing_seagate-technology_Mizuho_2026-06-08,seagate-technology
-011810,STX,Citi,2026-06-02,1150.0,740.0,,55.41,매수,investing.com,foreign,investing_seagate-technology_Citi_2026-06-02,seagate-technology
 036570,NC,Citi,2026-05-19,405000.0,290000.0,,39.66,매수,investing.com,foreign,investing_ncsoft-corp_Citi_2026-05-19,ncsoft-corp
 036570,NC,Nomura,2026-05-14,310000.0,230000.0,,34.78,매수,investing.com,foreign,investing_ncsoft-corp_Nomura/Instinet_2026-05-14,ncsoft-corp
 036570,NC,JP Morgan,2026-05-14,230000.0,160000.0,,43.75,보유,investing.com,foreign,investing_ncsoft-corp_JPMorgan_2026-05-14,ncsoft-corp
 036570,NC,Morgan Stanley,2026-03-31,310000.0,300000.0,,3.33,매수,investing.com,foreign,investing_ncsoft-corp_Morgan Stanley_2026-03-31,ncsoft-corp
 036570,NC,Citi,2026-03-25,290000.0,260000.0,,11.54,매수,investing.com,foreign,investing_ncsoft-corp_Citi_2026-03-25,ncsoft-corp
-293490,카카오게임즈,Macquarie,2026-02-12,9000.0,10000.0,,-10.0,매도,investing.com,foreign,investing_kakao-games-corp_Macquarie_2026-02-12,kakao-games-corp
-251270,넷마블,Citi,2026-05-19,57000.0,61000.0,,-6.56,매수,investing.com,foreign,investing_netmarble-games-corp_Citi_2026-05-19,netmarble-games-corp
-251270,넷마블,Morgan Stanley,2026-05-15,43000.0,46000.0,,-6.52,보유,investing.com,foreign,investing_netmarble-games-corp_Morgan Stanley_2026-05-15,netmarble-games-corp
-251270,넷마블,JP Morgan,2026-05-08,47000.0,54000.0,,-12.96,보유,investing.com,foreign,investing_netmarble-games-corp_JPMorgan_2026-05-08,netmarble-games-corp
-251270,넷마블,Citi,2026-04-28,61000.0,50000.0,,22.0,매수,investing.com,foreign,investing_netmarble-games-corp_Citi_2026-04-28,netmarble-games-corp
-251270,넷마블,Goldman Sachs,2026-03-17,62000.0,56000.0,,10.71,보유,investing.com,foreign,investing_netmarble-games-corp_Goldman Sachs_2026-03-17,netmarble-games-corp
-003670,포스코퓨처엠,Goldman Sachs,2026-06-02,130000.0,110000.0,,18.18,매도,investing.com,foreign,investing_posco-chemtech-co-ltd_Goldman Sachs_2026-06-02,posco-chemtech-co-ltd
-003670,포스코퓨처엠,Macquarie,2026-05-04,139000.0,140000.0,,-0.71,매도,investing.com,foreign,investing_posco-chemtech-co-ltd_Macquarie_2026-05-04,posco-chemtech-co-ltd
-003670,포스코퓨처엠,JP Morgan,2026-05-04,150000.0,130000.0,,15.38,매도,investing.com,foreign,investing_posco-chemtech-co-ltd_JPMorgan_2026-05-04,posco-chemtech-co-ltd
-003670,포스코퓨처엠,Nomura,2026-03-20,200000.0,240000.0,,-16.67,보유,investing.com,foreign,investing_posco-chemtech-co-ltd_Nomura/Instinet_2026-03-20,posco-chemtech-co-ltd
-003670,포스코퓨처엠,JP Morgan,2026-01-30,130000.0,100000.0,,30.0,매도,investing.com,foreign,investing_posco-chemtech-co-ltd_JPMorgan_2026-01-30,posco-chemtech-co-ltd
 051910,LG화학,Goldman Sachs,2026-06-02,480000.0,410000.0,,17.07,매수,investing.com,foreign,investing_lg-chemicals_Goldman Sachs_2026-06-02,lg-chemicals
 051910,LG화학,JP Morgan,2026-05-04,460000.0,400000.0,,15.0,매수,investing.com,foreign,investing_lg-chemicals_JPMorgan_2026-05-04,lg-chemicals
 051910,LG화학,Nomura,2026-04-14,440000.0,540000.0,,-18.52,매수,investing.com,foreign,investing_lg-chemicals_Nomura/Instinet_2026-04-14,lg-chemicals
 051910,LG화학,Bernstein SocGen Group,2026-02-11,298000.0,310000.0,,-3.87,보유,investing.com,foreign,investing_lg-chemicals_Bernstein SocGen Group_2026-02-11,lg-chemicals
 051910,LG화학,JP Morgan,2026-01-30,400000.0,480000.0,,-16.67,매수,investing.com,foreign,investing_lg-chemicals_JPMorgan_2026-01-30,lg-chemicals
+003670,포스코퓨처엠,Goldman Sachs,2026-06-02,130000.0,110000.0,,18.18,매도,investing.com,foreign,investing_posco-chemtech-co-ltd_Goldman Sachs_2026-06-02,posco-chemtech-co-ltd
+003670,포스코퓨처엠,Macquarie,2026-05-04,139000.0,140000.0,,-0.71,매도,investing.com,foreign,investing_posco-chemtech-co-ltd_Macquarie_2026-05-04,posco-chemtech-co-ltd
+003670,포스코퓨처엠,JP Morgan,2026-05-04,150000.0,130000.0,,15.38,매도,investing.com,foreign,investing_posco-chemtech-co-ltd_JPMorgan_2026-05-04,posco-chemtech-co-ltd
+003670,포스코퓨처엠,Nomura,2026-03-20,200000.0,240000.0,,-16.67,보유,investing.com,foreign,investing_posco-chemtech-co-ltd_Nomura/Instinet_2026-03-20,posco-chemtech-co-ltd
+003670,포스코퓨처엠,JP Morgan,2026-01-30,130000.0,100000.0,,30.0,매도,investing.com,foreign,investing_posco-chemtech-co-ltd_JPMorgan_2026-01-30,posco-chemtech-co-ltd
+141080,리가켐바이오,CLSA,2026-04-01,250000.0,200000.0,,25.0,매수,investing.com,foreign,investing_legochem-biosciences-inc_CLSA_2026-04-01,legochem-biosciences-inc
 068270,셀트리온,Jefferies,2026-05-27,270000.0,,,,매수,investing.com,foreign,investing_celltrion-inc_Jefferies_2026-05-27,celltrion-inc
 068270,셀트리온,Macquarie,2026-04-22,220000.0,170000.0,,29.41,보유,investing.com,foreign,investing_celltrion-inc_Macquarie_2026-04-22,celltrion-inc
 068270,셀트리온,Nomura,2026-04-08,270000.0,240000.0,,12.5,매수,investing.com,foreign,investing_celltrion-inc_Nomura/Instinet_2026-04-08,celltrion-inc
 068270,셀트리온,JP Morgan,2026-02-25,200000.0,150000.0,,33.33,매도,investing.com,foreign,investing_celltrion-inc_JPMorgan_2026-02-25,celltrion-inc
 068270,셀트리온,Morgan Stanley,2026-01-02,202000.0,198000.0,,2.02,보유,investing.com,foreign,investing_celltrion-inc_Morgan Stanley_2026-01-02,celltrion-inc
-141080,리가켐바이오,CLSA,2026-04-01,250000.0,200000.0,,25.0,매수,investing.com,foreign,investing_legochem-biosciences-inc_CLSA_2026-04-01,legochem-biosciences-inc
+207940,삼성바이오로직스,CLSA,2026-06-29,1900000.0,,,,매수,investing.com,foreign,investing_samsung-biologics-co-ltd_CLSA_2026-06-29,samsung-biologics-co-ltd
+207940,삼성바이오로직스,Morgan Stanley,2026-06-28,1988000.0,2292000.0,,-13.26,매수,investing.com,foreign,investing_samsung-biologics-co-ltd_Morgan Stanley_2026-06-28,samsung-biologics-co-ltd
 207940,삼성바이오로직스,Jefferies,2026-05-27,1900000.0,,,,매수,investing.com,foreign,investing_samsung-biologics-co-ltd_Jefferies_2026-05-27,samsung-biologics-co-ltd
 207940,삼성바이오로직스,JP Morgan,2026-05-22,2200000.0,2600000.0,,-15.38,매수,investing.com,foreign,investing_samsung-biologics-co-ltd_JPMorgan_2026-05-22,samsung-biologics-co-ltd
 207940,삼성바이오로직스,Nomura,2026-04-23,2200000.0,2600000.0,,-15.38,매수,investing.com,foreign,investing_samsung-biologics-co-ltd_Nomura/Instinet_2026-04-23,samsung-biologics-co-ltd
-207940,삼성바이오로직스,CLSA,2026-04-23,1900000.0,,,,매수,investing.com,foreign,investing_samsung-biologics-co-ltd_CLSA_2026-04-23,samsung-biologics-co-ltd
-207940,삼성바이오로직스,CLSA,2026-02-27,2400000.0,,,,매수,investing.com,foreign,investing_samsung-biologics-co-ltd_CLSA_2026-02-27,samsung-biologics-co-ltd
+112610,씨에스윈드,UBS,2026-03-17,72000.0,47000.0,,53.19,매수,investing.com,foreign,investing_cs-wind-corp_UBS_2026-03-17,cs-wind-corp
 032830,삼성생명,JP Morgan,2026-06-04,580000.0,430000.0,,34.88,매수,investing.com,foreign,investing_samsung-life_JPMorgan_2026-06-04,samsung-life
 032830,삼성생명,JP Morgan,2026-05-22,430000.0,370000.0,,16.22,매수,investing.com,foreign,investing_samsung-life_JPMorgan_2026-05-22,samsung-life
 032830,삼성생명,JP Morgan,2026-05-07,370000.0,310000.0,,19.35,매수,investing.com,foreign,investing_samsung-life_JPMorgan_2026-05-07,samsung-life
@@ -135,17 +146,18 @@
 018260,삼성에스디에스,Macquarie,2026-01-23,180000.0,190000.0,,-5.26,보유,investing.com,foreign,investing_samsung-sds-co-ltd_Macquarie_2026-01-23,samsung-sds-co-ltd
 033780,KT&G,CLSA,2026-05-08,200000.0,185000.0,,8.11,매수,investing.com,foreign,investing_kt-g-corp_CLSA_2026-05-08,kt-g-corp
 033780,KT&G,CLSA,2026-03-10,185000.0,167000.0,,10.78,매수,investing.com,foreign,investing_kt-g-corp_CLSA_2026-03-10,kt-g-corp
+034220,LG디스플레이,Nomura,2026-06-29,16000.0,17000.0,,-5.88,매수,investing.com,foreign,investing_lg-display_Nomura/Instinet_2026-06-29,lg-display
 034220,LG디스플레이,BofA Securities,2026-04-23,11000.0,12000.0,,-8.33,매도,investing.com,foreign,investing_lg-display_BofA Securities_2026-04-23,lg-display
 034220,LG디스플레이,Nomura,2026-01-29,17000.0,18000.0,,-5.56,매수,investing.com,foreign,investing_lg-display_Nomura/Instinet_2026-01-29,lg-display
-105560,KB금융,HSBC,2026-06-23,193000.0,190000.0,,1.58,매수,investing.com,foreign,investing_kb-financial-group_HSBC_2026-06-23,kb-financial-group
-105560,KB금융,Macquarie,2026-04-27,210000.0,,,,매수,investing.com,foreign,investing_kb-financial-group_Macquarie_2026-04-27,kb-financial-group
-105560,KB금융,CLSA,2026-04-27,190000.0,179000.0,,6.15,매수,investing.com,foreign,investing_kb-financial-group_CLSA_2026-04-27,kb-financial-group
-105560,KB금융,JP Morgan,2026-04-24,200000.0,180000.0,,11.11,매수,investing.com,foreign,investing_kb-financial-group_JPMorgan_2026-04-24,kb-financial-group
-105560,KB금융,CLSA,2026-04-24,190000.0,179000.0,,6.15,매수,investing.com,foreign,investing_kb-financial-group_CLSA_2026-04-24,kb-financial-group
 024110,기업은행,HSBC,2026-03-28,27000.0,26000.0,,3.85,매수,investing.com,foreign,investing_industrial-bank-of-korea_HSBC_2026-03-28,industrial-bank-of-korea
 024110,기업은행,Macquarie,2026-02-12,22000.0,17000.0,,29.41,보유,investing.com,foreign,investing_industrial-bank-of-korea_Macquarie_2026-02-12,industrial-bank-of-korea
 024110,기업은행,JP Morgan,2026-02-06,24000.0,22000.0,,9.09,보유,investing.com,foreign,investing_industrial-bank-of-korea_JPMorgan_2026-02-06,industrial-bank-of-korea
 024110,기업은행,JP Morgan,2026-01-12,22000.0,21000.0,,4.76,보유,investing.com,foreign,investing_industrial-bank-of-korea_JPMorgan_2026-01-12,industrial-bank-of-korea
+105560,KB금융,Goldman Sachs,2026-06-29,214000.0,203000.0,,5.42,매수,investing.com,foreign,investing_kb-financial-group_Goldman Sachs_2026-06-29,kb-financial-group
+105560,KB금융,HSBC,2026-06-23,193000.0,190000.0,,1.58,매수,investing.com,foreign,investing_kb-financial-group_HSBC_2026-06-23,kb-financial-group
+105560,KB금융,Macquarie,2026-04-27,210000.0,,,,매수,investing.com,foreign,investing_kb-financial-group_Macquarie_2026-04-27,kb-financial-group
+105560,KB금융,CLSA,2026-04-27,190000.0,179000.0,,6.15,매수,investing.com,foreign,investing_kb-financial-group_CLSA_2026-04-27,kb-financial-group
+105560,KB금융,JP Morgan,2026-04-24,200000.0,180000.0,,11.11,매수,investing.com,foreign,investing_kb-financial-group_JPMorgan_2026-04-24,kb-financial-group
 042660,한화오션,Nomura,2026-04-28,75000.0,72000.0,,4.17,매도,investing.com,foreign,investing_daewoo-shipbuilding_Nomura/Instinet_2026-04-28,daewoo-shipbuilding
 042660,한화오션,Macquarie,2026-04-28,150000.0,,,,매수,investing.com,foreign,investing_daewoo-shipbuilding_Macquarie_2026-04-28,daewoo-shipbuilding
 042660,한화오션,CLSA,2026-04-15,170000.0,167000.0,,1.8,매수,investing.com,foreign,investing_daewoo-shipbuilding_CLSA_2026-04-15,daewoo-shipbuilding
@@ -166,16 +178,16 @@
 006400,삼성SDI,Nomura,2026-04-29,900000.0,540000.0,,66.67,매수,investing.com,foreign,investing_samsung-sdi_Nomura/Instinet_2026-04-29,samsung-sdi
 006400,삼성SDI,Citi,2026-04-28,900000.0,385000.0,,133.77,매수,investing.com,foreign,investing_samsung-sdi_Citi_2026-04-28,samsung-sdi
 006400,삼성SDI,Morgan Stanley,2026-04-28,850000.0,420000.0,,102.38,매수,investing.com,foreign,investing_samsung-sdi_Morgan Stanley_2026-04-28,samsung-sdi
-373220,LG에너지솔루션,Goldman Sachs,2026-06-02,520000.0,410000.0,,26.83,매수,investing.com,foreign,investing_lg-energy-solution_Goldman Sachs_2026-06-02,lg-energy-solution
-373220,LG에너지솔루션,JP Morgan,2026-05-04,530000.0,510000.0,,3.92,매수,investing.com,foreign,investing_lg-energy-solution_JPMorgan_2026-05-04,lg-energy-solution
-373220,LG에너지솔루션,JP Morgan,2026-04-22,510000.0,450000.0,,13.33,매수,investing.com,foreign,investing_lg-energy-solution_JPMorgan_2026-04-22,lg-energy-solution
-373220,LG에너지솔루션,Bernstein SocGen Group,2026-02-11,347000.0,363000.0,,-4.41,보유,investing.com,foreign,investing_lg-energy-solution_Bernstein SocGen Group_2026-02-11,lg-energy-solution
-373220,LG에너지솔루션,JP Morgan,2026-02-09,450000.0,430000.0,,4.65,매수,investing.com,foreign,investing_lg-energy-solution_JPMorgan_2026-02-09,lg-energy-solution
 247540,에코프로비엠,Goldman Sachs,2026-06-02,110000.0,82500.0,,33.33,매도,investing.com,foreign,investing_ecopro-bm-co-ltd_Goldman Sachs_2026-06-02,ecopro-bm-co-ltd
 247540,에코프로비엠,JP Morgan,2026-05-04,180000.0,110000.0,,63.64,보유,investing.com,foreign,investing_ecopro-bm-co-ltd_JPMorgan_2026-05-04,ecopro-bm-co-ltd
 247540,에코프로비엠,Nomura,2026-04-30,280000.0,270000.0,,3.7,매수,investing.com,foreign,investing_ecopro-bm-co-ltd_Nomura/Instinet_2026-04-30,ecopro-bm-co-ltd
 247540,에코프로비엠,Macquarie,2026-04-30,154000.0,,,,매도,investing.com,foreign,investing_ecopro-bm-co-ltd_Macquarie_2026-04-30,ecopro-bm-co-ltd
 247540,에코프로비엠,JP Morgan,2026-04-30,180000.0,110000.0,,63.64,보유,investing.com,foreign,investing_ecopro-bm-co-ltd_JPMorgan_2026-04-30,ecopro-bm-co-ltd
+373220,LG에너지솔루션,Goldman Sachs,2026-06-02,520000.0,410000.0,,26.83,매수,investing.com,foreign,investing_lg-energy-solution_Goldman Sachs_2026-06-02,lg-energy-solution
+373220,LG에너지솔루션,JP Morgan,2026-05-04,530000.0,510000.0,,3.92,매수,investing.com,foreign,investing_lg-energy-solution_JPMorgan_2026-05-04,lg-energy-solution
+373220,LG에너지솔루션,JP Morgan,2026-04-22,510000.0,450000.0,,13.33,매수,investing.com,foreign,investing_lg-energy-solution_JPMorgan_2026-04-22,lg-energy-solution
+373220,LG에너지솔루션,Bernstein SocGen Group,2026-02-11,347000.0,363000.0,,-4.41,보유,investing.com,foreign,investing_lg-energy-solution_Bernstein SocGen Group_2026-02-11,lg-energy-solution
+373220,LG에너지솔루션,JP Morgan,2026-02-09,450000.0,430000.0,,4.65,매수,investing.com,foreign,investing_lg-energy-solution_JPMorgan_2026-02-09,lg-energy-solution
 066570,LG전자,JP Morgan,2026-05-04,145000.0,87000.0,,66.67,보유,investing.com,foreign,investing_lg-electronics-inc_JPMorgan_2026-05-04,lg-electronics-inc
 066570,LG전자,Nomura,2026-04-30,160000.0,120000.0,,33.33,매수,investing.com,foreign,investing_lg-electronics-inc_Nomura/Instinet_2026-04-30,lg-electronics-inc
 066570,LG전자,Macquarie,2026-04-30,135000.0,85000.0,,58.82,보유,investing.com,foreign,investing_lg-electronics-inc_Macquarie_2026-04-30,lg-electronics-inc
@@ -186,50 +198,42 @@
 012450,한화에어로스페이스,JP Morgan,2026-04-08,1900000.0,1500000.0,,26.67,매수,investing.com,foreign,investing_samsung-techwin_JPMorgan_2026-04-08,samsung-techwin
 012450,한화에어로스페이스,Goldman Sachs,2026-03-11,1830000.0,1480000.0,,23.65,매수,investing.com,foreign,investing_samsung-techwin_Goldman Sachs_2026-03-11,samsung-techwin
 012450,한화에어로스페이스,Macquarie,2026-02-10,1540000.0,1600000.0,,-3.75,매수,investing.com,foreign,investing_samsung-techwin_Macquarie_2026-02-10,samsung-techwin
-079550,LIG디펜스앤에어로스페이스,Nomura,2026-05-08,1200000.0,650000.0,,84.62,매수,investing.com,foreign,investing_lig-nex1-co-ltd_Nomura/Instinet_2026-05-08,lig-nex1-co-ltd
-079550,LIG디펜스앤에어로스페이스,JP Morgan,2026-04-08,1100000.0,590000.0,,86.44,매수,investing.com,foreign,investing_lig-nex1-co-ltd_JPMorgan_2026-04-08,lig-nex1-co-ltd
-079550,LIG디펜스앤에어로스페이스,Macquarie,2026-03-26,930000.0,560000.0,,66.07,매수,investing.com,foreign,investing_lig-nex1-co-ltd_Macquarie_2026-03-26,lig-nex1-co-ltd
-079550,LIG디펜스앤에어로스페이스,Macquarie,2026-02-19,560000.0,630000.0,,-11.11,매수,investing.com,foreign,investing_lig-nex1-co-ltd_Macquarie_2026-02-19,lig-nex1-co-ltd
-079550,LIG디펜스앤에어로스페이스,JP Morgan,2026-02-16,590000.0,650000.0,,-9.23,매수,investing.com,foreign,investing_lig-nex1-co-ltd_JPMorgan_2026-02-16,lig-nex1-co-ltd
 064350,현대로템,Macquarie,2026-04-28,350000.0,,,,매수,investing.com,foreign,investing_hyundai-rotem_Macquarie_2026-04-28,hyundai-rotem
 064350,현대로템,JP Morgan,2026-04-27,300000.0,290000.0,,3.45,매수,investing.com,foreign,investing_hyundai-rotem_JPMorgan_2026-04-27,hyundai-rotem
 064350,현대로템,Nomura,2026-04-17,350000.0,320000.0,,9.38,매수,investing.com,foreign,investing_hyundai-rotem_Nomura/Instinet_2026-04-17,hyundai-rotem
 064350,현대로템,JP Morgan,2026-04-08,290000.0,280000.0,,3.57,매수,investing.com,foreign,investing_hyundai-rotem_JPMorgan_2026-04-08,hyundai-rotem
 064350,현대로템,JP Morgan,2026-02-02,280000.0,290000.0,,-3.45,매수,investing.com,foreign,investing_hyundai-rotem_JPMorgan_2026-02-02,hyundai-rotem
-272210,한화시스템,Nomura,2026-04-28,65000.0,48000.0,,35.42,매도,investing.com,foreign,investing_hanwha-systems-co-ltd_Nomura/Instinet_2026-04-28,hanwha-systems-co-ltd
-272210,한화시스템,Macquarie,2026-04-28,65000.0,51000.0,,27.45,매도,investing.com,foreign,investing_hanwha-systems-co-ltd_Macquarie_2026-04-28,hanwha-systems-co-ltd
-272210,한화시스템,Nomura,2026-02-09,48000.0,47000.0,,2.13,매도,investing.com,foreign,investing_hanwha-systems-co-ltd_Nomura/Instinet_2026-02-09,hanwha-systems-co-ltd
-272210,한화시스템,Nomura,2026-01-19,47000.0,41000.0,,14.63,매도,investing.com,foreign,investing_hanwha-systems-co-ltd_Nomura/Instinet_2026-01-19,hanwha-systems-co-ltd
+079550,LIG디펜스앤에어로스페이스,Macquarie,2026-06-29,1100000.0,,,,매수,investing.com,foreign,investing_lig-nex1-co-ltd_Macquarie_2026-06-29,lig-nex1-co-ltd
+079550,LIG디펜스앤에어로스페이스,Nomura,2026-05-08,1200000.0,650000.0,,84.62,매수,investing.com,foreign,investing_lig-nex1-co-ltd_Nomura/Instinet_2026-05-08,lig-nex1-co-ltd
+079550,LIG디펜스앤에어로스페이스,JP Morgan,2026-04-08,1100000.0,590000.0,,86.44,매수,investing.com,foreign,investing_lig-nex1-co-ltd_JPMorgan_2026-04-08,lig-nex1-co-ltd
+079550,LIG디펜스앤에어로스페이스,Macquarie,2026-03-26,930000.0,560000.0,,66.07,매수,investing.com,foreign,investing_lig-nex1-co-ltd_Macquarie_2026-03-26,lig-nex1-co-ltd
+079550,LIG디펜스앤에어로스페이스,Macquarie,2026-02-19,560000.0,630000.0,,-11.11,매수,investing.com,foreign,investing_lig-nex1-co-ltd_Macquarie_2026-02-19,lig-nex1-co-ltd
 352820,하이브,Nomura,2026-04-30,400000.0,460000.0,,-13.04,매수,investing.com,foreign,investing_big-hit-entertainment-co-ltd_Nomura/Instinet_2026-04-30,big-hit-entertainment-co-ltd
 352820,하이브,Citi,2026-04-30,380000.0,440000.0,,-13.64,매수,investing.com,foreign,investing_big-hit-entertainment-co-ltd_Citi_2026-04-30,big-hit-entertainment-co-ltd
 352820,하이브,Bernstein SocGen Group,2026-03-09,500000.0,,,,매수,investing.com,foreign,investing_big-hit-entertainment-co-ltd_Bernstein SocGen Group_2026-03-09,big-hit-entertainment-co-ltd
 352820,하이브,Macquarie,2026-02-13,450000.0,370000.0,,21.62,매수,investing.com,foreign,investing_big-hit-entertainment-co-ltd_Macquarie_2026-02-13,big-hit-entertainment-co-ltd
 352820,하이브,Nomura,2026-02-13,460000.0,410000.0,,12.2,매수,investing.com,foreign,investing_big-hit-entertainment-co-ltd_Nomura/Instinet_2026-02-13,big-hit-entertainment-co-ltd
+272210,한화시스템,Nomura,2026-04-28,65000.0,48000.0,,35.42,매도,investing.com,foreign,investing_hanwha-systems-co-ltd_Nomura/Instinet_2026-04-28,hanwha-systems-co-ltd
+272210,한화시스템,Macquarie,2026-04-28,65000.0,51000.0,,27.45,매도,investing.com,foreign,investing_hanwha-systems-co-ltd_Macquarie_2026-04-28,hanwha-systems-co-ltd
+272210,한화시스템,Nomura,2026-02-09,48000.0,47000.0,,2.13,매도,investing.com,foreign,investing_hanwha-systems-co-ltd_Nomura/Instinet_2026-02-09,hanwha-systems-co-ltd
+272210,한화시스템,Nomura,2026-01-19,47000.0,41000.0,,14.63,매도,investing.com,foreign,investing_hanwha-systems-co-ltd_Nomura/Instinet_2026-01-19,hanwha-systems-co-ltd
+041510,에스엠,Nomura,2026-05-07,100000.0,120000.0,,-16.67,보유,investing.com,foreign,investing_sm-entertainment-co_Nomura/Instinet_2026-05-07,sm-entertainment-co
 035900,JYP Ent.,Nomura,2026-05-15,65000.0,81000.0,,-19.75,보유,investing.com,foreign,investing_jyp-entertainment-corp_Nomura/Instinet_2026-05-15,jyp-entertainment-corp
 035900,JYP Ent.,JP Morgan,2026-05-15,80000.0,89000.0,,-10.11,매수,investing.com,foreign,investing_jyp-entertainment-corp_JPMorgan_2026-05-15,jyp-entertainment-corp
 035900,JYP Ent.,JP Morgan,2026-03-11,93000.0,90000.0,,3.33,매수,investing.com,foreign,investing_jyp-entertainment-corp_JPMorgan_2026-03-11,jyp-entertainment-corp
-041510,에스엠,Nomura,2026-05-07,100000.0,120000.0,,-16.67,보유,investing.com,foreign,investing_sm-entertainment-co_Nomura/Instinet_2026-05-07,sm-entertainment-co
 122870,와이지엔터테인먼트,Nomura,2026-05-11,57000.0,80000.0,,-28.75,보유,investing.com,foreign,investing_yg-entertainment-inc_Nomura/Instinet_2026-05-11,yg-entertainment-inc
-035760,CJ ENM,Citi,2026-05-28,40000.0,43000.0,,-6.98,매도,investing.com,foreign,investing_cj-o-shopping-co-ltd_Citi_2026-05-28,cj-o-shopping-co-ltd
-298040,효성중공업,Citi,2026-04-27,4500000.0,3200000.0,,40.62,매수,investing.com,foreign,investing_hyosung-heavy-industries_Citi_2026-04-27,hyosung-heavy-industries
-298040,효성중공업,Macquarie,2026-04-27,4700000.0,3600000.0,,30.56,매수,investing.com,foreign,investing_hyosung-heavy-industries_Macquarie_2026-04-27,hyosung-heavy-industries
-298040,효성중공업,JP Morgan,2026-04-27,3900000.0,3300000.0,,18.18,매수,investing.com,foreign,investing_hyosung-heavy-industries_JPMorgan_2026-04-27,hyosung-heavy-industries
-298040,효성중공업,Macquarie,2026-04-24,4700000.0,3600000.0,,30.56,매수,investing.com,foreign,investing_hyosung-heavy-industries_Macquarie_2026-04-24,hyosung-heavy-industries
-298040,효성중공업,JP Morgan,2026-04-09,3300000.0,3000000.0,,10.0,매수,investing.com,foreign,investing_hyosung-heavy-industries_JPMorgan_2026-04-09,hyosung-heavy-industries
+010120,LS ELECTRIC,JP Morgan,2026-06-25,190000.0,160000.0,,18.75,보유,investing.com,foreign,investing_ls-industrial-systems_JPMorgan_2026-06-25,ls-industrial-systems
 010120,LS ELECTRIC,Citi,2026-04-30,320000.0,230000.0,,39.13,매수,investing.com,foreign,investing_ls-industrial-systems_Citi_2026-04-30,ls-industrial-systems
 010120,LS ELECTRIC,Macquarie,2026-04-22,150000.0,490000.0,,-69.39,매도,investing.com,foreign,investing_ls-industrial-systems_Macquarie_2026-04-22,ls-industrial-systems
 010120,LS ELECTRIC,Citi,2026-04-21,230000.0,168000.0,,36.9,매수,investing.com,foreign,investing_ls-industrial-systems_Citi_2026-04-21,ls-industrial-systems
 010120,LS ELECTRIC,Morgan Stanley,2026-04-21,240000.0,136000.0,,76.47,매수,investing.com,foreign,investing_ls-industrial-systems_Morgan Stanley_2026-04-21,ls-industrial-systems
-010120,LS ELECTRIC,JP Morgan,2026-04-15,160000.0,800000.0,,-80.0,보유,investing.com,foreign,investing_ls-industrial-systems_JPMorgan_2026-04-15,ls-industrial-systems
-267260,HD현대일렉트릭,Macquarie,2026-04-29,1600000.0,1200000.0,,33.33,매수,investing.com,foreign,investing_hyundai-electric-energy-systems_Macquarie_2026-04-29,hyundai-electric-energy-systems
-267260,HD현대일렉트릭,JP Morgan,2026-04-29,1315000.0,1100000.0,,19.55,매수,investing.com,foreign,investing_hyundai-electric-energy-systems_JPMorgan_2026-04-29,hyundai-electric-energy-systems
-267260,HD현대일렉트릭,Citi,2026-04-28,1440000.0,1200000.0,,20.0,매수,investing.com,foreign,investing_hyundai-electric-energy-systems_Citi_2026-04-28,hyundai-electric-energy-systems
-267260,HD현대일렉트릭,Morgan Stanley,2026-04-28,1500000.0,1200000.0,,25.0,매수,investing.com,foreign,investing_hyundai-electric-energy-systems_Morgan Stanley_2026-04-28,hyundai-electric-energy-systems
-267260,HD현대일렉트릭,JP Morgan,2026-04-09,1100000.0,1050000.0,,4.76,매수,investing.com,foreign,investing_hyundai-electric-energy-systems_JPMorgan_2026-04-09,hyundai-electric-energy-systems
 454910,두산로보틱스,UBS,2026-01-29,130000.0,81000.0,,60.49,보유,investing.com,foreign,investing_doosan-robotics_UBS_2026-01-29,doosan-robotics
+034230,파라다이스,UBS,2026-06-27,27000.0,19200.0,,40.62,매수,investing.com,foreign,investing_paradise-co-ltd_UBS_2026-06-27,paradise-co-ltd
 034230,파라다이스,Citi,2026-04-16,19500.0,25500.0,,-23.53,매수,investing.com,foreign,investing_paradise-co-ltd_Citi_2026-04-16,paradise-co-ltd
 034230,파라다이스,JP Morgan,2026-02-11,19000.0,14800.0,,28.38,보유,investing.com,foreign,investing_paradise-co-ltd_JPMorgan_2026-02-11,paradise-co-ltd
 034230,파라다이스,CLSA,2026-02-11,24000.0,18000.0,,33.33,매수,investing.com,foreign,investing_paradise-co-ltd_CLSA_2026-02-11,paradise-co-ltd
+006360,GS건설,Macquarie,2026-05-04,16200.0,15500.0,,4.52,매도,investing.com,foreign,investing_gs-engineering---construction_Macquarie_2026-05-04,gs-engineering---construction
+006360,GS건설,HSBC,2026-03-18,26000.0,20000.0,,30.0,보유,investing.com,foreign,investing_gs-engineering---construction_HSBC_2026-03-18,gs-engineering---construction
 028050,삼성E&A,Macquarie,2026-04-24,45000.0,28000.0,,60.71,보유,investing.com,foreign,investing_samsung-engineering_Macquarie_2026-04-24,samsung-engineering
 028050,삼성E&A,CLSA,2026-04-06,50000.0,40000.0,,25.0,매수,investing.com,foreign,investing_samsung-engineering_CLSA_2026-04-06,samsung-engineering
 028050,삼성E&A,Macquarie,2026-01-26,28000.0,,,,보유,investing.com,foreign,investing_samsung-engineering_Macquarie_2026-01-26,samsung-engineering
@@ -239,13 +243,14 @@
 161890,한국콜마,Macquarie,2026-02-26,95000.0,80000.0,,18.75,매수,investing.com,foreign,investing_korea-kolmar_Macquarie_2026-02-26,korea-kolmar
 161890,한국콜마,JP Morgan,2026-02-26,74000.0,67000.0,,10.45,보유,investing.com,foreign,investing_korea-kolmar_JPMorgan_2026-02-26,korea-kolmar
 161890,한국콜마,Macquarie,2026-01-14,80000.0,110000.0,,-27.27,매수,investing.com,foreign,investing_korea-kolmar_Macquarie_2026-01-14,korea-kolmar
+067160,SOOP,JP Morgan,2026-05-04,65000.0,80000.0,,-18.75,보유,investing.com,foreign,investing_afreecatv-co-ltd_JPMorgan_2026-05-04,afreecatv-co-ltd
+067160,SOOP,HSBC,2026-02-24,80000.0,110000.0,,-27.27,보유,investing.com,foreign,investing_afreecatv-co-ltd_HSBC_2026-02-24,afreecatv-co-ltd
+035720,카카오,Goldman Sachs,2026-06-30,49000.0,81000.0,,-39.51,매수,investing.com,foreign,investing_kakao-corp_Goldman Sachs_2026-06-30,kakao-corp
 035720,카카오,CLSA,2026-06-15,42000.0,,,,보유,investing.com,foreign,investing_kakao-corp_CLSA_2026-06-15,kakao-corp
 035720,카카오,Nomura,2026-05-08,45000.0,59000.0,,-23.73,보유,investing.com,foreign,investing_kakao-corp_Nomura/Instinet_2026-05-08,kakao-corp
 035720,카카오,JP Morgan,2026-05-08,50000.0,60000.0,,-16.67,보유,investing.com,foreign,investing_kakao-corp_JPMorgan_2026-05-08,kakao-corp
 035720,카카오,JP Morgan,2026-02-13,60000.0,65000.0,,-7.69,보유,investing.com,foreign,investing_kakao-corp_JPMorgan_2026-02-13,kakao-corp
-035720,카카오,Macquarie,2026-02-13,83000.0,80000.0,,3.75,매수,investing.com,foreign,investing_kakao-corp_Macquarie_2026-02-13,kakao-corp
-067160,SOOP,JP Morgan,2026-05-04,65000.0,80000.0,,-18.75,보유,investing.com,foreign,investing_afreecatv-co-ltd_JPMorgan_2026-05-04,afreecatv-co-ltd
-067160,SOOP,HSBC,2026-02-24,80000.0,110000.0,,-27.27,보유,investing.com,foreign,investing_afreecatv-co-ltd_HSBC_2026-02-24,afreecatv-co-ltd
+086280,현대글로비스,UBS,2026-07-01,250000.0,,,,매수,investing.com,foreign,investing_hyundai-glovis_UBS_2026-07-01,hyundai-glovis
 000120,CJ대한통운,JP Morgan,2026-05-14,100000.0,120000.0,,-16.67,보유,investing.com,foreign,investing_cj-korea-express_JPMorgan_2026-05-14,cj-korea-express
 000120,CJ대한통운,JP Morgan,2026-02-11,120000.0,80000.0,,50.0,보유,investing.com,foreign,investing_cj-korea-express_JPMorgan_2026-02-11,cj-korea-express
 052690,한전기술,JP Morgan,2026-05-14,260000.0,210000.0,,23.81,매수,investing.com,foreign,investing_kepco-engineering---construction_JPMorgan_2026-05-14,kepco-engineering---construction
@@ -256,6 +261,8 @@
 003230,삼양식품,CLSA,2026-03-24,2100000.0,,,,매수,investing.com,foreign,investing_sam-yang-foods_CLSA_2026-03-24,sam-yang-foods
 003230,삼양식품,CLSA,2026-01-23,2100000.0,2000000.0,,5.0,매수,investing.com,foreign,investing_sam-yang-foods_CLSA_2026-01-23,sam-yang-foods
 003230,삼양식품,Macquarie,2026-01-15,1900000.0,,,,매수,investing.com,foreign,investing_sam-yang-foods_Macquarie_2026-01-15,sam-yang-foods
+271560,오리온,Citi,2026-02-11,165000.0,120000.0,,37.5,매수,investing.com,foreign,investing_orion-corp_Citi_2026-02-11,orion-corp
+271560,오리온,Morgan Stanley,2026-01-27,140000.0,114000.0,,22.81,매수,investing.com,foreign,investing_orion-corp_Morgan Stanley_2026-01-27,orion-corp
 030000,제일기획,Citi,2026-04-27,22800.0,23400.0,,-2.56,매수,investing.com,foreign,investing_cheil-worldwide_Citi_2026-04-27,cheil-worldwide
 030000,제일기획,Macquarie,2026-01-29,25000.0,,,,매수,investing.com,foreign,investing_cheil-worldwide_Macquarie_2026-01-29,cheil-worldwide
 214320,이노션,Macquarie,2026-02-04,23000.0,,,,매수,investing.com,foreign,investing_innocean-worldwide-inc_Macquarie_2026-02-04,innocean-worldwide-inc
@@ -264,11 +271,11 @@
 402340,SK스퀘어,CLSA,2026-05-15,1500000.0,1250000.0,,20.0,매수,investing.com,foreign,investing_sk-square_CLSA_2026-05-15,sk-square
 402340,SK스퀘어,CLSA,2026-05-07,1250000.0,700000.0,,78.57,매수,investing.com,foreign,investing_sk-square_CLSA_2026-05-07,sk-square
 402340,SK스퀘어,CLSA,2026-03-31,700000.0,790000.0,,-11.39,매수,investing.com,foreign,investing_sk-square_CLSA_2026-03-31,sk-square
+028260,삼성물산,CLSA,2026-06-25,630000.0,570000.0,,10.53,매수,investing.com,foreign,investing_cheil-industries-inc_CLSA_2026-06-25,cheil-industries-inc
 028260,삼성물산,CLSA,2026-06-02,570000.0,500000.0,,14.0,매수,investing.com,foreign,investing_cheil-industries-inc_CLSA_2026-06-02,cheil-industries-inc
 028260,삼성물산,JP Morgan,2026-05-22,570000.0,370000.0,,54.05,매수,investing.com,foreign,investing_cheil-industries-inc_JPMorgan_2026-05-22,cheil-industries-inc
 028260,삼성물산,CLSA,2026-05-07,500000.0,450000.0,,11.11,매수,investing.com,foreign,investing_cheil-industries-inc_CLSA_2026-05-07,cheil-industries-inc
 028260,삼성물산,HSBC,2026-03-18,405000.0,380000.0,,6.58,매수,investing.com,foreign,investing_cheil-industries-inc_HSBC_2026-03-18,cheil-industries-inc
-028260,삼성물산,Morgan Stanley,2026-03-17,340000.0,140000.0,,142.86,매수,investing.com,foreign,investing_cheil-industries-inc_Morgan Stanley_2026-03-17,cheil-industries-inc
 003550,LG,CLSA,2026-06-09,160000.0,140000.0,,14.29,매수,investing.com,foreign,investing_lg-corp_CLSA_2026-06-09,lg-corp
 003550,LG,JP Morgan,2026-05-08,110000.0,100000.0,,10.0,보유,investing.com,foreign,investing_lg-corp_JPMorgan_2026-05-08,lg-corp
 003550,LG,Macquarie,2026-03-18,71000.0,66000.0,,7.58,매도,investing.com,foreign,investing_lg-corp_Macquarie_2026-03-18,lg-corp
@@ -277,16 +284,19 @@
 000810,삼성화재,Goldman Sachs,2026-04-29,620000.0,550000.0,,12.73,매수,investing.com,foreign,investing_samsung-fire---marine-insurance_Goldman Sachs_2026-04-29,samsung-fire---marine-insurance
 000810,삼성화재,JP Morgan,2026-04-15,500000.0,450000.0,,11.11,보유,investing.com,foreign,investing_samsung-fire---marine-insurance_JPMorgan_2026-04-15,samsung-fire---marine-insurance
 000810,삼성화재,HSBC,2026-04-14,682000.0,753000.0,,-9.43,매수,investing.com,foreign,investing_samsung-fire---marine-insurance_HSBC_2026-04-14,samsung-fire---marine-insurance
-001450,현대해상,HSBC,2026-04-14,27900.0,27000.0,,3.33,보유,investing.com,foreign,investing_hyundai-mar-fi_HSBC_2026-04-14,hyundai-mar-fi
-001450,현대해상,Goldman Sachs,2026-03-25,40000.0,36000.0,,11.11,매수,investing.com,foreign,investing_hyundai-mar-fi_Goldman Sachs_2026-03-25,hyundai-mar-fi
-001450,현대해상,JP Morgan,2026-01-08,22000.0,41000.0,,-46.34,매도,investing.com,foreign,investing_hyundai-mar-fi_JPMorgan_2026-01-08,hyundai-mar-fi
 005830,DB손해보험,Morgan Stanley,2026-05-18,209000.0,220000.0,,-5.0,매수,investing.com,foreign,investing_dongbu-insurance_Morgan Stanley_2026-05-18,dongbu-insurance
 005830,DB손해보험,Goldman Sachs,2026-04-29,203000.0,184000.0,,10.33,매수,investing.com,foreign,investing_dongbu-insurance_Goldman Sachs_2026-04-29,dongbu-insurance
 005830,DB손해보험,HSBC,2026-04-14,219000.0,228000.0,,-3.95,매수,investing.com,foreign,investing_dongbu-insurance_HSBC_2026-04-14,dongbu-insurance
 005830,DB손해보험,HSBC,2026-02-24,228000.0,172000.0,,32.56,매수,investing.com,foreign,investing_dongbu-insurance_HSBC_2026-02-24,dongbu-insurance
 005830,DB손해보험,CLSA,2026-02-23,280000.0,150000.0,,86.67,매수,investing.com,foreign,investing_dongbu-insurance_CLSA_2026-02-23,dongbu-insurance
+001450,현대해상,HSBC,2026-04-14,27900.0,27000.0,,3.33,보유,investing.com,foreign,investing_hyundai-mar-fi_HSBC_2026-04-14,hyundai-mar-fi
+001450,현대해상,Goldman Sachs,2026-03-25,40000.0,36000.0,,11.11,매수,investing.com,foreign,investing_hyundai-mar-fi_Goldman Sachs_2026-03-25,hyundai-mar-fi
+001450,현대해상,JP Morgan,2026-01-08,22000.0,41000.0,,-46.34,매도,investing.com,foreign,investing_hyundai-mar-fi_JPMorgan_2026-01-08,hyundai-mar-fi
 003690,코리안리,JP Morgan,2026-05-18,17000.0,12000.0,,41.67,매수,investing.com,foreign,investing_korean-reinsu_JPMorgan_2026-05-18,korean-reinsu
 003690,코리안리,JP Morgan,2026-01-08,12000.0,13000.0,,-7.69,보유,investing.com,foreign,investing_korean-reinsu_JPMorgan_2026-01-08,korean-reinsu
+204320,HL만도,Nomura,2026-04-30,63000.0,65000.0,,-3.08,보유,investing.com,foreign,investing_mando-corp_Nomura/Instinet_2026-04-30,mando-corp
+204320,HL만도,Nomura,2026-02-24,65000.0,34000.0,,91.18,보유,investing.com,foreign,investing_mando-corp_Nomura/Instinet_2026-02-24,mando-corp
+204320,HL만도,Macquarie,2026-02-06,65000.0,,,,보유,investing.com,foreign,investing_mando-corp_Macquarie_2026-02-06,mando-corp
 012330,현대모비스,JP Morgan,2026-06-22,710000.0,,,,보유,investing.com,foreign,investing_hyundai-mobis_JPMorgan_2026-06-22,hyundai-mobis
 012330,현대모비스,UBS,2026-06-12,600000.0,520000.0,,15.38,보유,investing.com,foreign,investing_hyundai-mobis_UBS_2026-06-12,hyundai-mobis
 012330,현대모비스,CLSA,2026-05-27,900000.0,690000.0,,30.43,매수,investing.com,foreign,investing_hyundai-mobis_CLSA_2026-05-27,hyundai-mobis
@@ -304,25 +314,24 @@
 030200,KT,HSBC,2026-02-11,66520.0,61090.0,,8.89,매수,investing.com,foreign,investing_kt-corporation_HSBC_2026-02-11,kt-corporation
 030200,KT,JP Morgan,2026-02-11,75000.0,70000.0,,7.14,매수,investing.com,foreign,investing_kt-corporation_JPMorgan_2026-02-11,kt-corporation
 030200,KT,Macquarie,2026-02-11,70000.0,65000.0,,7.69,매수,investing.com,foreign,investing_kt-corporation_Macquarie_2026-02-11,kt-corporation
+000660,SK하이닉스,CLSA,2026-06-29,3700000.0,,,,매수,investing.com,foreign,investing_sk-hynix-inc_CLSA_2026-06-29,sk-hynix-inc
 000660,SK하이닉스,Bernstein SocGen Group,2026-06-22,3300000.0,1150000.0,,186.96,매수,investing.com,foreign,investing_sk-hynix-inc_Bernstein SocGen Group_2026-06-22,sk-hynix-inc
 000660,SK하이닉스,CLSA,2026-06-02,3700000.0,2520000.0,,46.83,매수,investing.com,foreign,investing_sk-hynix-inc_CLSA_2026-06-02,sk-hynix-inc
 000660,SK하이닉스,Goldman Sachs,2026-06-01,3500000.0,1800000.0,,94.44,매수,investing.com,foreign,investing_sk-hynix-inc_Goldman Sachs_2026-06-01,sk-hynix-inc
 000660,SK하이닉스,Nomura,2026-05-18,4000000.0,2340000.0,,70.94,매수,investing.com,foreign,investing_sk-hynix-inc_Nomura/Instinet_2026-05-18,sk-hynix-inc
-000660,SK하이닉스,JP Morgan,2026-05-18,3000000.0,1800000.0,,66.67,매수,investing.com,foreign,investing_sk-hynix-inc_JPMorgan_2026-05-18,sk-hynix-inc
+005930,삼성전자,CLSA,2026-06-29,540000.0,,,,매수,investing.com,foreign,investing_samsung-electronics-co-ltd_CLSA_2026-06-29,samsung-electronics-co-ltd
 005930,삼성전자,Nomura,2026-06-23,670000.0,590000.0,,13.56,매수,investing.com,foreign,investing_samsung-electronics-co-ltd_Nomura/Instinet_2026-06-23,samsung-electronics-co-ltd
 005930,삼성전자,Bernstein SocGen Group,2026-06-22,440000.0,225000.0,,95.56,매수,investing.com,foreign,investing_samsung-electronics-co-ltd_Bernstein SocGen Group_2026-06-22,samsung-electronics-co-ltd
 005930,삼성전자,CLSA,2026-06-02,540000.0,400000.0,,35.0,매수,investing.com,foreign,investing_samsung-electronics-co-ltd_CLSA_2026-06-02,samsung-electronics-co-ltd
 005930,삼성전자,Nomura,2026-05-18,590000.0,340000.0,,73.53,매수,investing.com,foreign,investing_samsung-electronics-co-ltd_Nomura/Instinet_2026-05-18,samsung-electronics-co-ltd
-005930,삼성전자,JP Morgan,2026-05-18,480000.0,350000.0,,37.14,매수,investing.com,foreign,investing_samsung-electronics-co-ltd_JPMorgan_2026-05-18,samsung-electronics-co-ltd
-042700,한미반도체,JP Morgan,2026-06-12,200000.0,150000.0,,33.33,매도,investing.com,foreign,investing_hanmi-semicon_JPMorgan_2026-06-12,hanmi-semicon
-042700,한미반도체,CLSA,2026-05-18,325000.0,230000.0,,41.3,보유,investing.com,foreign,investing_hanmi-semicon_CLSA_2026-05-18,hanmi-semicon
-042700,한미반도체,Macquarie,2026-02-10,100000.0,89000.0,,12.36,매도,investing.com,foreign,investing_hanmi-semicon_Macquarie_2026-02-10,hanmi-semicon
-042700,한미반도체,Citi,2026-02-04,110000.0,,,,매도,investing.com,foreign,investing_hanmi-semicon_Citi_2026-02-04,hanmi-semicon
-042700,한미반도체,CLSA,2026-02-03,230000.0,180000.0,,27.78,매수,investing.com,foreign,investing_hanmi-semicon_CLSA_2026-02-03,hanmi-semicon
 005380,현대차,Nomura,2026-06-23,670000.0,640000.0,,4.69,매수,investing.com,foreign,investing_hyundai-motor_Nomura/Instinet_2026-06-23,hyundai-motor
 005380,현대차,CLSA,2026-05-27,790000.0,730000.0,,8.22,매수,investing.com,foreign,investing_hyundai-motor_CLSA_2026-05-27,hyundai-motor
 005380,현대차,Macquarie,2026-05-19,800000.0,590000.0,,35.59,매수,investing.com,foreign,investing_hyundai-motor_Macquarie_2026-05-19,hyundai-motor
 005380,현대차,Macquarie,2026-04-24,590000.0,,,,매수,investing.com,foreign,investing_hyundai-motor_Macquarie_2026-04-24,hyundai-motor
+240810,원익IPS,UBS,2026-06-03,145000.0,,,,매수,investing.com,foreign,investing_wonik-ips-co-ltd_UBS_2026-06-03,wonik-ips-co-ltd
+240810,원익IPS,Macquarie,2026-04-20,170000.0,,,,매수,investing.com,foreign,investing_wonik-ips-co-ltd_Macquarie_2026-04-20,wonik-ips-co-ltd
+240810,원익IPS,Nomura,2026-02-26,134000.0,90000.0,,48.89,매수,investing.com,foreign,investing_wonik-ips-co-ltd_Nomura/Instinet_2026-02-26,wonik-ips-co-ltd
+240810,원익IPS,CLSA,2026-02-03,120000.0,75000.0,,60.0,매수,investing.com,foreign,investing_wonik-ips-co-ltd_CLSA_2026-02-03,wonik-ips-co-ltd
 000270,기아,CLSA,2026-05-27,290000.0,270000.0,,7.41,매수,investing.com,foreign,investing_kia-motors_CLSA_2026-05-27,kia-motors
 000270,기아,Macquarie,2026-05-19,290000.0,230000.0,,26.09,매수,investing.com,foreign,investing_kia-motors_Macquarie_2026-05-19,kia-motors
 000270,기아,Macquarie,2026-04-27,230000.0,,,,매수,investing.com,foreign,investing_kia-motors_Macquarie_2026-04-27,kia-motors

@@ -23,6 +23,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from collectors.etf_analytics import build_etf_metrics_table, build_holdings_cache
 from collectors.investing_collector import InvestingCollector, SLUG_CACHE_PATH
+from collectors.naver_price_collector import NaverPriceCollector
 from collectors.yahoo_collector import YahooCollector
 from config.settings import (
     PROCESSED_DIR,
@@ -76,6 +77,7 @@ def _collect_investing_for_tickers(
     tickers: list[str],
     name_map: dict[str, str],
     months: int,
+    parallel_workers: int = 0,
 ) -> pd.DataFrame:
     collector = InvestingCollector()
     slug_map = _load_slug_map()
@@ -132,8 +134,39 @@ def _collect_investing_for_tickers(
                 )
         return still_failed
 
-    failed_error = _run_pass(pending, pass_no=1, delay=0.0)
-    if failed_error:
+    if parallel_workers > 0 and pending:
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        parallel_failed: list[str] = []
+        with ThreadPoolExecutor(max_workers=parallel_workers) as pool:
+            futures = {pool.submit(_fetch_one, code): code for code in pending}
+            done = 0
+            for fut in as_completed(futures):
+                code = futures[fut]
+                done += 1
+                try:
+                    df = fut.result()
+                    if not df.empty:
+                        frames.append(df)
+                    else:
+                        no_data.append(code)
+                except Exception as exc:
+                    parallel_failed.append(code)
+                    logger.warning("Investing %s 실패 (parallel): %s", code, exc)
+                if done % 25 == 0 or done == len(pending):
+                    rows = sum(len(f) for f in frames)
+                    logger.info(
+                        "Investing 병렬 %d/%d (누적 %d건, 오류 %d)",
+                        done,
+                        len(pending),
+                        rows,
+                        len(parallel_failed),
+                    )
+        failed_error = parallel_failed
+    else:
+        failed_error = _run_pass(pending, pass_no=1, delay=0.0)
+
+    if failed_error and parallel_workers <= 0:
         logger.info("Investing 오류 %d종목 — 30초 후 재시도", len(failed_error))
         time.sleep(30)
         failed_error = _run_pass(failed_error, pass_no=2, delay=3.0)
@@ -185,7 +218,9 @@ def run(
     refresh_investing: bool = False,
     skip_etf: bool = False,
     refresh_industry_cache: bool = False,
-) -> pd.DataFrame:
+    investing_parallel: int = 0,
+    return_meta: bool = False,
+):
     months = months or SECTOR_ANALYSIS_MONTHS
     per_sector = per_sector or SECTOR_LEADERS_PER_SECTOR
     top_n = top_gap or SECTOR_TOP_GAP_COUNT
@@ -207,17 +242,25 @@ def run(
     )
 
     cache_path = RAW_DIR / "sector_investing_reports.csv"
+    refreshed_count = 0
     if refresh_investing:
         logger.info("Investing 전 종목 재수집 (%d개)…", len(tickers))
-        fresh_df = _collect_investing_for_tickers(tickers, name_map, months)
+        fresh_df = _collect_investing_for_tickers(
+            tickers, name_map, months, parallel_workers=investing_parallel
+        )
         if from_cache and cache_path.exists():
             investing_df = pd.read_csv(cache_path, encoding="utf-8-sig")
             investing_df = _merge_investing_cache(investing_df, fresh_df)
         else:
             investing_df = fresh_df
         save_csv(investing_df, cache_path)
-        refreshed = set(fresh_df["ticker"].astype(str)) if not fresh_df.empty else set()
-        stale = [normalize_ticker_code(t) for t in tickers if normalize_ticker_code(t) not in refreshed]
+        if not fresh_df.empty:
+            refreshed_count = fresh_df["ticker"].nunique()
+        stale = [
+            normalize_ticker_code(t)
+            for t in tickers
+            if normalize_ticker_code(t) not in set(fresh_df["ticker"].astype(str))
+        ] if not fresh_df.empty else list(tickers)
         if stale:
             logger.warning("Investing 미갱신 %d종목: %s", len(stale), ", ".join(stale[:15]))
     elif from_cache and cache_path.exists():
@@ -243,12 +286,29 @@ def run(
 
     if investing_df.empty:
         logger.error("Investing 데이터 없음")
-        return pd.DataFrame()
+        empty = pd.DataFrame()
+        if return_meta:
+            return empty, {
+                "refreshed_tickers": refreshed_count,
+                "total_targets": len(tickers),
+                "prices_refreshed": 0,
+            }
+        return empty
 
     logger.info("Investing: %d건", len(investing_df))
 
-    prices_df = YahooCollector().collect(tickers, batch=True)
+    prices_df = NaverPriceCollector().collect(tickers, batch=True)
+    if not prices_df.empty:
+        prices_df["ticker"] = prices_df["ticker"].map(normalize_ticker_code)
+    have = set(prices_df["ticker"].astype(str)) if not prices_df.empty else set()
+    missing = [normalize_ticker_code(t) for t in tickers if normalize_ticker_code(t) not in have]
+    if missing:
+        yahoo_fill = YahooCollector().collect(missing, batch=True)
+        if not yahoo_fill.empty:
+            prices_df = pd.concat([prices_df, yahoo_fill], ignore_index=True)
+            prices_df = prices_df.drop_duplicates(subset=["ticker"], keep="first")
     save_csv(prices_df, RAW_DIR / "sector_yahoo_prices.csv")
+    prices_refreshed = len(prices_df) if not prices_df.empty else 0
 
     summary = build_stock_summary(
         investing_df,
@@ -280,6 +340,13 @@ def run(
         logger.warning("괴리율 상위 종목 없음 — ETF 표 생략")
 
     _print_console(summary, top)
+    meta = {
+        "refreshed_tickers": refreshed_count,
+        "total_targets": len(tickers),
+        "prices_refreshed": prices_refreshed,
+    }
+    if return_meta:
+        return summary, meta
     return summary
 
 
