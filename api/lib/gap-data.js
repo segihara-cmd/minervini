@@ -198,6 +198,27 @@ async function fetchInvestingConsensus(ticker, stockName, slug) {
   return parseConsensusHtml(html, ticker, stockName, resolved);
 }
 
+async function naverPrice(ticker) {
+  const code = normalizeCode(ticker);
+  try {
+    const url = `https://m.stock.naver.com/api/stock/${code}/basic`;
+    const res = await fetch(url, {
+      headers: { 'User-Agent': UA, Referer: 'https://m.stock.naver.com/' },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return parseNumber(json?.closePrice);
+  } catch (_) {
+    return null;
+  }
+}
+
+async function fetchLivePrice(ticker, marketHint) {
+  const naver = await naverPrice(ticker);
+  if (naver != null) return naver;
+  return yahooPrice(ticker, marketHint);
+}
+
 async function yahooPrice(ticker, marketHint) {
   const code = normalizeCode(ticker);
   const markets = marketHint === 'KOSDAQ' ? ['KQ', 'KS'] : ['KS', 'KQ'];
@@ -434,10 +455,15 @@ async function buildGapData() {
   const allReports = mergeReports(freshRows, cachedReports, refreshedTickers);
 
   const priceMap = {};
+  let pricesRefreshed = 0;
   const leaderTickers = [...new Set(leaders.map(l => normalizeCode(l.ticker)))];
   await mapInBatches(leaderTickers, BATCH_SIZE, async code => {
     const leader = leaders.find(l => normalizeCode(l.ticker) === code);
-    priceMap[code] = await yahooPrice(code, leader?.market);
+    const price = await fetchLivePrice(code, leader?.market);
+    if (price != null) {
+      priceMap[code] = price;
+      pricesRefreshed += 1;
+    }
     return null;
   });
 
@@ -450,6 +476,8 @@ async function buildGapData() {
     title: `목표주가 괴리율 Top ${top.length} (Investing 해외)`,
     refreshedTickers: refreshedTickers.size,
     totalTargets: targets.length,
+    pricesRefreshed,
+    priceSource: 'naver',
     errors: errors.length ? errors.slice(0, 5) : undefined,
     rows: top,
     _live: true,

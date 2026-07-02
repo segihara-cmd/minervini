@@ -32,6 +32,9 @@
     },
     "api/semiconductor-export.py": {
       "maxDuration": 60
+    },
+    "api/gap.js": {
+      "maxDuration": 300
     }
   }
 }

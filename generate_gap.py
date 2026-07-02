@@ -113,10 +113,10 @@ tr:hover td{{filter:brightness(.96)}}
 </div>
 {TAB_NAV}
 <div class="content" id="app-content">
-  <div class="loading-box"><div class="spinner"></div><p>괴리율 데이터 불러오는 중</p></div>
+  <div class="loading-box"><div class="spinner"></div><p>괴리율 데이터 수집 중 (실시간 API, 최대 3분)</p></div>
 </div>
-<div class="footer">Investing.com 해외 목표가 · Yahoo 현재가 · 투자 권유 아님</div>
-<script src="gap-app.js?v=20260625-sort-date"></script>
+<div class="footer">Investing.com 해외 목표가 · 네이버 현재가 · 새로고침 시 실시간 갱신 · 투자 권유 아님</div>
+<script src="gap-app.js?v=20260702-live-refresh"></script>
 </body>
 </html>"""
 

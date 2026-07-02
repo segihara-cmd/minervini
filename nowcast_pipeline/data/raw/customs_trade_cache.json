@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-26T13:07:01.784524",
+  "updated_at": "2026-07-02T09:04:23.594517",
   "data": {
     "updated_at": "2026-06-26T10:05:41.970534",
     "data": {
@@ -251,14 +251,16 @@
       "net_export_usd": 6912793874.0
     },
     "8542:202604:export": {
-      "export_usd": 25207210065.0,
-      "import_usd": 7587393123.0,
-      "net_export_usd": 17619816942.0
+      "export_usd": 24627619403.0,
+      "import_usd": 7479870769.0,
+      "net_export_usd": 17147748634.0,
+      "api_source": "nitemtrade"
     },
     "8542:202605:export": {
-      "export_usd": 29399417383.0,
-      "import_usd": 7681001444.0,
-      "net_export_usd": 21718415939.0
+      "export_usd": 28884792606.0,
+      "import_usd": 7591486562.0,
+      "net_export_usd": 21293306044.0,
+      "api_source": "nitemtrade"
     },
     "8542:202201:export": {
       "export_usd": 9208615952.0,
@@ -540,6 +542,24 @@
       "export_usd": 24422986999.0,
       "import_usd": 7095965977.0,
       "net_export_usd": 17327021022.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202607:export": {
+      "export_usd": 0.0,
+      "import_usd": 0.0,
+      "net_export_usd": 0.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202608:export": {
+      "export_usd": 0.0,
+      "import_usd": 0.0,
+      "net_export_usd": 0.0,
+      "api_source": "nitemtrade"
+    },
+    "8542:202609:export": {
+      "export_usd": 0.0,
+      "import_usd": 0.0,
+      "net_export_usd": 0.0,
       "api_source": "nitemtrade"
     }
   }
