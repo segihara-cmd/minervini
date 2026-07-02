@@ -15,6 +15,7 @@ class PartialMonthInput:
     year_month: str
     partial_export_usd: float
     days_covered: int
+    confirmed: bool = False
 
 
 def quarter_label(year: int, quarter: int) -> str:
@@ -58,5 +59,6 @@ def load_partial_overrides(path: Path | None = None) -> dict[str, PartialMonthIn
             year_month=ym,
             partial_export_usd=float(item["partial_export_usd"]),
             days_covered=int(item["days_covered"]),
+            confirmed=bool(item.get("confirmed", False)),
         )
     return out

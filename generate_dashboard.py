@@ -88,6 +88,28 @@ def _parse_adr_embed(html, name):
     values = [round(float(v), 2) for _, v in pairs]
     return dates, values
 
+def fetch_adr_today():
+    """adrinfo.kr 메인 페이지 당일 KOSPI/KOSDAQ ADR (chart embed보다 최신)."""
+    try:
+        r = requests.get('http://adrinfo.kr/', headers=ADR_HEADERS, timeout=15)
+        r.raise_for_status()
+
+        def _parse_mkt(html: str, name: str) -> float | None:
+            m = re.search(
+                rf'<header>{name}</header>.*?<h2 class="card-title">\s*([\d.]+)',
+                html,
+                re.S | re.I,
+            )
+            return float(m.group(1)) if m else None
+
+        kospi = _parse_mkt(r.text, 'KOSPI')
+        kosdaq = _parse_mkt(r.text, 'KOSDAQ')
+        if kospi is not None and kosdaq is not None:
+            return kospi, kosdaq
+    except Exception as e:
+        print(f'[경고] ADR today: {e}')
+    return None, None
+
 def fetch_adr(days=63):
     """adrinfo.kr/chart와 동일한 KOSPI/KOSDAQ ADR 시계열 수집"""
     try:
@@ -202,6 +224,16 @@ def collect_data():
     mu_d,   mu_v   = fetch_live('MU',         '3mo')
     skew_d, skew_v = fetch_live('^SKEW',      '3mo')
     adr_d, adr_kospi, adr_kosdaq = fetch_adr()
+    adr_k_today, adr_q_today = fetch_adr_today()
+    if adr_k_today is not None:
+        today = datetime.now(KST).strftime('%Y-%m-%d')
+        if adr_d and adr_d[-1] == today:
+            adr_kospi[-1] = adr_k_today
+            adr_kosdaq[-1] = adr_q_today
+        else:
+            adr_d.append(today)
+            adr_kospi.append(adr_k_today)
+            adr_kosdaq.append(adr_q_today)
 
     # 1년치 KOSPI for MA computation
     ks11_1y_d, ks11_1y_v = fetch_live('^KS11', '2y')
@@ -423,10 +455,10 @@ tr:hover td{{background:#f8fafc}}
   <a href="gap.html" style="padding:12px 24px;color:#94a3b8;text-decoration:none;font-size:.9rem;font-weight:600;border-bottom:3px solid transparent">📈 ETF 괴리율</a>
 </nav>
 <div class="content" id="app-content">
-  <div class="loading-box"><div class="spinner"></div><p>시장 데이터 불러오는 중 (약 10~20초)</p></div>
+  <div class="loading-box"><div class="spinner"></div><p>시장·수출 데이터 불러오는 중 (실시간 API, 최대 1분)</p></div>
 </div>
 <div class="footer">실시간 대시보드 · 새로고침 시 최신 데이터 반영 · 투자 권유 아님</div>
-<script src="dashboard-app.js?v=20260626-export-yoy-collision"></script>
+<script src="dashboard-app.js?v=20260702-live-refresh"></script>
 </body>
 </html>'''
 
@@ -435,7 +467,7 @@ def build_semiconductor_export_json() -> None:
     """관세청 API(nowcast_pipeline) → docs/semiconductor-export.json 스냅샷."""
     try:
         as_of = datetime.now(KST).date()
-        payload = build_export_payload(as_of=as_of, use_cache=True)
+        payload = build_export_payload(as_of=as_of, use_cache=False, live=True)
         payload['_live'] = False
         EXPORT_JSON.parent.mkdir(parents=True, exist_ok=True)
         EXPORT_JSON.write_text(json.dumps(payload, ensure_ascii=False), encoding='utf-8')

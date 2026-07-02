@@ -32,7 +32,7 @@ class handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         try:
-            payload = build_export_payload(as_of=date.today(), use_cache=True)
+            payload = build_export_payload(as_of=date.today(), use_cache=False, live=True)
             payload["_live"] = True
             body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
             self.send_response(200)

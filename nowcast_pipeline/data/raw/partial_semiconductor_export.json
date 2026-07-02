@@ -1,11 +1,12 @@
 {
-  "_comment": "관세청 10일 단위 잠정치(1~10일/1~20일) 수출 USD. API 미구독 시 수동 입력.",
+  "_comment": "관세청 API 미반영 월 수동 입력. confirmed=true면 E추정 아닌 확정치.",
   "partials": {
     "2026-06": {
-      "partial_export_usd": 12400000000,
-      "days_covered": 20,
-      "source": "관세청 보도자료 또는 tradedata.go.kr 1~20일 잠정치",
-      "note": "HS 8542 합산과 단위(USD)를 맞출 것"
+      "partial_export_usd": 44820000000,
+      "days_covered": 30,
+      "confirmed": true,
+      "source": "산업통상부 2026-07-01 발표 6월 반도체 수출 확정 448.2억 USD",
+      "note": "관세청 nitemtrade API 202606 미반영(7/2 기준). HS8542와 산업부 반도체 품목 범위 차이 가능."
     }
   }
 }

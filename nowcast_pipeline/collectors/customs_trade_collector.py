@@ -212,12 +212,14 @@ def fetch_semiconductor_trade_month(
     """
     service_key = _require_api_key()
     cache_key = f"{hs_code}:{yymm}:{direction}"
-    cache = _load_cache() if use_cache else {}
+    cache = _load_cache()
 
-    if cache_key in cache:
+    if use_cache and cache_key in cache:
         cached = cache[cache_key]
-        cached["api_source"] = cached.get("api_source", "cache")
-        return cached
+        if direction != "export" or cached.get("export_usd", 0) > 0:
+            cached["api_source"] = cached.get("api_source", "cache")
+            return cached
+        logger.info("yymm=%s stale zero cache — 재조회", yymm)
 
     itemtrade = _fetch_month_via_itemtrade(service_key, yymm, hs_code)
     api_source = "itemtrade"
@@ -268,9 +270,11 @@ def fetch_semiconductor_trade_month(
         "api_source": api_source,
     }
 
-    if use_cache:
+    if direction != "export" or export_sum > 0:
         cache[cache_key] = result
         _save_cache(cache)
+    else:
+        logger.warning("yymm=%s export=0 — 캐시 미저장 (API 미반영)", yymm)
     return result
 
 

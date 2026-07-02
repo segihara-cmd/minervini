@@ -110,6 +110,23 @@ function parseAdrEmbed(html, name) {
   return [dates, values];
 }
 
+async function fetchAdrToday() {
+  try {
+    const res = await fetch('http://adrinfo.kr/', { headers: { 'User-Agent': UA } });
+    if (!res.ok) return null;
+    const html = await res.text();
+    const parseMkt = (name) => {
+      const re = new RegExp(`<header>${name}</header>[\\s\\S]*?<h2 class="card-title">\\s*([\\d.]+)`, 'i');
+      const m = html.match(re);
+      return m ? parseFloat(m[1]) : null;
+    };
+    const kospi = parseMkt('KOSPI');
+    const kosdaq = parseMkt('KOSDAQ');
+    if (kospi != null && kosdaq != null) return { kospi, kosdaq };
+  } catch (_) { /* optional */ }
+  return null;
+}
+
 async function fetchAdr(days = 63) {
   const res = await fetch('http://adrinfo.kr/chart', { headers: { 'User-Agent': UA } });
   if (!res.ok) throw new Error(`ADR: ${res.status}`);
@@ -128,7 +145,7 @@ async function fetchAdr(days = 63) {
 
 async function buildDashboardData() {
   const [
-    sam, hyn, ks11, sox, nvda, vix, tnx, fx, wti, mu, skew, ks11_2y, adrPack,
+    sam, hyn, ks11, sox, nvda, vix, tnx, fx, wti, mu, skew, ks11_2y, adrPack, adrToday,
   ] = await Promise.all([
     yahooChart('005930.KS', '3mo'),
     yahooChart('000660.KS', '3mo'),
@@ -143,9 +160,21 @@ async function buildDashboardData() {
     yahooChart('^SKEW', '3mo'),
     yahooChart('^KS11', '2y'),
     fetchAdr().catch(() => [[], [], []]),
+    fetchAdrToday().catch(() => null),
   ]);
 
-  const [adrD, adrKospi, adrKosdaq] = adrPack;
+  let [adrD, adrKospi, adrKosdaq] = adrPack;
+  if (adrToday) {
+    const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
+    if (adrD.length && adrD[adrD.length - 1] === today) {
+      adrKospi[adrKospi.length - 1] = adrToday.kospi;
+      adrKosdaq[adrKosdaq.length - 1] = adrToday.kosdaq;
+    } else {
+      adrD = [...adrD, today];
+      adrKospi = [...adrKospi, adrToday.kospi];
+      adrKosdaq = [...adrKosdaq, adrToday.kosdaq];
+    }
+  }
   const exitResult = computeExit(ks11_2y.values, vix.values, tnx.values);
   let exitLv = null, ma50 = null, ma150 = null, ma200 = null, aligned = null;
   if (exitResult) [exitLv, ma50, ma150, ma200, aligned] = exitResult;

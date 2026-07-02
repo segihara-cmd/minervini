@@ -1,22 +1,37 @@
-"""관세청 API 기반 반도체 분기 수출 → 대시보드 JSON.
-
-fPER Research `project/config/samsung_nowcast_config.py` +
-`collectors/customs_trade_collector.py` (data.go.kr) 와 동일 소스.
-"""
+"""관세청 API 기반 반도체 분기 수출 → 대시보드 JSON."""
 
 from __future__ import annotations
 
 import json
 import re
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
 
-from collectors.customs_trade_collector import ITEMTRADE_URL, NITEMTRADE_URL
+from collectors.customs_trade_collector import (
+    ITEMTRADE_URL,
+    NITEMTRADE_URL,
+    fetch_semiconductor_trade_month,
+)
 from config.samsung_nowcast_config import CORE_EXPORT_COUNTRIES, DEFAULT_HS_CODE
 from config.settings import CUSTOMS_TRADE_CACHE, DATA_GO_KR_API_KEY
 from pipeline.quarterly_export_analysis import analyze_quarterly_exports
+
+
+def _warm_live_cache(as_of: date, months_back: int = 8) -> None:
+    """실시간 조회: 최근 월만 API 재호출 후 캐시 갱신 (전체 no-cache 방지)."""
+    seen: set[str] = set()
+    for i in range(months_back):
+        d = as_of - timedelta(days=32 * i)
+        yymm = d.strftime("%Y%m")
+        if yymm in seen:
+            continue
+        seen.add(yymm)
+        try:
+            fetch_semiconductor_trade_month(yymm, use_cache=False)
+        except Exception:
+            pass
 
 
 def _customs_api_meta() -> dict:
@@ -110,10 +125,14 @@ def _parse_monthly_row(row: pd.Series) -> list[dict]:
 def build_export_payload(
     as_of: date | None = None,
     use_cache: bool = True,
+    live: bool = False,
     start_year: int = 2023,
 ) -> dict:
     """관세청 API + E.partial_month_scaleup → 대시보드용 dict."""
     as_of = as_of or date.today()
+    if live or not use_cache:
+        _warm_live_cache(as_of)
+        use_cache = True
     df = analyze_quarterly_exports(
         as_of=as_of,
         hs_code=DEFAULT_HS_CODE,

@@ -19,7 +19,6 @@ from collectors.customs_trade_collector import (
 from config.samsung_nowcast_config import CORE_EXPORT_COUNTRIES, DEFAULT_HS_CODE
 from pipeline.export_nowcast import days_in_month, estimate_partial_month_scaleup
 from pipeline.nowcast_helpers import (
-    confirmed_month_cutoff,
     label_from_yymm,
     load_partial_overrides,
     quarter_label,
@@ -54,7 +53,7 @@ def build_monthly_exports_with_estimates(
     use_cache: bool = True,
     countries: tuple[str, ...] = CORE_EXPORT_COUNTRIES,
     start_year: int = 2023,
-) -> dict[str, float]:
+) -> tuple[dict[str, float], set[str]]:
     """확정월 + 미발표월 E추정 포함 월별 수출 USD."""
     end_year, end_q = as_of.year, (as_of.month - 1) // 3 + 1
     end_month = end_q * 3
@@ -69,7 +68,7 @@ def build_monthly_exports_with_estimates(
 
     month_list = sorted(needed)
     if not month_list:
-        return {}
+        return {}, set()
 
     df = fetch_semiconductor_trade_range(
         month_list[0],
@@ -84,15 +83,16 @@ def build_monthly_exports_with_estimates(
         for row in df.itertuples()
     }
 
-    cutoff = confirmed_month_cutoff(as_of)
     overrides = load_partial_overrides()
+    estimated: set[str] = set()
 
     for y in range(start_year, end_year + 1):
         for m in range(1, 13):
             if y > end_year or (y == end_year and m > end_month):
                 break
             ym = f"{y}-{m:02d}"
-            if ym <= cutoff and monthly.get(ym, 0) > 0:
+            # 관세청 API에 월별 실측/확정치가 있으면 E추정 생략 (6/30 확정 등)
+            if monthly.get(ym, 0) > 0:
                 continue
             if ym > f"{as_of.year}-{as_of.month:02d}":
                 continue
@@ -100,12 +100,16 @@ def build_monthly_exports_with_estimates(
             if partial is None:
                 continue
             total_days = days_in_month(y, m)
+            if partial.confirmed or partial.days_covered >= total_days:
+                monthly[ym] = partial.partial_export_usd
+                continue
             est = estimate_partial_month_scaleup(
                 partial.partial_export_usd,
                 partial.days_covered,
                 total_days,
             )
             monthly[ym] = est
+            estimated.add(ym)
             logger.info(
                 "E추정 %s: $%.2fB (%d일->%d일 스케일업)",
                 ym,
@@ -114,7 +118,7 @@ def build_monthly_exports_with_estimates(
                 total_days,
             )
 
-    return monthly
+    return monthly, estimated
 
 
 def analyze_quarterly_exports(
@@ -126,16 +130,13 @@ def analyze_quarterly_exports(
 ) -> pd.DataFrame:
     """분기별 수출 합계 + 전분기(QoQ) / 전년동기(YoY) 증감률."""
     as_of = as_of or date.today()
-    monthly = build_monthly_exports_with_estimates(
+    monthly, estimated_set = build_monthly_exports_with_estimates(
         as_of=as_of,
         hs_code=hs_code,
         use_cache=use_cache,
         countries=countries,
         start_year=start_year,
     )
-    cutoff = confirmed_month_cutoff(as_of)
-    overrides = load_partial_overrides()
-
     end_year, end_q = as_of.year, (as_of.month - 1) // 3 + 1
     rows: list[QuarterExportRow] = []
     totals: dict[str, float] = {}
@@ -155,7 +156,7 @@ def analyze_quarterly_exports(
                     complete = False
                     break
                 month_vals[ym] = val
-                if ym > cutoff or ym in overrides:
+                if ym in estimated_set:
                     est_months.append(ym)
             if not complete:
                 continue

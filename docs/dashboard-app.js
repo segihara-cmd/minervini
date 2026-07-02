@@ -603,28 +603,13 @@ ${exportSectionHtml(exportData)}
 async function loadExportData() {
   const ts = Date.now();
   const errors = [];
-  const onGhPages = location.hostname.includes('github.io');
-
-  if (onGhPages) {
-    try {
-      const res = await fetchWithTimeout(`./semiconductor-export.json?t=${ts}`, 8000);
-      if (res.ok) {
-        const data = await res.json();
-        data._live = false;
-        return data;
-      }
-      errors.push(`semiconductor-export.json: ${res.status}`);
-    } catch (e) {
-      errors.push(`semiconductor-export.json: ${e.message}`);
-    }
-  }
 
   for (const base of API_CANDIDATES()) {
     const url = base
       ? `${base}/api/semiconductor-export?t=${ts}`
       : `/api/semiconductor-export?t=${ts}`;
     try {
-      const res = await fetchWithTimeout(url, 15000);
+      const res = await fetchWithTimeout(url, 60000);
       if (!res.ok) throw new Error(`${res.status}`);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -635,18 +620,16 @@ async function loadExportData() {
     }
   }
 
-  if (!onGhPages) {
-    try {
-      const res = await fetchWithTimeout(`./semiconductor-export.json?t=${ts}`, 8000);
-      if (res.ok) {
-        const data = await res.json();
-        data._live = false;
-        return data;
-      }
-      errors.push(`semiconductor-export.json: ${res.status}`);
-    } catch (e) {
-      errors.push(`semiconductor-export.json: ${e.message}`);
+  try {
+    const res = await fetchWithTimeout(`./semiconductor-export.json?t=${ts}`, 8000);
+    if (res.ok) {
+      const data = await res.json();
+      data._live = false;
+      return data;
     }
+    errors.push(`semiconductor-export.json: ${res.status}`);
+  } catch (e) {
+    errors.push(`semiconductor-export.json: ${e.message}`);
   }
   console.warn('수출 데이터 로드 실패:', errors.join(' | '));
   return null;
@@ -655,26 +638,11 @@ async function loadExportData() {
 async function fetchLiveData() {
   const ts = Date.now();
   const errors = [];
-  const onGhPages = location.hostname.includes('github.io');
-
-  if (onGhPages) {
-    try {
-      const res = await fetchWithTimeout(`./data.json?t=${ts}`, 8000);
-      if (res.ok) {
-        const data = await res.json();
-        data._live = false;
-        return data;
-      }
-      errors.push(`data.json: ${res.status}`);
-    } catch (e) {
-      errors.push(`data.json: ${e.message}`);
-    }
-  }
 
   for (const base of API_CANDIDATES()) {
     const url = base ? `${base}/api/dashboard?t=${ts}` : `/api/dashboard?t=${ts}`;
     try {
-      const res = await fetchWithTimeout(url, 15000);
+      const res = await fetchWithTimeout(url, 30000);
       if (!res.ok) throw new Error(`${res.status}`);
       const data = await res.json();
       data._live = true;
@@ -684,18 +652,16 @@ async function fetchLiveData() {
     }
   }
 
-  if (!onGhPages) {
-    try {
-      const res = await fetchWithTimeout(`./data.json?t=${ts}`, 8000);
-      if (res.ok) {
-        const data = await res.json();
-        data._live = false;
-        return data;
-      }
-      errors.push(`data.json: ${res.status}`);
-    } catch (e) {
-      errors.push(`data.json: ${e.message}`);
+  try {
+    const res = await fetchWithTimeout(`./data.json?t=${ts}`, 8000);
+    if (res.ok) {
+      const data = await res.json();
+      data._live = false;
+      return data;
     }
+    errors.push(`data.json: ${res.status}`);
+  } catch (e) {
+    errors.push(`data.json: ${e.message}`);
   }
   throw new Error(errors.join(' | '));
 }
@@ -703,7 +669,7 @@ async function fetchLiveData() {
 function showLoading() {
   document.getElementById('updated').textContent = '실시간 데이터 로딩 중...';
   document.getElementById('app-content').innerHTML = `
-    <div class="loading-box"><div class="spinner"></div><p>시장 데이터 불러오는 중 (약 10~20초)</p></div>`;
+    <div class="loading-box"><div class="spinner"></div><p>시장·수출 데이터 불러오는 중 (실시간 API, 최대 1분)</p></div>`;
 }
 
 function showError(msg) {
