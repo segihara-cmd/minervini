@@ -14,12 +14,22 @@ const API_CANDIDATES = () => {
 
 async function loadApiConfig() {
   try {
-    const res = await fetch(`./config.json?t=${Date.now()}`, { cache: 'no-store' });
+    const res = await fetchWithTimeout(`./config.json?t=${Date.now()}`, 8000);
     if (res.ok) {
       const cfg = await res.json();
       window.__DASHBOARD_API_BASES = cfg.apiBases || [];
     }
   } catch (_) { /* optional */ }
+}
+
+async function fetchWithTimeout(url, timeoutMs = 120000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    return await fetch(url, { cache: 'no-store', signal: ctrl.signal });
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function lerpColor(v, lo, hi, cLo, cHi) {
@@ -113,7 +123,7 @@ function buildTable(rows) {
 }
 
 function renderScreener(data) {
-  const live = data._live ? '실시간' : '스냅샷';
+  const live = data._live ? '실시간 (네이버 현재가)' : '스냅샷 (CI)';
   document.getElementById('updated').textContent = `업데이트: ${data.updated} · ${live}`;
   document.getElementById('app-content').innerHTML = `
     <div class="info-bar">
@@ -135,7 +145,7 @@ async function fetchLiveData() {
   for (const base of API_CANDIDATES()) {
     const url = base ? `${base}/api/screener?t=${ts}` : `/api/screener?t=${ts}`;
     try {
-      const res = await fetch(url, { cache: 'no-store' });
+      const res = await fetchWithTimeout(url, 120000);
       if (!res.ok) throw new Error(`${res.status}`);
       const data = await res.json();
       data._live = true;
@@ -145,7 +155,7 @@ async function fetchLiveData() {
     }
   }
   try {
-    const res = await fetch(`./screener.json?t=${ts}`, { cache: 'no-store' });
+    const res = await fetchWithTimeout(`./screener.json?t=${ts}`, 8000);
     if (res.ok) {
       const data = await res.json();
       data._live = false;
@@ -159,7 +169,7 @@ async function fetchLiveData() {
 function showLoading() {
   document.getElementById('updated').textContent = '실시간 데이터 로딩 중...';
   document.getElementById('app-content').innerHTML =
-    '<div class="loading-box"><div class="spinner"></div><p>ETF 스크리닝 중 (약 30~90초)</p></div>';
+    '<div class="loading-box"><div class="spinner"></div><p>ETF 스크리닝 중 (실시간 API, 최대 2분)</p></div>';
 }
 
 function showError(msg) {

@@ -36,6 +36,7 @@ async function fetchEtfList(minVolume = MIN_VOLUME) {
       code: normalizeCode(item.itemcode || ''),
       name: String(item.itemname || '').trim(),
       volume: parseInt(item.quant, 10) || 0,
+      livePrice: parseInt(item.nowVal, 10) || null,
     }))
     .filter(e => e.code && e.volume >= minVolume);
 }
@@ -45,8 +46,18 @@ async function yahooCloses(symbol) {
   const res = await fetch(url, { headers: { 'User-Agent': UA } });
   if (!res.ok) return null;
   const json = await res.json();
-  const closes = json?.chart?.result?.[0]?.indicators?.quote?.[0]?.close || [];
-  return closes.filter(c => c != null);
+  const result = json?.chart?.result?.[0];
+  if (!result) return null;
+  const closes = result.indicators?.quote?.[0]?.close || [];
+  const prices = closes.filter(c => c != null);
+  if (!prices.length) return null;
+
+  const meta = result.meta || {};
+  const livePrice = meta.regularMarketPrice ?? meta.previousClose ?? meta.chartPreviousClose;
+  if (livePrice != null) {
+    prices[prices.length - 1] = Math.round(livePrice * 10000) / 10000;
+  }
+  return prices;
 }
 
 function ema(values, span) {
@@ -137,7 +148,9 @@ async function screenOneEtf(etf) {
   if (!prices || prices.length < MIN_DAYS) return null;
 
   const idx = prices.length - 1;
-  const curr = prices[idx];
+  const curr = etf.livePrice != null && etf.livePrice > 0
+    ? etf.livePrice
+    : prices[idx];
   const ma50 = rollingMeanAt(prices, 50, idx);
   const ma150 = rollingMeanAt(prices, 150, idx);
   const ma200 = rollingMeanAt(prices, 200, idx);

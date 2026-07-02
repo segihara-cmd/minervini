@@ -107,7 +107,7 @@ def fetch_etf_list(min_volume=300_000):
             'Referer': 'https://finance.naver.com/sise/etf.nhn'
         }, timeout=20)
         r.raise_for_status()
-        items = r.json().get('result', {}).get('etfItemList', [])
+        items = json.loads(r.content.decode('euc-kr')).get('result', {}).get('etfItemList', [])
         result = []
         for item in items:
             vol = int(item.get('quant', 0) or 0)
@@ -116,6 +116,7 @@ def fetch_etf_list(min_volume=300_000):
                     'code': normalize_code(item.get('itemcode', '')),
                     'name': str(item.get('itemname', '')).strip(),
                     'volume': vol,
+                    'live_price': int(item.get('nowVal', 0) or 0) or None,
                 })
         print(f'  → {len(result)}개 수집')
         return result
@@ -143,7 +144,7 @@ def screen_etfs(etf_list):
             if price is None or len(price) < MIN_DAYS:
                 continue
 
-            curr = float(price.iloc[-1])
+            curr = float(etf.get('live_price') or price.iloc[-1])
             ma50  = float(price.rolling(50).mean().iloc[-1])
             ma150 = float(price.rolling(150).mean().iloc[-1])
             ma200 = float(price.rolling(200).mean().iloc[-1])
@@ -290,7 +291,7 @@ tr:hover td{{filter:brightness(.96)}}
   <div class="loading-box"><div class="spinner"></div><p>ETF 스크리닝 중 (약 30~90초)</p></div>
 </div>
 <div class="footer">실시간 스크리너 · 새로고침 시 최신 데이터 반영 · 투자 권유 아님</div>
-<script src="screener-app.js?v=20260624-live"></script>
+<script src="screener-app.js?v=20260702-live-refresh"></script>
 </body>
 </html>'''
 

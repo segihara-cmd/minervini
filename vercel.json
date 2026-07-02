@@ -24,6 +24,12 @@
     }
   ],
   "functions": {
+    "api/screener.js": {
+      "maxDuration": 60
+    },
+    "api/dashboard.js": {
+      "maxDuration": 60
+    },
     "api/semiconductor-export.py": {
       "maxDuration": 60
     }
